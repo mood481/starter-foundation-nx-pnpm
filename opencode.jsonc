@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "instructions": [
+
+  ],
+
+  "permission": {
+    "bash": {
+      "pnpm *": "allow",
+      "pnpm ospec:*": "allow",
+      "pnpm ospec *": "allow",
+      "nx *": "allow",
+      "ls *": "allow",
+      "cat *": "allow",
+      "echo *": "allow",
+      "openspec *": "allow",
+
+      "rm -rf *": "ask"
+    }
+  }
+}

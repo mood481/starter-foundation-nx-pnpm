@@ -10,15 +10,12 @@
     "pnpm": ">=10.0.0"
   },
   "scripts": {
-    "openspec": "openspec",
-    "os:list": "openspec list",
-    "os:list:specs": "openspec list --specs",
-    "os:status": "openspec status",
-    "os:validate": "openspec validate --all --strict",
-    "os:validate:json": "openspec validate --all --strict --json",
-    "os:validate:change": "openspec validate add-foundation-template-contract --strict",
-    "os:update": "openspec update",
-    "validate": "pnpm os:validate"
+    "ospec": "openspec",
+    "ospec:list": "openspec list",
+    "ospec:list:specs": "openspec list --specs",
+    "ospec:validate": "openspec validate --all --strict",
+    "ospec:validate:json": "openspec validate --all --strict --json",
+    "validate": "pnpm ospec:validate"
   },
   "devDependencies": {
     "@fission-ai/openspec": "~1.4.0"

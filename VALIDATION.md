@@ -9,13 +9,13 @@ This document describes how to validate the foundation starter and its generated
 Validate all OpenSpec artifacts:
 
 ```bash
-pnpm os:validate
+pnpm ospec:validate
 ```
 
 Validate the current change in strict mode:
 
 ```bash
-pnpm os:validate:change
+pnpm ospec validate <change-id> --strict
 ```
 
 ### Constraint Validation
