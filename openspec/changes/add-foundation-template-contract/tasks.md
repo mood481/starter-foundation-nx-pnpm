@@ -24,7 +24,9 @@
 - [x] Create `template/services/.gitkeep`.
 - [x] Create `template/packages/.gitkeep`.
 - [x] Create `template/tools/scripts/`.
+- [x] Create `template/tools/scripts/.gitkeep`.
 - [x] Create `template/tools/nx/`.
+- [x] Create `template/tools/nx/.gitkeep`.
 - [x] Create `template/docs/`.
 - [x] Create `template/openspec/specs/`.
 - [x] Create `template/openspec/changes/.gitkeep`.
@@ -33,6 +35,7 @@
 ### Workspace files
 
 - [x] Create `template/package.json`.
+- [x] Create `template/pnpm-lock.yaml`.
 - [x] Create `template/pnpm-workspace.yaml`.
 - [x] Create `template/nx.json`.
 - [x] Create `template/tsconfig.base.json`.

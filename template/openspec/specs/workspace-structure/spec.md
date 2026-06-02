@@ -41,6 +41,11 @@ The generated project SHALL provide base workspace configuration.
 - **THEN** `pnpm-workspace.yaml` SHALL exist
 - **AND** it SHALL declare workspace package globs for `apps/*`, `services/*`, `packages/*`, and `tools/*`.
 
+#### Scenario: pnpm lockfile exists
+
+- **WHEN** the generated project is inspected
+- **THEN** `pnpm-lock.yaml` SHALL exist to support reproducible dependency installation.
+
 #### Scenario: Build output is excluded
 
 - **WHEN** the pnpm workspace configuration is inspected

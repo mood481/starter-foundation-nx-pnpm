@@ -60,52 +60,52 @@ context: |
 rules:
   proposal:
     - Use the canonical proposal sections `## Why`, `## What Changes`, and `## Impact`.
-    - `## Why` must describe the problem, opportunity, or constraint that motivates the change.
-    - `## What Changes` must describe the proposed change as concrete bullets.
-    - `## Impact` must identify affected specs, generated-template files, starter-repository files, tooling, dependencies, and validation behaviour.
-    - Add `## Out of Scope` when the change deliberately excludes related work.
-    - Add `## Risks` when the change affects repository layout, generated-project layout, validation, rendering, variants, or future module starters.
-    - Add `## Open Questions` only when unresolved decisions remain; otherwise omit it.
+    - "`## Why` must describe the problem, opportunity, or constraint that motivates the change."
+    - "`## What Changes` must describe the proposed change as concrete bullets."
+    - "`## Impact` must identify affected specs, generated-template files, starter-repository files, tooling, dependencies, and validation behaviour."
+    - "Add `## Out of Scope` when the change deliberately excludes related work."
+    - "Add `## Risks` when the change affects repository layout, generated-project layout, validation, rendering, variants, or future module starters."
+    - "Add `## Open Questions` only when unresolved decisions remain; otherwise omit it."
     - State whether the change affects the starter repository, the generated template, or both.
     - Identify whether generated-project files under `template/` are affected.
     - Do not introduce concrete variants unless the change is explicitly about variants.
     - Use `variant` and `overlay` terminology; do not introduce new `flavour` metadata.
 
   specs:
-    - Use `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, or `## RENAMED Requirements`.
-    - Each requirement must use `### Requirement: ...`.
-    - Each requirement must include at least one `#### Scenario: ...`.
+    - "Use `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, or `## RENAMED Requirements`."
+    - "Each requirement must use `### Requirement: ...`."
+    - "Each requirement must include at least one `#### Scenario: ...`."
     - Requirements must describe externally observable behaviour, contracts, constraints, or verifiable outcomes.
-    - Move implementation details, file-by-file plans, library internals, and execution mechanics to `design.md` or `tasks.md`.
-    - Use `SHALL` for required system or template behaviour.
-    - Use `MUST` for hard process constraints, safety boundaries, compatibility guarantees, or prohibitions.
-    - Use `SHOULD` for preferred behaviour where justified exceptions are allowed.
-    - Use `MAY` for explicitly optional capabilities.
-    - Use `SHALL NOT` or `MUST NOT` only for verifiable prohibitions or boundary constraints.
-    - Avoid negative requirements when they only restate out-of-scope work; place those in `proposal.md` instead.
+    - "Move implementation details, file-by-file plans, library internals, and execution mechanics to `design.md` or `tasks.md`."
+    - "Use `SHALL` for required system or template behaviour."
+    - "Use `MUST` for hard process constraints, safety boundaries, compatibility guarantees, or prohibitions."
+    - "Use `SHOULD` for preferred behaviour where justified exceptions are allowed."
+    - "Use `MAY` for explicitly optional capabilities."
+    - "Use `SHALL NOT` or `MUST NOT` only for verifiable prohibitions or boundary constraints."
+    - "Avoid negative requirements when they only restate out-of-scope work; place those in `proposal.md` instead."
     - Distinguish starter-repository requirements from generated-template requirements.
-    - When referring to generated OpenSpec content, use `template/openspec/`.
-    - Do not require root `openspec/changes/` from the starter repository to be copied into generated projects.
+    - "When referring to generated OpenSpec content, use `template/openspec/`."
+    - "Do not require root `openspec/changes/` from the starter repository to be copied into generated projects."
 
   design:
-    - Use these minimum sections: `## Context`, `## Goals / Non-Goals`, `## Decisions`, `## Constraints`, `## Alternatives Considered`, `## Risks / Trade-offs`, and `## Validation Strategy`.
-    - Include `## Repository Structure` when the change affects the starter repository layout.
-    - Include `## Template Structure` when the change affects generated files under `template/`.
-    - Include `## Rendering Model` when the change affects placeholders, variants, overlays, or generated output.
-    - Include `## Migration Plan` when existing files, metadata, terminology, or specs must be renamed or moved.
-    - In `## Constraints`, explicitly list constraints agents must not violate.
+    - "Use these minimum sections: `## Context`, `## Goals / Non-Goals`, `## Decisions`, `## Constraints`, `## Alternatives Considered`, `## Risks / Trade-offs`, and `## Validation Strategy`."
+    - "Include `## Repository Structure` when the change affects the starter repository layout."
+    - "Include `## Template Structure` when the change affects generated files under `template/`."
+    - "Include `## Rendering Model` when the change affects placeholders, variants, overlays, or generated output."
+    - "Include `## Migration Plan` when existing files, metadata, terminology, or specs must be renamed or moved."
+    - "In `## Constraints`, explicitly list constraints agents must not violate."
     - Design documents should explain how implementation will work, not redefine requirements already captured in specs.
     - Separate starter-maintenance artifacts from importable generated-template artifacts.
     - Call out compatibility with future variants, module starters, and multi-language projects when relevant.
     - Do not add concrete variant assumptions to neutral starter design unless the change explicitly introduces variants.
 
   tasks:
-    - Use two top-level sections: `## Execution Plan` and `## Validation`.
-    - Under `## Execution Plan`, group tasks by implementation area.
-    - Under `## Validation`, include checks that prove specs, design constraints, generated-template files, and tooling expectations are satisfied.
+    - "Use two top-level sections: `## Execution Plan` and `## Validation`."
+    - "Under `## Execution Plan`, group tasks by implementation area."
+    - "Under `## Validation`, include checks that prove specs, design constraints, generated-template files, and tooling expectations are satisfied."
     - Use checkbox tasks only.
     - Include a validation task for OpenSpec strict validation.
     - Include a validation task for unresolved placeholders when template rendering is involved.
     - Include a validation task to confirm forbidden variant-specific files are not introduced by neutral changes.
     - Include a validation task to confirm design constraints were respected.
-    - Include a validation task to confirm terminology consistency, especially `variant` and `overlay`.
+    - "Include a validation task to confirm terminology consistency, especially `variant` and `overlay`."

@@ -37,6 +37,7 @@ Affected starter-repository files:
 Affected generated-template files:
 
 - `template/package.json`
+- `template/pnpm-lock.yaml`
 - `template/pnpm-workspace.yaml`
 - `template/nx.json`
 - `template/tsconfig.base.json`

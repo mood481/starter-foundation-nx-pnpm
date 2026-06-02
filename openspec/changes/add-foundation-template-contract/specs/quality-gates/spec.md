@@ -35,6 +35,11 @@ The generated project SHALL support deterministic validation of the neutral foun
 - **WHEN** a generated project is validated
 - **THEN** dependency installation SHOULD support frozen-lockfile mode.
 
+#### Scenario: Lockfile exists
+
+- **WHEN** the generated project is inspected
+- **THEN** `pnpm-lock.yaml` SHALL exist.
+
 #### Scenario: Workspace validation can be run
 
 - **WHEN** a generated project is validated

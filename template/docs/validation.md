@@ -40,7 +40,7 @@ pnpm nx graph --file=tmp/nx-graph.json
 
 ## Placeholder Validation
 
-After rendering, no unresolved double-underscore placeholders should remain. Scan for patterns like `__PLACEHOLDER_NAME__` in generated files.
+After rendering, no unresolved double-underscore placeholders should remain. Scan generated files for double-underscore placeholder tokens.
 
 ## Neutral Boundary Validation
 

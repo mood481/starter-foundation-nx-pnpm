@@ -147,7 +147,9 @@ template/
 │   └── .gitkeep
 ├── tools/
 │   ├── scripts/
+│   │   └── .gitkeep
 │   └── nx/
+│       └── .gitkeep
 ├── docs/
 │   ├── development.md
 │   ├── monorepo.md
@@ -175,6 +177,7 @@ template/
 ├── eslint.config.mjs
 ├── nx.json
 ├── package.json
+├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
 ├── prettier.config.mjs
 ├── tsconfig.base.json
@@ -267,6 +270,8 @@ validations:
 ```
 
 ## Workspace Model
+
+The generated project contains `pnpm-lock.yaml` so `pnpm install --frozen-lockfile` can run reproducibly after rendering.
 
 The generated project contains `pnpm-workspace.yaml`:
 

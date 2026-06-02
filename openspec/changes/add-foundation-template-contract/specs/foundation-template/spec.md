@@ -54,6 +54,11 @@ The template SHALL provide the base workspace configuration for pnpm and Nx.
 - **WHEN** the template is inspected
 - **THEN** `pnpm-workspace.yaml` SHALL exist.
 
+#### Scenario: pnpm lockfile exists
+
+- **WHEN** the template is inspected
+- **THEN** `pnpm-lock.yaml` SHALL exist to support reproducible dependency installation.
+
 #### Scenario: Nx configuration file exists
 
 - **WHEN** the template is inspected
