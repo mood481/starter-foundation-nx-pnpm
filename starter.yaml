@@ -1,0 +1,55 @@
+id: foundation-nx-pnpm
+name: Foundation Nx pnpm Monorepo
+kind: foundation
+version: 0.1.0
+
+template:
+  path: template
+  engine: generic-renderer
+  placeholders:
+    style: double-underscore
+    failOnUnresolved: true
+
+sdd:
+  provider: openspec
+  root: openspec
+  importable:
+    - template/openspec/specs
+
+variants: {}
+
+provides:
+  - monorepo
+  - nx-workspace
+  - pnpm-workspace
+  - openspec-sdd
+  - quality-gates
+  - multi-language-workspace
+
+paths:
+  apps: apps
+  services: services
+  packages: packages
+  tools: tools
+  docs: docs
+  sdd: openspec
+
+projectRules:
+  configFile: project.json
+  requiredTargets:
+    - lint
+    - test
+  optionalTargets:
+    - typecheck
+    - build
+    - e2e
+    - serve
+    - docker
+  requiredTags:
+    - type
+    - lang
+
+validations:
+  - pnpm install --frozen-lockfile
+  - pnpm validate
+  - pnpm nx graph --file=tmp/nx-graph.json

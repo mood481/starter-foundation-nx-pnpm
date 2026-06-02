@@ -67,7 +67,7 @@ The template SHALL provide the base workspace configuration for pnpm and Nx.
 
 ### Requirement: Placeholder Rendering
 
-The template MAY contain placeholders that are resolved during project generation.
+The template SHALL support placeholders that are resolved during project generation.
 
 #### Scenario: Placeholder style is consistent
 

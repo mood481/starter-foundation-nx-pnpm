@@ -1,0 +1,27 @@
+{
+  "name": "__PROJECT_SLUG__",
+  "version": "0.0.0",
+  "private": true,
+  "description": "__PROJECT_DESCRIPTION__",
+  "type": "module",
+  "packageManager": "pnpm@__PNPM_VERSION__",
+  "engines": {
+    "node": ">=__NODE_VERSION__",
+    "pnpm": ">=__PNPM_VERSION__"
+  },
+  "scripts": {
+    "lint": "nx run-many --target=lint --all",
+    "typecheck": "nx run-many --target=typecheck --all",
+    "test": "nx run-many --target=test --all",
+    "build": "nx run-many --target=build --all",
+    "validate": "pnpm lint && pnpm typecheck && pnpm test",
+    "nx": "nx"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "nx": "22.7.5",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}
