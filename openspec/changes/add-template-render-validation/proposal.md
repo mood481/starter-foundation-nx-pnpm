@@ -12,6 +12,7 @@ Maintainers need an automated validation path that catches unresolved placeholde
 - Update root `validate` so full starter validation is the default and runs both strict OpenSpec validation and rendered-template validation.
 - Add `validate:spec` as the simple OpenSpec-only validation command.
 - Document how maintainers run full validation, spec-only validation, and template-only validation.
+- Disable Nx analytics and block Nx Cloud connections by default in generated projects.
 
 ## Capabilities
 
@@ -26,9 +27,10 @@ Maintainers need an automated validation path that catches unresolved placeholde
 ## Impact
 
 - Affected starter-repository files: root `package.json`, root validation documentation, and a new validation script under `tools/scripts/`.
+- Affected generated-template files: `template/nx.json` and `template/openspec/specs/nx-workspace/spec.md`.
 - Affected specs: `quality-gates`.
 - Affected validation behaviour: root `validate` becomes more comprehensive and slower because it validates a rendered generated project; `validate:spec` remains the fast OpenSpec-only path.
-- Generated-template files under `template/` are not changed by this proposal.
+- Generated-template behaviour changes only to disable Nx analytics and Nx Cloud connections by default.
 
 ## Out of Scope
 

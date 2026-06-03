@@ -11,6 +11,12 @@ The generated project SHALL use Nx as the workspace orchestration layer.
 - **WHEN** the generated project is inspected
 - **THEN** `nx.json` SHALL exist.
 
+#### Scenario: Nx telemetry is disabled
+
+- **WHEN** the generated project `nx.json` is inspected
+- **THEN** Nx analytics SHALL be disabled
+- **AND** Nx Cloud connections SHALL be blocked by default.
+
 #### Scenario: Common targets are defined
 
 - **WHEN** a project is added to the workspace

@@ -15,7 +15,9 @@
     "ospec:list:specs": "openspec list --specs",
     "ospec:validate": "openspec validate --all --strict",
     "ospec:validate:json": "openspec validate --all --strict --json",
-    "validate": "pnpm ospec:validate"
+    "validate:template": "node tools/scripts/validate-template-render.mjs",
+    "validate:spec": "pnpm ospec:validate",
+    "validate": "pnpm validate:spec && pnpm validate:template"
   },
   "devDependencies": {
     "@fission-ai/openspec": "~1.4.0"

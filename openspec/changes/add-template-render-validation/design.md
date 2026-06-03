@@ -18,7 +18,7 @@ Non-goals:
 
 - Do not implement the real project generator or renderer.
 - Do not introduce variants, overlays, modules, or application code.
-- Do not change files under `template/` unless validation reveals an actual contract bug during implementation.
+- Do not change files under `template/` except for the explicit Nx telemetry and cloud defaults in `template/nx.json` and matching importable specs.
 - Do not add external runtime dependencies for the validation script.
 
 ## Decisions
@@ -29,15 +29,15 @@ Add `tools/scripts/validate-template-render.mjs` at the starter repository root.
 
 The script should use built-in Node modules only. It should copy `template/` to a temporary directory, replace known neutral placeholders, scan for unresolved placeholders, run generated-project commands, and clean up the temporary directory by default.
 
-### Decision: Add `template:validate`
+### Decision: Add `validate:template`
 
-Add a root package script named `template:validate` that runs the Node validation script.
+Add a root package script named `validate:template` that runs the Node validation script.
 
 This keeps rendered-template validation directly runnable without hiding it behind OpenSpec-specific script names.
 
 ### Decision: Make root `validate` comprehensive
 
-Update root `validate` to run `pnpm ospec:validate && pnpm template:validate`.
+Update root `validate` to run `pnpm validate:spec && pnpm validate:template`.
 
 Full validation is the default repository validation path.
 
@@ -53,6 +53,10 @@ The validation script should render placeholders from the current neutral contra
 
 The script validates that the neutral template is internally consistent. It does not validate every future variant or renderer implementation.
 
+### Decision: Disable Nx telemetry and cloud prompts in generated projects
+
+Set `analytics: false` and `neverConnectToCloud: true` in `template/nx.json` so generated projects do not prompt maintainers to share usage data and do not attempt to connect to Nx Cloud by default.
+
 ## Constraints
 
 - Do not add concrete variant or overlay support in this change.
@@ -60,6 +64,7 @@ The script validates that the neutral template is internally consistent. It does
 - Do not leave unresolved placeholders in the rendered output.
 - Do not require global OpenSpec, global pnpm, or global Nx installations beyond the project-local commands already used by pnpm.
 - Do not introduce dependencies solely for parsing or rendering.
+- Do not enable Nx Cloud or Nx analytics in generated projects by default.
 
 ## Repository Structure
 
@@ -71,7 +76,7 @@ tools/
     └── validate-template-render.mjs
 ```
 
-The generated-template `template/` directory is not changed by design.
+The generated-template changes are limited to `template/nx.json` and the matching importable Nx workspace spec.
 
 ## Rendering Model
 
@@ -107,7 +112,7 @@ Rejected as the default proposal because root `validate` should represent the co
 ## Validation Strategy
 
 - Run `pnpm validate:spec`.
-- Run `pnpm template:validate`.
+- Run `pnpm validate:template`.
 - Run `pnpm validate`.
-- Confirm unresolved placeholder detection fails when a placeholder is intentionally left unresolved in a temporary copy.
+- Confirm the scanner failure path by intentionally injecting an unresolved placeholder after the validation render.
 - Confirm no generated-template files or variant directories are introduced by the implementation.
