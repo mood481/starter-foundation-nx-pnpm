@@ -5,10 +5,15 @@ version: 0.1.0
 
 template:
   path: template
-  engine: generic-renderer
+  engine: starter-renderer
   placeholders:
     style: double-underscore
     failOnUnresolved: true
+    required:
+      - PROJECT_NAME
+      - PROJECT_SLUG
+      - PROJECT_DESCRIPTION
+      - DEFAULT_PACKAGE_SCOPE
 
 sdd:
   provider: openspec

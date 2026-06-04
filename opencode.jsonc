@@ -18,6 +18,8 @@
       "echo *": "allow",
       "mkdir *": "allow",
       "openspec *": "allow",
+      "rg *": "allow",
+      "test *": "allow",
 
       "rm -rf *": "ask"
     }

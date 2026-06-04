@@ -1,0 +1,8 @@
+output:
+  path: ../tmp/rendered-neutral-example
+
+placeholders:
+  PROJECT_NAME: Example Foundation
+  PROJECT_SLUG: example-foundation
+  PROJECT_DESCRIPTION: Example generated foundation repository.
+  DEFAULT_PACKAGE_SCOPE: "@example"

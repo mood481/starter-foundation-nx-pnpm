@@ -77,7 +77,7 @@ Validate a rendered copy of the template from the starter repository:
 pnpm validate:template
 ```
 
-This copies `template/` to a temporary directory, resolves neutral placeholders, scans for unresolved placeholders, installs dependencies with a frozen lockfile, runs generated-project validation, and generates an Nx graph.
+This uses the same generic renderer semantics as `pnpm starter:render`: it copies `template/` to a temporary directory, resolves neutral placeholders, scans for unresolved placeholders, installs dependencies with a frozen lockfile, runs generated-project validation, and generates an Nx graph.
 
 To keep the temporary rendered directory for debugging:
 
@@ -92,6 +92,41 @@ TEMPLATE_VALIDATE_TEST_UNRESOLVED_PLACEHOLDER=1 pnpm validate:template
 ```
 
 This intentionally injects an unresolved placeholder after the validation render. It verifies that the scanner fails the command before dependency installation; it does not simulate a complete production renderer failure.
+
+## Starter Rendering
+
+Render a project from the starter with the default `starter.render.yaml` input file:
+
+```bash
+pnpm starter:render
+```
+
+Render with an explicit YAML or JSON input file:
+
+```bash
+pnpm starter:render -- --input examples/render-input.neutral.yaml
+```
+
+Render with a selected variant:
+
+```bash
+pnpm starter:render -- --variant <variant-id> --input ./starter.render.yaml
+```
+
+Render inputs declare `output.path` and `placeholders`. Placeholder keys omit double-underscore delimiters:
+
+```yaml
+output:
+  path: ../my-project
+
+placeholders:
+  PROJECT_NAME: My Project
+  PROJECT_SLUG: my-project
+  PROJECT_DESCRIPTION: Generated foundation repository.
+  DEFAULT_PACKAGE_SCOPE: "@my-project"
+```
+
+If an input file declares `variant:` and `--variant` is also provided, both values must match. Unknown variants, missing required placeholders, non-empty output directories, and unresolved placeholders fail rendering.
 
 Inside a generated project, run:
 

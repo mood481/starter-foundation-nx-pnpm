@@ -8,7 +8,40 @@ This starter defines a neutral, renderable foundation template for monorepos bas
 
 ## Usage
 
-The starter is consumed by rendering the `template/` directory into a new project. Placeholders using double-underscore syntax (e.g., `__PROJECT_SLUG__`) are resolved during rendering.
+The starter is consumed with the starter-owned renderer. The renderer reads structured YAML or JSON input, copies the neutral `template/`, optionally applies a selected variant overlay, resolves double-underscore placeholders, and fails if unresolved placeholders remain.
+
+Render with the default input file, `starter.render.yaml`:
+
+```bash
+pnpm starter:render
+```
+
+Render with an explicit input file:
+
+```bash
+pnpm starter:render -- --input examples/render-input.neutral.yaml
+```
+
+Render with an optional variant:
+
+```bash
+pnpm starter:render -- --variant example --input ./starter.render.yaml
+```
+
+The neutral input shape is:
+
+```yaml
+output:
+  path: ../my-project
+
+placeholders:
+  PROJECT_NAME: My Project
+  PROJECT_SLUG: my-project
+  PROJECT_DESCRIPTION: Generated foundation repository.
+  DEFAULT_PACKAGE_SCOPE: "@my-project"
+```
+
+The renderer derives starter and runtime placeholders such as `STARTER_ID`, `STARTER_VERSION`, `NODE_VERSION`, and `PNPM_VERSION` from the starter repository metadata.
 
 ## Repository Structure
 
@@ -93,6 +126,8 @@ validation
 ```
 
 Overlay files may add or replace generated files according to deterministic renderer semantics. Validation must prove the effective rendered output is complete and contains no unresolved placeholders.
+
+Variant selection is an input to `pnpm starter:render`; variants do not require variant-specific renderers. A variant may be selected with `--variant <id>` or by declaring `variant: <id>` in the render input file. If both are provided, they must match.
 
 ### Validation Contract
 
