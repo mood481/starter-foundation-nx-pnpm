@@ -114,7 +114,7 @@ The starter repository SHALL expose working OpenSpec package scripts from the ro
 
 ### Requirement: Rendered Template Validation
 
-The starter repository SHALL provide an automated validation command that renders the neutral template and verifies the rendered generated project.
+The starter repository SHALL provide an automated validation command that renders the neutral template through the generic starter renderer and verifies the rendered generated project.
 
 #### Scenario: Template validation command exists
 
@@ -130,8 +130,13 @@ The starter repository SHALL provide an automated validation command that render
 #### Scenario: Template is rendered to temporary output
 
 - **WHEN** `pnpm validate:template` is run
-- **THEN** it SHALL copy `template/` to a temporary generated-project directory
+- **THEN** it SHALL render the neutral template through the generic starter renderer into a temporary generated-project directory
 - **AND** it SHALL resolve the neutral starter placeholders using deterministic validation values.
+
+#### Scenario: Validation uses renderer semantics
+
+- **WHEN** `pnpm validate:template` renders the neutral template
+- **THEN** it SHALL use the same template path, placeholder resolution, output safety, and unresolved-placeholder semantics as `pnpm starter:render`.
 
 #### Scenario: Unresolved placeholders fail validation
 
