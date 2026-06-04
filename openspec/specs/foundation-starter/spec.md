@@ -6,7 +6,7 @@ The foundation-starter specification defines the contract for a neutral starter 
 ## Requirements
 ### Requirement: Neutral Foundation Starter
 
-The starter repository SHALL define a neutral foundation starter for Nx + pnpm monorepos.
+The starter repository SHALL define a neutral foundation starter for Nx + pnpm monorepos while allowing approved variants outside the neutral template.
 
 #### Scenario: Starter identity is declared
 
@@ -15,12 +15,18 @@ The starter repository SHALL define a neutral foundation starter for Nx + pnpm m
 - **AND** the starter kind SHALL be `foundation`
 - **AND** the starter SHALL declare a semantic version.
 
-#### Scenario: Starter remains neutral
+#### Scenario: Neutral template remains variant-independent
 
-- **WHEN** the neutral starter is used
+- **WHEN** the neutral template is used without selecting a variant
 - **THEN** it MUST NOT require any concrete variant metadata
 - **AND** it MUST NOT require a variant-specific renderer
-- **AND** it MUST NOT include concrete variant files.
+- **AND** it MUST NOT include concrete variant generated files.
+
+#### Scenario: Approved variants may exist outside the neutral template
+
+- **WHEN** a concrete variant is introduced by an approved change
+- **THEN** the variant files SHALL live outside `template/`
+- **AND** the neutral template SHALL remain usable without that variant.
 
 ### Requirement: Starter Metadata Contract
 
@@ -45,9 +51,14 @@ The starter repository SHALL provide a root `starter.yaml` file describing how t
 
 #### Scenario: Variant map is declared
 
-- **WHEN** the initial `starter.yaml` file is read
+- **WHEN** the `starter.yaml` file is read
 - **THEN** it SHALL declare `variants`
-- **AND** `variants` SHALL be empty for the neutral initial contract.
+- **AND** `variants` SHALL be represented as a map keyed by variant id.
+
+#### Scenario: Variant entries may declare required placeholders
+
+- **WHEN** a concrete variant requires additional rendering data
+- **THEN** its `starter.yaml` entry MAY declare variant-specific required placeholders.
 
 ### Requirement: Starter Repository Separation
 
@@ -63,20 +74,6 @@ The starter repository SHALL separate its own OpenSpec artifacts from the OpenSp
 - **WHEN** a project is generated from the starter
 - **THEN** it SHALL receive OpenSpec specs from `template/openspec/specs/`
 - **AND** it MUST NOT receive the root active changes used to build the starter.
-
-### Requirement: No Concrete Variant In Initial Contract
-
-The initial foundation starter SHALL be variant-ready but SHALL NOT define any concrete variant.
-
-#### Scenario: Variants are initially empty
-
-- **WHEN** the initial `starter.yaml` is read
-- **THEN** the `variants` map SHALL be empty.
-
-#### Scenario: Concrete variants are introduced later
-
-- **WHEN** this change is implemented
-- **THEN** no concrete variant directory SHALL be created.
 
 ### Requirement: Variant Overlay Contract
 
@@ -139,4 +136,33 @@ The starter repository SHALL define a neutral contract for future variants and o
 - **THEN** no `variants/` directory SHALL be created
 - **AND** no `variants/mws/` directory SHALL be created
 - **AND** no variant-specific generated files SHALL be added.
+
+### Requirement: Approved Variant Declaration
+
+The starter repository SHALL allow concrete variants only when introduced by approved changes.
+
+#### Scenario: MWS variant is declared
+
+- **WHEN** this change is implemented
+- **THEN** `starter.yaml` SHALL declare a `mws` variant under `variants`.
+
+#### Scenario: MWS variant declares overlay path
+
+- **WHEN** `starter.yaml` is inspected
+- **THEN** `variants.mws.overlay.path` SHALL be `variants/mws/overlay`.
+
+#### Scenario: MWS variant declares additional required placeholder
+
+- **WHEN** `starter.yaml` is inspected
+- **THEN** `variants.mws.placeholders.required` SHALL include `PROJECT_ID`.
+
+#### Scenario: MWS variant validation is declared
+
+- **WHEN** `starter.yaml` is inspected
+- **THEN** `variants.mws.validations` SHALL include a command that validates the rendered MWS variant.
+
+#### Scenario: Neutral template remains default
+
+- **WHEN** a project is generated without selecting a variant
+- **THEN** MWS overlay files SHALL NOT be included in the generated project.
 
