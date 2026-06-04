@@ -33,12 +33,25 @@ pnpm ospec validate <change-id> --strict
 Confirm the following after implementation:
 
 - No concrete variant directory exists (e.g., no `variants/mws/`).
+- No `variants/` directory exists.
 - No variant-specific metadata file exists.
 - No API, mobile, web, service, auth, eventing, storage, observability, or infrastructure module is added.
 - Root `openspec/changes/` is not copied into `template/`.
 - Generated-project OpenSpec content only uses `template/openspec/`.
 - All references use `variant` and `overlay` terminology.
 - No `flavour` metadata remains.
+
+### Variant/Overlay Contract Validation
+
+When adding or modifying a variant, confirm the following contract checks:
+
+- Variant metadata is declared in `starter.yaml` as a map keyed by variant id.
+- Overlay paths are relative to the starter repository root, not to `template/`.
+- Overlay content lives outside `template/`.
+- Overlay-provided `openspec/config.yaml` uses full-file replacement, not YAML merge or partial override.
+- Overlay `openspec/config.yaml` declares `schema: spec-driven`, retains rendered project identity and starter provenance, and preserves or strengthens base validation rules.
+- Variant validations are additive to the neutral starter validations.
+- Documentation describes the conceptual overlay order (template base, overlay files, placeholder rendering, validation).
 
 ## Template Validation
 
