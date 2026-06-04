@@ -1,7 +1,9 @@
 # foundation-starter Specification
 
 ## Purpose
-TBD - created by archiving change add-foundation-template-contract. Update Purpose after archive.
+
+The foundation-starter specification defines the contract for a neutral starter template that provides a baseline structure for generating new projects using the OpenSpec framework. This specification outlines the expected directory layout, project structure, and workspace configuration for generated projects.
+
 ## Requirements
 ### Requirement: Neutral Foundation Starter
 

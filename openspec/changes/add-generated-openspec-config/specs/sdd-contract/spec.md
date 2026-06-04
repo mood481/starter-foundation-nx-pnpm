@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Generated OpenSpec Configuration
 
@@ -35,6 +35,8 @@ Generated projects SHALL include an OpenSpec configuration file for the generate
 
 - **WHEN** rendered-template validation runs
 - **THEN** `openspec/config.yaml` in the rendered output SHALL contain no unresolved double-underscore placeholders.
+
+## ADDED Requirements
 
 ### Requirement: Generated Local OpenSpec Tooling
 

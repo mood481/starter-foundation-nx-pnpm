@@ -1,5 +1,9 @@
 # Quality Gates
 
+## Purpose
+
+Defines the validation gates and quality expectations for the generated project.
+
 ## Requirements
 
 ### Requirement: Baseline Validation Commands
@@ -49,6 +53,31 @@ The generated project SHALL support deterministic validation.
 
 - **WHEN** a generated project is validated
 - **THEN** Nx SHOULD be able to produce a project graph output.
+
+### Requirement: Generated Spec Validation
+
+The generated project SHALL validate OpenSpec artifacts as part of baseline validation.
+
+#### Scenario: Validate includes spec validation
+
+- **WHEN** `pnpm validate` is run
+- **THEN** it SHALL run strict OpenSpec validation before lint, typecheck, and test checks.
+
+#### Scenario: Spec-only validation is available
+
+- **WHEN** generated-project maintainers need only OpenSpec validation
+- **THEN** `pnpm validate:spec` SHALL be executable.
+
+#### Scenario: Local OpenSpec wrapper is available
+
+- **WHEN** the generated root `package.json` scripts are inspected
+- **THEN** an `ospec` script SHALL exist
+- **AND** it SHALL invoke the local OpenSpec CLI.
+
+#### Scenario: OpenSpec dependency is included
+
+- **WHEN** the generated root `package.json` is inspected
+- **THEN** it SHALL include `@fission-ai/openspec` as a development dependency.
 
 ### Requirement: Placeholder Validation
 

@@ -1,5 +1,9 @@
 # SDD Layout
 
+## Purpose
+
+Defines the Spec-Driven Development layout, including the OpenSpec directory structure, foundational specs, configuration, and change management baseline for the generated project.
+
 ## Requirements
 
 ### Requirement: OpenSpec Default Layout
@@ -54,6 +58,26 @@ The generated project SHALL include canonical foundation specs.
 
 - **WHEN** the generated project is inspected
 - **THEN** `openspec/specs/sdd-layout/spec.md` SHALL exist.
+
+### Requirement: OpenSpec Configuration
+
+The generated project SHALL include an OpenSpec configuration for the generated repository.
+
+#### Scenario: OpenSpec config exists
+
+- **WHEN** the generated project is inspected
+- **THEN** `openspec/config.yaml` SHALL exist.
+
+#### Scenario: OpenSpec config uses spec-driven schema
+
+- **WHEN** `openspec/config.yaml` is inspected
+- **THEN** it SHALL declare `schema: spec-driven`.
+
+#### Scenario: OpenSpec config is project-aware
+
+- **WHEN** `openspec/config.yaml` is inspected
+- **THEN** it SHALL identify the generated project
+- **AND** it SHALL record starter provenance.
 
 ### Requirement: Empty Changes On Generation
 

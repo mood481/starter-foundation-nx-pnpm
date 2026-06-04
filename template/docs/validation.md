@@ -12,7 +12,7 @@ This document describes the validation expectations for the generated project.
 pnpm validate
 ```
 
-Runs the complete validation suite: linting, type checking, and testing.
+Runs the complete validation suite: spec validation, linting, type checking, and testing.
 
 ### Individual Checks
 
@@ -21,6 +21,15 @@ pnpm lint        # Lint all projects
 pnpm typecheck   # Type check all projects
 pnpm test        # Test all projects
 ```
+
+### Spec Validation
+
+```bash
+pnpm validate:spec   # Validate OpenSpec specs and changes
+pnpm ospec           # Access the local OpenSpec CLI
+```
+
+Spec validation runs strict OpenSpec validation across all specs and changes.
 
 ## Dependency Installation
 

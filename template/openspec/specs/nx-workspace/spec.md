@@ -1,5 +1,9 @@
 # Nx Workspace
 
+## Purpose
+
+Defines the Nx workspace orchestration baseline for the generated monorepo.
+
 ## Requirements
 
 ### Requirement: Nx As Workspace Orchestrator

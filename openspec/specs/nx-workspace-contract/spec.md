@@ -1,7 +1,9 @@
 # nx-workspace-contract Specification
 
 ## Purpose
-TBD - created by archiving change add-foundation-template-contract. Update Purpose after archive.
+
+This specification defines the contract between the Nx workspace and the Nx CLI.
+
 ## Requirements
 ### Requirement: Nx As Workspace Orchestrator
 

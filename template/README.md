@@ -35,6 +35,8 @@ pnpm validate
 | `pnpm test`       | Run tests across all projects        |
 | `pnpm build`      | Build all projects                   |
 | `pnpm validate`   | Run full validation suite            |
+| `pnpm ospec`      | Run local OpenSpec CLI               |
+| `pnpm validate:spec` | Validate OpenSpec specs and changes |
 
 ## Adding a Project
 
@@ -50,3 +52,4 @@ This project uses [OpenSpec](https://openspec.dev) for spec-driven development.
 - Specs live under `openspec/specs/`
 - Changes live under `openspec/changes/`
 - Archived changes live under `openspec/archive/`
+- Configuration lives at `openspec/config.yaml`

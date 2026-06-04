@@ -1,7 +1,9 @@
 # quality-gates Specification
 
 ## Purpose
-TBD - created by archiving change add-foundation-template-contract. Update Purpose after archive.
+
+This specification outlines the quality gate requirements for generated projects to ensure they meet the baseline validation standards defined by the OpenSpec project.
+
 ## Requirements
 ### Requirement: Baseline Validation Commands
 

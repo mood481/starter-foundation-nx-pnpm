@@ -1,0 +1,55 @@
+schema: spec-driven
+
+context: |
+  This is __PROJECT_NAME__, a generated project from __STARTER_ID__ __STARTER_VERSION__.
+
+  __PROJECT_DESCRIPTION__
+
+  This project uses OpenSpec for spec-driven development. The foundation provides a neutral baseline for Nx + pnpm monorepos with multi-language workspace support.
+
+  Project domain (editable):
+  - [Describe the domain and industry context this project serves.]
+
+  Users and stakeholders (editable):
+  - [Describe who uses this project and what stakeholders influence its design.]
+
+  Runtime stack (editable):
+  - [Describe runtime choices, including languages, compute platforms, storage, and infrastructure.]
+
+  Delivery, compliance, and constraints (editable):
+  - [Describe delivery expectations, compliance requirements, and integration or operational constraints.]
+
+  Project-specific terminology (editable):
+  - [Define project-specific terminology that differs from the starter baseline or that is important for understanding this project's specs.]
+
+  Starter provenance:
+  - Generated from __STARTER_ID__ version __STARTER_VERSION__.
+  - Foundation baseline: Nx, pnpm, OpenSpec SDD.
+  - Multi-language workspace: TypeScript as orchestration language; supports TypeScript, Python, Go, and future runtimes.
+
+rules:
+  proposal:
+    - "Use the canonical proposal sections `## Why` and `## What Changes`."
+    - "`## Why` must describe the problem, opportunity, or constraint that motivates the change."
+    - "`## What Changes` must describe the proposed change as concrete bullets."
+    - "Add `## Impact` identifying affected specs, capabilities, and project areas."
+    - Enumerate capabilities affected by the change.
+
+  specs:
+    - "Use `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, or `## RENAMED Requirements`."
+    - "Each requirement must use `### Requirement: ...`."
+    - "Each requirement must include at least one `#### Scenario: ...`."
+    - Requirements must describe externally observable behaviour, contracts, or verifiable outcomes.
+    - "Use `SHALL`, `MUST`, `SHOULD`, `MAY` per RFC 2119."
+    - "Move implementation details, file-by-file plans, and execution mechanics to `design.md` or `tasks.md`."
+
+  design:
+    - "Use these minimum sections: `## Context`, `## Goals / Non-Goals`, `## Decisions`, `## Constraints`, `## Risks / Trade-offs`."
+    - Design documents should explain how implementation will work, not redefine requirements.
+    - Justify decisions against alternatives considered.
+    - Address constraints and risks explicitly.
+
+  tasks:
+    - Use checkbox tasks with `- [ ]`.
+    - Group tasks by implementation area.
+    - Include explicit validation tasks.

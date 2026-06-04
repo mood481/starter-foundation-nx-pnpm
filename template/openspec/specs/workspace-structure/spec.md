@@ -1,5 +1,9 @@
 # Workspace Structure
 
+## Purpose
+
+Defines the monorepo directory layout, workspace configuration, and placeholder rendering contract for the generated project.
+
 ## Requirements
 
 ### Requirement: Monorepo Directories
@@ -53,7 +57,7 @@ The generated project SHALL provide base workspace configuration.
 
 ### Requirement: Placeholder Rendering
 
-The generated project MAY contain resolved placeholders from the rendering process.
+Placeholder rendering SHALL produce resolved files from the template. Unresolved placeholders MUST fail the render process.
 
 #### Scenario: Placeholder style is consistent
 

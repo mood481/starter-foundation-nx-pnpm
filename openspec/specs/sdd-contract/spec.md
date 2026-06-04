@@ -1,7 +1,9 @@
 # sdd-contract Specification
 
 ## Purpose
-TBD - created by archiving change add-foundation-template-contract. Update Purpose after archive.
+
+This specification defines the requirements for a project-specific SDD provider.
+
 ## Requirements
 ### Requirement: OpenSpec Default Layout
 
@@ -70,4 +72,40 @@ Generated projects SHALL NOT include the active OpenSpec changes used to build t
 - **WHEN** a project is generated
 - **THEN** generated `openspec/changes/` SHALL be present
 - **AND** it SHOULD contain no active changes by default.
+
+### Requirement: Generated OpenSpec Configuration
+
+Generated projects SHALL include an OpenSpec configuration file for the generated repository.
+
+#### Scenario: Importable OpenSpec config is included
+
+- **WHEN** the template is inspected
+- **THEN** `template/openspec/config.yaml` SHALL exist.
+
+#### Scenario: Generated OpenSpec config uses spec-driven schema
+
+- **WHEN** `template/openspec/config.yaml` is inspected
+- **THEN** it SHALL declare `schema: spec-driven`.
+
+#### Scenario: Generated OpenSpec config is project-aware
+
+- **WHEN** `template/openspec/config.yaml` is rendered
+- **THEN** it SHALL identify the generated project using rendered project placeholders
+- **AND** it SHALL retain starter provenance using rendered starter placeholders.
+
+#### Scenario: Generated OpenSpec config leaves project context editable
+
+- **WHEN** `template/openspec/config.yaml` is inspected
+- **THEN** it SHALL include editable project-specific context sections for domain, users, runtime stack, delivery constraints, and terminology.
+
+#### Scenario: Generated OpenSpec config defines lightweight global authoring rules
+
+- **WHEN** `template/openspec/config.yaml` is inspected
+- **THEN** it SHALL define generated-project OpenSpec rules for proposals, specs, designs, and tasks
+- **AND** those rules SHALL remain domain-neutral and lighter than starter-maintenance root rules.
+
+#### Scenario: Generated OpenSpec config renders without unresolved placeholders
+
+- **WHEN** rendered-template validation runs
+- **THEN** `openspec/config.yaml` in the rendered output SHALL contain no unresolved double-underscore placeholders.
 

@@ -1,5 +1,9 @@
 # Project Foundation
 
+## Purpose
+
+Defines the core identity, neutrality, and provenance baseline for the generated project.
+
 ## Requirements
 
 ### Requirement: Project Identity
