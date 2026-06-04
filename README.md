@@ -4,7 +4,7 @@ Neutral foundation starter for strict Nx + pnpm multi-language monorepos.
 
 ## Overview
 
-This starter defines a neutral, renderable foundation template for monorepos based on Nx and pnpm. It provides the monorepo structure, workspace configuration, OpenSpec SDD layout, and validation baseline without assuming any concrete variant.
+This starter defines a neutral, renderable foundation template for monorepos based on Nx and pnpm. It provides the monorepo structure, workspace configuration, OpenSpec SDD layout, and validation baseline. Approved variants may add overlays outside the neutral `template/`.
 
 ## Usage
 
@@ -87,11 +87,29 @@ pnpm validate
 
 ## Variants
 
-This starter is variant-ready. Variants are declared in `starter.yaml` under `variants`. The initial contract declares an empty variants map. Concrete variants (e.g., `mws`) are introduced through dedicated changes.
+This starter is variant-ready. Variants are declared in `starter.yaml` under `variants`. Concrete variants are introduced through dedicated changes and live outside the neutral `template/`.
+
+### MWS Variant
+
+The approved `mws` variant adds MWS foundation metadata, generated-project MWS docs, an MWS lifecycle spec, and a stricter generated OpenSpec config through an overlay.
+
+Render the MWS variant with the generic starter renderer:
+
+```bash
+pnpm starter:render -- --variant mws --input examples/render-input.mws.yaml
+```
+
+The MWS render input provides `PROJECT_ID` and the base project placeholders through structured YAML. The renderer applies `variants/mws/overlay/` before placeholder rendering.
+
+Validate the MWS variant render:
+
+```bash
+pnpm validate:template:mws
+```
 
 ### Variant Metadata Shape
 
-A future variant entry in `starter.yaml` uses a map keyed by kebab-case variant id. Each entry supports a human-readable name, a description, an optional overlay path, and optional additional validation commands:
+A variant entry in `starter.yaml` uses a map keyed by kebab-case variant id. Each entry supports a human-readable name, a description, an optional overlay path, optional required placeholders, and optional additional validation commands:
 
 ```yaml
 variants:
@@ -100,6 +118,9 @@ variants:
     description: Example variant description.
     overlay:
       path: variants/example/overlay
+    placeholders:
+      required:
+        - EXAMPLE_ID
     validations:
       - pnpm validate:template:example
 ```

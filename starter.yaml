@@ -21,7 +21,17 @@ sdd:
   importable:
     - template/openspec/specs
 
-variants: {}
+variants:
+  mws:
+    name: MWS Foundation Variant
+    description: MWS-compatible foundation overlay for generated monorepos.
+    overlay:
+      path: variants/mws/overlay
+    placeholders:
+      required:
+        - PROJECT_ID
+    validations:
+      - pnpm validate:template:mws
 
 provides:
   - monorepo

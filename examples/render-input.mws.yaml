@@ -1,0 +1,11 @@
+variant: mws
+
+output:
+  path: ../tmp/rendered-mws-example
+
+placeholders:
+  PROJECT_ID: example-mws-foundation
+  PROJECT_NAME: Example MWS Foundation
+  PROJECT_SLUG: example-mws-foundation
+  PROJECT_DESCRIPTION: Example MWS-compatible foundation repository.
+  DEFAULT_PACKAGE_SCOPE: "@example-mws"

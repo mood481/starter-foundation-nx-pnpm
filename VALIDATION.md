@@ -32,12 +32,11 @@ pnpm ospec validate <change-id> --strict
 
 Confirm the following after implementation:
 
-- No concrete variant directory exists (e.g., no `variants/mws/`).
-- No `variants/` directory exists.
-- No variant-specific metadata file exists.
+- Concrete variant directories exist only for approved variants declared in `starter.yaml`.
+- Variant-specific metadata files live outside the neutral `template/` and are applied through overlays.
 - No API, mobile, web, service, auth, eventing, storage, observability, or infrastructure module is added.
-- Root `openspec/changes/` is not copied into `template/`.
-- Generated-project OpenSpec content only uses `template/openspec/`.
+- Root `openspec/changes/` is not copied into `template/` or generated outputs.
+- Neutral generated-project OpenSpec content only uses `template/openspec/`; variant-specific generated OpenSpec content lives in approved overlays.
 - All references use `variant` and `overlay` terminology.
 - No `flavour` metadata remains.
 
@@ -78,6 +77,8 @@ pnpm validate:template
 ```
 
 This uses the same generic renderer semantics as `pnpm starter:render`: it copies `template/` to a temporary directory, resolves neutral placeholders, scans for unresolved placeholders, installs dependencies with a frozen lockfile, runs generated-project validation, and generates an Nx graph.
+
+Neutral template validation does not apply variant overlays.
 
 To keep the temporary rendered directory for debugging:
 
@@ -127,6 +128,25 @@ placeholders:
 ```
 
 If an input file declares `variant:` and `--variant` is also provided, both values must match. Unknown variants, missing required placeholders, non-empty output directories, and unresolved placeholders fail rendering.
+
+## Variant Validation
+
+Validate the approved MWS variant render:
+
+```bash
+pnpm validate:template:mws
+```
+
+This renders the neutral template with `variants/mws/overlay/`, resolves MWS placeholders from `examples/render-input.mws.yaml`, installs generated dependencies, runs generated-project validation, and generates an Nx graph.
+
+For MWS validation, confirm:
+
+- `starter.yaml` declares `variants.mws`.
+- `variants.mws.overlay.path` is `variants/mws/overlay`.
+- `variants.mws.placeholders.required` includes `PROJECT_ID`.
+- `examples/render-input.mws.yaml` selects `mws` and includes `PROJECT_ID`.
+- Rendered output includes `mws.project.yaml`, `docs/mws.md`, `docs/mws-openspec.md`, and `openspec/specs/mws-project-lifecycle/spec.md`.
+- Rendered output uses the MWS full-file replacement for `openspec/config.yaml`.
 
 Inside a generated project, run:
 

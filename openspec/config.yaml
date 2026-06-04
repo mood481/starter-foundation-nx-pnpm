@@ -17,13 +17,15 @@ context: |
      - Lives under `template/`.
      - Includes importable OpenSpec specs under `template/openspec/specs/`.
      - Provides the initial canonical SDD baseline for generated repositories.
-     - Must remain neutral until a dedicated variant change is approved.
+     - Must remain neutral and independent from concrete variants.
 
   Variants:
   - A variant is a declared adaptation of the neutral starter for a specific usage context.
   - A variant may use an overlay to add, replace, or refine generated files.
-  - The `mws` variant is expected to be one future variant, but it is not special in the neutral starter contract.
-  - No concrete variant should be assumed unless explicitly introduced by an approved change.
+  - Concrete variants are allowed only when introduced by an approved change.
+  - Approved variant files live outside `template/`, under `variants/<variant-id>/overlay/`.
+  - The approved `mws` variant is a foundation-only overlay for MWS-compatible generated monorepos.
+  - The neutral template remains usable without selecting `mws` or any other variant.
 
   Terminology:
   - Use `variant` for the catalog-level option selected by a consumer.
@@ -52,9 +54,9 @@ context: |
   - The neutral starter may define `template/`.
   - The neutral starter may define importable specs under `template/openspec/specs/`.
   - The neutral starter may define validation expectations.
-  - The neutral starter may declare an empty `variants` map.
-  - The neutral starter must not define a concrete variant directory.
-  - The neutral starter must not define MWS-specific metadata.
+  - The starter may declare approved concrete variants in `starter.yaml`.
+  - Approved concrete variant files must live outside `template/`.
+  - MWS-specific metadata belongs under `variants/mws/overlay/` and is applied only when the `mws` variant is selected.
   - The neutral starter must not add API, mobile, web, service, auth, eventing, storage, or infrastructure modules.
 
 rules:

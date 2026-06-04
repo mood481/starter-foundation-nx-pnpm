@@ -16,6 +16,7 @@
     "ospec:validate": "openspec validate --all --strict",
     "ospec:validate:json": "openspec validate --all --strict --json",
     "starter:render": "node tools/scripts/render-template.mjs",
+    "validate:template:mws": "node tools/scripts/validate-template-render.mjs --variant mws --input examples/render-input.mws.yaml",
     "validate:template": "node tools/scripts/validate-template-render.mjs",
     "validate:spec": "pnpm ospec:validate",
     "validate": "pnpm validate:spec && pnpm validate:template"
