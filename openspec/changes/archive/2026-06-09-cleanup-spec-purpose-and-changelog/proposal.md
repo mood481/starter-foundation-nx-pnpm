@@ -14,13 +14,11 @@ Several canonical specs and repository files have stale or placeholder content a
 
 ### New Capabilities
 
-(None.)
+None.
 
 ### Modified Capabilities
 
-- `foundation-starter`: remove obsolete transitional scenarios and reformulate variant overlay contract scenarios to reflect established contract.
-- `mws-foundation-variant`: fill in TBD Purpose section.
-- `starter-template-renderer`: fill in TBD Purpose section.
+The foundation-starter spec SHALL have obsolete transitional scenarios removed and its variant overlay contract scenarios SHALL be reformulated to reflect the established contract. The mws-foundation-variant spec SHALL have its TBD Purpose section filled with a descriptive summary. The starter-template-renderer spec SHALL have its TBD Purpose section filled with a descriptive summary.
 
 ## Impact
 

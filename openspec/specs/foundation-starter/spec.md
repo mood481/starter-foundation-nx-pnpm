@@ -3,6 +3,7 @@
 ## Purpose
 
 The foundation-starter specification defines the contract for a neutral starter template that provides a baseline structure for generating new projects using the OpenSpec framework. This specification outlines the expected directory layout, project structure, and workspace configuration for generated projects.
+
 ## Requirements
 ### Requirement: Neutral Foundation Starter
 
@@ -77,48 +78,43 @@ The starter repository SHALL separate its own OpenSpec artifacts from the OpenSp
 
 ### Requirement: Variant Overlay Contract
 
-The starter repository SHALL define a neutral contract for future variants and overlays without introducing a concrete variant.
+The starter repository SHALL define the contract for variant and overlay metadata, application order, and validation expectations.
 
 #### Scenario: Variants remain map-based
 
 - **WHEN** the root `starter.yaml` contract is inspected
 - **THEN** variants SHALL be represented as a map keyed by variant id.
 
-#### Scenario: Initial variant map remains empty
+#### Scenario: Variant metadata shape supports overlay and validation entries
 
-- **WHEN** this change is implemented
-- **THEN** `variants` SHALL remain empty
-- **AND** no concrete variant SHALL be declared.
-
-#### Scenario: Future variant metadata shape is defined
-
-- **WHEN** documentation or specs describe a future variant entry
+- **WHEN** a variant entry is declared in `starter.yaml`
 - **THEN** the entry SHALL support a human-readable name
 - **AND** it SHALL support a description
 - **AND** it MAY support an overlay path
+- **AND** it MAY support required placeholders
 - **AND** it MAY support additional validation commands.
 
 #### Scenario: Overlay paths are starter-root relative
 
-- **WHEN** a future variant declares an overlay path
+- **WHEN** a variant declares an overlay path
 - **THEN** the path SHALL be relative to the starter repository root
 - **AND** it SHALL NOT be interpreted relative to `template/`.
 
 #### Scenario: Overlay content is separate from neutral template
 
-- **WHEN** future overlay content is added
+- **WHEN** overlay content is added as part of a variant
 - **THEN** it SHALL live outside `template/`
 - **AND** it SHALL NOT require changing the neutral template for unrelated variants.
 
 #### Scenario: Overlay OpenSpec config replacement is explicit
 
-- **WHEN** a future overlay includes `openspec/config.yaml`
+- **WHEN** an overlay includes `openspec/config.yaml`
 - **THEN** it SHALL replace the generated `openspec/config.yaml` as a full file
 - **AND** it SHALL NOT rely on YAML merge or partial override semantics.
 
 #### Scenario: Overlay OpenSpec config preserves base guarantees
 
-- **WHEN** a future overlay replaces `openspec/config.yaml`
+- **WHEN** an overlay replaces `openspec/config.yaml`
 - **THEN** the replacement SHALL declare `schema: spec-driven`
 - **AND** it SHALL retain rendered project identity and starter provenance
 - **AND** it SHALL NOT copy starter-maintenance root context
@@ -127,15 +123,8 @@ The starter repository SHALL define a neutral contract for future variants and o
 
 #### Scenario: Variant validations preserve base validations
 
-- **WHEN** a future variant declares validation commands
+- **WHEN** a variant declares validation commands
 - **THEN** those validations SHALL be additive to the neutral starter validations unless a later approved change modifies the base validation contract.
-
-#### Scenario: No concrete variant is introduced
-
-- **WHEN** this change is implemented
-- **THEN** no `variants/` directory SHALL be created
-- **AND** no `variants/mws/` directory SHALL be created
-- **AND** no variant-specific generated files SHALL be added.
 
 ### Requirement: Approved Variant Declaration
 
@@ -143,7 +132,7 @@ The starter repository SHALL allow concrete variants only when introduced by app
 
 #### Scenario: MWS variant is declared
 
-- **WHEN** this change is implemented
+- **WHEN** the starter repository is inspected
 - **THEN** `starter.yaml` SHALL declare a `mws` variant under `variants`.
 
 #### Scenario: MWS variant declares overlay path

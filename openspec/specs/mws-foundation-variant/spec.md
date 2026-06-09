@@ -1,7 +1,8 @@
 # mws-foundation-variant Specification
 
 ## Purpose
-TBD - created by archiving change add-mws-foundation-variant. Update Purpose after archive.
+
+The mws-foundation-variant specification defines the contract for the MWS-compatible variant overlay, including MWS project metadata, generated documentation, OpenSpec baseline, and variant render validation.
 ## Requirements
 ### Requirement: MWS Foundation Variant Overlay
 

@@ -1,7 +1,8 @@
 # starter-template-renderer Specification
 
 ## Purpose
-TBD - created by archiving change add-starter-template-renderer. Update Purpose after archive.
+
+The starter-template-renderer specification defines the contract for the starter-owned generic renderer that generates projects from the template, supports optional variant selection and overlay application, and resolves placeholders deterministically.
 ## Requirements
 ### Requirement: Starter Render Command
 
