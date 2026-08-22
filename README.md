@@ -47,9 +47,12 @@ The renderer derives starter and runtime placeholders such as `STARTER_ID`, `STA
 
 ```txt
 .
+├── .github/           # GitHub Actions workflows
 ├── openspec/          # Starter-maintenance SDD artifacts
 ├── template/          # Importable generated-project baseline
+├── docs/              # Starter-maintenance documentation
 ├── starter.yaml       # Starter contract metadata
+├── renovate.json      # Renovate dependency automation config
 ├── README.md          # This file
 ├── VALIDATION.md      # Validation instructions
 └── CHANGELOG.md       # Change history
@@ -168,6 +171,10 @@ An overlay-provided `openspec/config.yaml` must preserve these base guarantees:
 - Pass rendered-template and variant validation.
 
 Variants may add stricter rules but must not weaken the base validation and safety guarantees.
+
+## Dependency Automation
+
+This starter repository uses Renovate to keep `@fission-ai/openspec` up to date: `patch` and `minor` updates automerge after regenerating the checked-in OpenSpec tooling, while `major` updates stay manual. See `docs/renovate.md` for how to activate Renovate on GitHub or on other Git servers.
 
 ## Terminology
 

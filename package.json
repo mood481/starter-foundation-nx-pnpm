@@ -1,6 +1,6 @@
 {
   "name": "starter-foundation-nx-pnpm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Neutral foundation starter for strict Nx + pnpm multi-language monorepos.",
   "type": "module",
@@ -13,6 +13,7 @@
     "ospec": "openspec",
     "ospec:list": "openspec list",
     "ospec:list:specs": "openspec list --specs",
+    "ospec:update": "openspec update",
     "ospec:validate": "openspec validate --all --strict",
     "ospec:validate:json": "openspec validate --all --strict --json",
     "starter:render": "node tools/scripts/render-template.mjs",

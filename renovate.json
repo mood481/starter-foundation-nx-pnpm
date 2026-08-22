@@ -1,0 +1,34 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "dependencyDashboard": true,
+  "baseBranches": ["devel"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["@fission-ai/openspec"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true,
+      "postUpgradeTasks": {
+        "executionMode": "update",
+        "commands": [
+          "pnpm exec openspec config set profile custom",
+          "pnpm exec openspec config set delivery both",
+          "pnpm exec openspec config set workflows '[\"propose\",\"explore\",\"new\",\"continue\",\"apply\",\"update\",\"ff\",\"sync\",\"verify\",\"onboard\"]'",
+          "pnpm ospec:update"
+        ],
+        "fileFilters": [
+          ".agents/skills/**",
+          ".opencode/commands/**",
+          ".opencode/skills/**"
+        ]
+      }
+    },
+    {
+      "matchPackageNames": ["@fission-ai/openspec"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    }
+  ]
+}

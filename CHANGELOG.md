@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format follows the change IDs tracked through OpenSpec. Each entry corresponds to an archived OpenSpec change.
 
+## 0.2.0
+
+### add-renovate-automerge
+
+Add Renovate dependency automation for the starter repository: patch/minor `@fission-ai/openspec` updates automerge while major updates stay manual, OpenSpec assistant tooling is regenerated on update, an OpenSpec-scope GitHub Actions workflow rejects generated tooling drift and validates, and `docs/renovate.md` documents how to activate Renovate on GitHub and other Git servers.
+
 ## 0.1.0
 
 ### add-foundation-template-contract

@@ -1,0 +1,68 @@
+name: OpenSpec scope
+
+on:
+  pull_request:
+    branches:
+      - devel
+    paths:
+      - openspec/config.yaml
+      - .agents/skills/**
+      - .opencode/commands/**
+      - .opencode/skills/**
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - renovate.json
+      - .github/workflows/openspec-scope.yml
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: OpenSpec scope
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out pull request
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Configure the OpenSpec profile
+        run: |
+          pnpm exec openspec config set profile custom
+          pnpm exec openspec config set delivery both
+          pnpm exec openspec config set workflows '["propose","explore","new","continue","apply","update","ff","sync","verify","onboard"]'
+
+      - name: Regenerate OpenSpec tooling
+        run: pnpm ospec:update
+
+      - name: Reject generated tooling drift
+        run: |
+          status=$(git status --porcelain -- .agents/skills .opencode/commands .opencode/skills)
+          if [ -n "$status" ]; then
+            echo "Generated OpenSpec tooling drift detected:"
+            echo "$status"
+            exit 1
+          fi
+
+      - name: Reject non-generated drift
+        run: |
+          status=$(git status --porcelain)
+          if [ -n "$status" ]; then
+            echo "Non-generated drift detected:"
+            echo "$status"
+            exit 1
+          fi
+
+      - name: Validate OpenSpec artifacts
+        run: pnpm ospec:validate
