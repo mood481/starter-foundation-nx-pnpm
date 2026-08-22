@@ -101,6 +101,12 @@ The starter repository SHALL expose working OpenSpec package scripts from the ro
 - **WHEN** maintainers use the root package scripts
 - **THEN** standalone helper scripts SHALL exist for listing changes, listing specs, validating all artifacts strictly, and validating all artifacts strictly as JSON.
 
+#### Scenario: Tooling update command is exposed
+
+- **WHEN** the root `package.json` scripts are inspected
+- **THEN** an `ospec:update` script SHALL exist
+- **AND** it SHALL invoke the project-local OpenSpec CLI `update` command to regenerate checked-in assistant tooling.
+
 #### Scenario: Context-dependent commands use wrapper
 
 - **WHEN** maintainers need OpenSpec commands that require a change id or additional context
