@@ -6,7 +6,6 @@ on:
       - devel
     paths:
       - openspec/config.yaml
-      - .agents/skills/**
       - .opencode/commands/**
       - .opencode/skills/**
       - package.json
@@ -56,7 +55,7 @@ jobs:
       - name: Commit regenerated OpenSpec tooling (Renovate branches only)
         if: startsWith(github.head_ref, 'renovate/')
         run: |
-          git add .agents/skills .opencode/commands .opencode/skills
+          git add .opencode/commands .opencode/skills
           if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -66,7 +65,7 @@ jobs:
 
       - name: Reject generated tooling drift
         run: |
-          status=$(git status --porcelain -- .agents/skills .opencode/commands .opencode/skills)
+          status=$(git status --porcelain -- .opencode/commands .opencode/skills)
           if [ -n "$status" ]; then
             echo "Generated OpenSpec tooling drift detected:"
             echo "$status"

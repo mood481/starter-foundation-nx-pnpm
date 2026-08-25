@@ -12,7 +12,7 @@ This starter repository automates dependency updates for `@fission-ai/openspec` 
 - Manages only the root `package.json` dependencies, and inside `template/package.json` manages only `@fission-ai/openspec`. Every other dependency in `template/package.json` (eslint, nx, prettier, typescript…) is disabled from updates by a package rule, because the template is consumer-owned starter content.
 - Automerges `patch` and `minor` updates of `@fission-ai/openspec` through pull-request automerge with platform automerge.
 - Never automerges `major` updates of `@fission-ai/openspec`; they are proposed as regular pull requests for human review.
-- Regenerates the checked-in OpenSpec assistant tooling (`.agents/skills/**`, `.opencode/commands/**`, `.opencode/skills/**`) after an OpenSpec update through post-upgrade tasks.
+- Regenerates the checked-in OpenSpec tooling (`.opencode/commands/**`, `.opencode/skills/**`) after an OpenSpec update through post-upgrade tasks.
 
 The `.github/workflows/openspec-scope.yml` workflow runs on OpenSpec-scope pull requests to `devel`: it installs with a frozen lockfile, configures the OpenSpec profile, regenerates tooling, and fails if the result differs from the checked-in state. It also runs strict OpenSpec validation. **On Renovate branches (`renovate/*`) the workflow commits the regenerated tooling back to the pull request**, so the drift gate passes and `platformAutomerge` can proceed even when the hosted Renovate app ignores `postUpgradeTasks`. On non-Renovate branches it never commits and still fails on drift, so the author must fix and push the tooling. Its green status is what informs Renovate that a branch is ready for automerge.
 

@@ -11,7 +11,7 @@ The starter repository SHALL provide a root `renovate.json` that configures Reno
 - **AND** it SHALL declare the Renovate `$schema`
 - **AND** it SHALL extend `config:recommended`.
 
-#### Scenario: Dependency dashboard is disabled
+#### Scenario: Dependency dashboard is enabled
 
 - **WHEN** `renovate.json` is inspected
 - **THEN** the Renovate dependency dashboard SHALL be disabled (`dependencyDashboard: false`)
@@ -56,13 +56,33 @@ The starter repository SHALL automerge `@fission-ai/openspec` patch and minor up
 - **THEN** the OpenSpec rules SHALL match the dependency with `matchDepNames` (the current Renovate key)
 - **AND** they SHALL NOT use the deprecated `matchPackageNames` key.
 
+### Requirement: OpenSpec Tooling Regeneration on Dependency Update
+
+Renovate OpenSpec updates SHALL regenerate the checked-in OpenSpec assistant tooling as part of the update.
+
+#### Scenario: Post-upgrade tasks reconfigure the OpenSpec profile
+
+- **WHEN** Renovate processes an `@fission-ai/openspec` update
+- **THEN** post-upgrade tasks SHALL set the OpenSpec profile, delivery, and workflows configuration before regenerating tooling, because OpenSpec configuration is global and not checked in
+- **AND** the configuration commands SHALL follow the in-use example `tmp/renovate.json`, since they run with the updated OpenSpec version on the Renovate branch.
+
+#### Scenario: Post-upgrade tasks regenerate tooling through the package script
+
+- **WHEN** Renovate processes an `@fission-ai/openspec` update
+- **THEN** post-upgrade tasks SHALL regenerate assistant tooling through the `ospec:update` package script.
+
+#### Scenario: Post-upgrade side effects are limited to tooling paths
+
+- **WHEN** Renovate commits post-upgrade task results
+- **THEN** committed files SHALL be limited to `.opencode/commands/**` and `.opencode/skills/**`.
+
 ### Requirement: OpenSpec Scope Pull Request Gate
 
 The starter repository SHALL run a GitHub Actions workflow on pull requests that touch the OpenSpec scope, proving that checked-in assistant tooling matches the pinned OpenSpec version.
 
 #### Scenario: Workflow triggers on OpenSpec-scope paths
 
-- **WHEN** a pull request targeting `devel` changes `openspec/config.yaml`, `.agents/skills/**`, `.opencode/commands/**`, `.opencode/skills/**`, `package.json`, `pnpm-lock.yaml`, `renovate.json`, or the workflow itself
+- **WHEN** a pull request targeting `devel` changes `openspec/config.yaml`, `.opencode/commands/**`, `.opencode/skills/**`, `package.json`, `pnpm-lock.yaml`, `renovate.json`, or the workflow itself
 - **THEN** the OpenSpec-scope workflow SHALL run.
 
 #### Scenario: Workflow adapts the in-use example
@@ -83,11 +103,11 @@ The starter repository SHALL run a GitHub Actions workflow on pull requests that
 #### Scenario: Workflow commits regenerated tooling on Renovate branches only
 
 - **WHEN** the OpenSpec-scope workflow runs on a pull request whose head ref starts with `renovate/`
-- **THEN** after regenerating tooling it SHALL commit and push the generated-tooling paths (`.agents/skills`, `.opencode/commands`, `.opencode/skills`) to the pull request head
+- **THEN** after regenerating tooling it SHALL commit and push the generated-tooling paths (`.opencode/commands`, `.opencode/skills`) to the pull request head
 - **AND** this commit SHALL use the `github-actions[bot]` identity
 - **AND** it SHALL be idempotent so a second run makes no further commit.
 
-#### Scenario: Workflow never commits for non-Renovate branches
+#### Scenario: Workflow never commits
 
 - **WHEN** the OpenSpec-scope workflow runs on a pull request whose head ref does not start with `renovate/`
 - **THEN** it MUST NOT commit or push

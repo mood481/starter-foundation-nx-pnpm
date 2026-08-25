@@ -32,7 +32,6 @@
           "pnpm ospec:update"
         ],
         "fileFilters": [
-          ".agents/skills/**",
           ".opencode/commands/**",
           ".opencode/skills/**"
         ]

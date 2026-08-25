@@ -90,7 +90,7 @@ No files under `template/` or `variants/` are added or modified.
 - Agents MUST NOT enable automerge for `major` updates or for any package other than `@fission-ai/openspec`.
 - Agents MUST NOT auto-commit regenerated tooling for human PRs; the commit step is guarded to `renovate/*` branches only.
 - Agents MUST keep the `ospec:` script prefix convention.
-- Agents MUST NOT regenerate checked-in OpenSpec assistant tooling as part of this change.
+- Agents MUST NOT regenerate checked-in OpenSpec tooling as part of this change.
 - Agents MUST NOT weaken existing validation (`pnpm validate`, rendered-template validation).
 - Terminology MUST remain `variant`/`overlay`; this change introduces neither.
 
@@ -127,7 +127,7 @@ Agent-verifiable, local validation:
 - `renovate.json` parses as JSON, declares its `$schema`, has `dependencyDashboard: false`, `enabledManagers: ["npm","pnpm"]`, the template disable/re-enable rules, and uses `matchDepNames`.
 - `npx --yes -p renovate renovate-config-validator renovate.json` passes.
 - The workflow YAML parses, references existing `pnpm` scripts, sets `permissions: contents: write`, checks out `github.head_ref`, and gates the commit step on `renovate/` head refs.
-- `git status` shows no changes under `.opencode/` or `.agents/` introduced by this change.
+- `git status` shows no changes under `.opencode/` introduced by this change.
 - `starter.yaml` and `package.json` both declare `0.3.0`, and `CHANGELOG.md` has a `0.3.0` entry.
 
 Out of agent reach: live Renovate/CI behaviour is validated by observing the next Renovate run after rollout.

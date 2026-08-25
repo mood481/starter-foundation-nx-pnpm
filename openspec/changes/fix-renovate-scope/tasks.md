@@ -15,7 +15,7 @@
 - [x] Change `permissions` to `contents: write`.
 - [x] Add a `concurrency` group keyed on `github.head_ref`.
 - [x] Check out the PR head ref with `ref: ${{ github.head_ref }}` and `token: ${{ secrets.GITHUB_TOKEN }}`.
-- [x] Add a step that, only when `github.head_ref` starts with `renovate/`, stages `.agents/skills`, `.opencode/commands`, `.opencode/skills`, and commits + pushes if there is drift (idempotent, `github-actions[bot]` identity).
+- [x] Add a step that, only when `github.head_ref` starts with `renovate/`, stages `.opencode/commands`, `.opencode/skills`, and commits + pushes if there is drift (idempotent, `github-actions[bot]` identity).
 - [x] Keep the generated-tooling and non-generated drift-rejection steps and the strict `pnpm ospec:validate` step.
 - [x] Confirm the workflow never commits for non-`renovate/` PRs (the commit step is guarded by `startsWith(github.head_ref, 'renovate/')`).
 
@@ -60,5 +60,5 @@ The spec changes are delivered as a delta in `specs/dependency-automation/spec.m
 - [x] Confirm no files under `template/` or `variants/` were added or modified.
 - [x] Confirm Renovate was not added as an npm dependency.
 - [x] Confirm the workflow only commits on `renovate/*` branches.
-- [x] Confirm no files under `.opencode/` or `.agents/` were modified by this change.
+- [x] Confirm no files under `.opencode/` were modified by this change.
 - [x] Confirm terminology consistency: `variant`/`overlay` used, no `flavour` metadata introduced.
