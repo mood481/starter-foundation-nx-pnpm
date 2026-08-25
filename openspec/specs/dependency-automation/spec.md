@@ -14,10 +14,11 @@ The starter repository SHALL provide a root `renovate.json` that configures Reno
 - **AND** it SHALL declare the Renovate `$schema`
 - **AND** it SHALL extend `config:recommended`.
 
-#### Scenario: Dependency dashboard is enabled
+#### Scenario: Dependency dashboard is disabled
 
 - **WHEN** `renovate.json` is inspected
-- **THEN** the Renovate dependency dashboard SHALL be enabled.
+- **THEN** the Renovate dependency dashboard SHALL be disabled (`dependencyDashboard: false`)
+- **AND** Renovate SHALL still auto-open configuration-migration pull requests when it detects deprecated options (`configMigration` defaults to `true`).
 
 #### Scenario: Base branch targets the integration branch
 
@@ -51,6 +52,12 @@ The starter repository SHALL automerge `@fission-ai/openspec` patch and minor up
 - **WHEN** `renovate.json` is inspected
 - **THEN** automerge SHALL be configured only for `@fission-ai/openspec`
 - **AND** no other package SHALL be configured to automerge.
+
+#### Scenario: Current dependency-name matcher is used
+
+- **WHEN** `renovate.json` is inspected
+- **THEN** the OpenSpec rules SHALL match the dependency with `matchDepNames` (the current Renovate key)
+- **AND** they SHALL NOT use the deprecated `matchPackageNames` key.
 
 ### Requirement: OpenSpec Tooling Regeneration on Dependency Update
 
@@ -96,20 +103,27 @@ The starter repository SHALL run a GitHub Actions workflow on pull requests that
 - **AND** it SHALL regenerate assistant tooling
 - **AND** it MUST fail if the working tree differs afterwards, including untracked generated files.
 
+#### Scenario: Workflow commits regenerated tooling on Renovate branches only
+
+- **WHEN** the OpenSpec-scope workflow runs on a pull request whose head ref starts with `renovate/`
+- **THEN** after regenerating tooling it SHALL commit and push the generated-tooling paths (`.agents/skills`, `.opencode/commands`, `.opencode/skills`) to the pull request head
+- **AND** this commit SHALL use the `github-actions[bot]` identity
+- **AND** it SHALL be idempotent so a second run makes no further commit.
+
+#### Scenario: Workflow never commits for non-Renovate branches
+
+- **WHEN** the OpenSpec-scope workflow runs on a pull request whose head ref does not start with `renovate/`
+- **THEN** it MUST NOT commit or push
+- **AND** it MUST fail the drift gate if generated tooling is stale, so the author must fix and push the tooling.
+
 #### Scenario: Workflow runs strict OpenSpec validation
 
 - **WHEN** the OpenSpec-scope workflow runs
 - **THEN** it SHALL run the strict all-artifacts OpenSpec validation script.
 
-#### Scenario: Workflow never commits
-
-- **WHEN** the OpenSpec-scope workflow detects drift
-- **THEN** it MUST fail the check
-- **AND** it MUST NOT push commits to the pull request.
-
 #### Scenario: Workflow failure on Renovate branches signals a contract change
 
-- **WHEN** the OpenSpec-scope workflow fails on a Renovate branch that carries the latest OpenSpec version
+- **WHEN** the OpenSpec-scope workflow fails on a Renovate branch after the tooling commit step
 - **THEN** the failure SHALL be treated as a signal that OpenSpec changed its tooling contract
 - **AND** maintainers SHALL address it through a follow-up starter change
 - **AND** the workflow SHALL NOT be weakened to make the branch pass.
@@ -146,4 +160,40 @@ The starter repository SHALL document how to activate and install Renovate for t
 
 - **WHEN** a maintainer reads `README.md`
 - **THEN** it SHALL link to the Renovate activation documentation.
+
+### Requirement: Manager Restriction
+
+Renovate SHALL only use the `npm` manager for this repository.
+
+#### Scenario: Only the npm manager is enabled
+
+- **WHEN** `renovate.json` is inspected
+- **THEN** `enabledManagers` SHALL be `["npm"]`
+- **AND** Renovate SHALL NOT run the `github-actions` manager (workflow `uses:`)
+- **AND** Renovate SHALL NOT run the `nvm` manager (`.nvmrc` files).
+
+#### Scenario: Root package-manager pin stays managed
+
+- **WHEN** `renovate.json` is inspected
+- **THEN** the `npm` manager SHALL remain enabled so the root `packageManager` pin (the pnpm version, handled by the npm manager) is still proposed as a manual update.
+
+### Requirement: Template Dependency Scope
+
+Renovate SHALL manage the root `package.json` dependencies, and inside `template/package.json` it SHALL manage only `@fission-ai/openspec`.
+
+#### Scenario: Root package.json dependencies are managed
+
+- **WHEN** Renovate inspects the root `package.json`
+- **THEN** its dependencies SHALL be eligible for updates (manual pull requests by default).
+
+#### Scenario: Template non-OpenSpec dependencies are ignored
+
+- **WHEN** Renovate inspects `template/package.json`
+- **THEN** every dependency other than `@fission-ai/openspec` SHALL be disabled from updates
+- **AND** those dependencies SHALL NOT receive Renovate pull requests from this repository.
+
+#### Scenario: Template OpenSpec dependency is managed
+
+- **WHEN** Renovate inspects `template/package.json`
+- **THEN** `@fission-ai/openspec` SHALL remain eligible for updates under the same automerge policy as the root dependency.
 
