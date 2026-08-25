@@ -43,17 +43,36 @@ jobs:
       - name: Install dependencies without lifecycle scripts
         run: pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: Detect OpenSpec-relevant change
+        id: detect
+        run: |
+          changed=false
+          if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" \
+             | grep -E '^(openspec/config\.yaml|\.opencode/commands/|\.opencode/skills/|openspec/)' >/dev/null; then
+            changed=true
+          fi
+          if git diff "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" -- package.json template/package.json \
+             | grep -E '^\+[^+]*"@fission-ai/openspec"'; then
+            changed=true
+          fi
+          if [[ "${{ github.head_ref }}" == renovate/* ]]; then
+            changed=true
+          fi
+          echo "changed=${changed}" >> "$GITHUB_OUTPUT"
+
       - name: Configure the OpenSpec profile
+        if: steps.detect.outputs.changed == 'true'
         run: |
           pnpm exec openspec config set profile custom
           pnpm exec openspec config set delivery both
           pnpm exec openspec config set workflows '["propose","explore","new","continue","apply","update","ff","sync","verify","onboard"]'
 
       - name: Regenerate OpenSpec tooling
+        if: steps.detect.outputs.changed == 'true'
         run: pnpm ospec:update
 
       - name: Commit regenerated OpenSpec tooling (Renovate branches only)
-        if: startsWith(github.head_ref, 'renovate/')
+        if: steps.detect.outputs.changed == 'true' && startsWith(github.head_ref, 'renovate/')
         run: |
           git add .opencode/commands .opencode/skills
           if ! git diff --cached --quiet; then
@@ -64,6 +83,7 @@ jobs:
           fi
 
       - name: Reject generated tooling drift
+        if: steps.detect.outputs.changed == 'true'
         run: |
           status=$(git status --porcelain -- .opencode/commands .opencode/skills)
           if [ -n "$status" ]; then
@@ -73,6 +93,7 @@ jobs:
           fi
 
       - name: Reject non-generated drift
+        if: steps.detect.outputs.changed == 'true'
         run: |
           status=$(git status --porcelain)
           if [ -n "$status" ]; then

@@ -3,12 +3,19 @@
   "extends": ["config:recommended"],
   "dependencyDashboard": false,
   "baseBranches": ["devel"],
+  "gitIgnoredAuthors": ["github-actions[bot]@users.noreply.github.com"],
   "enabledManagers": ["npm"],
   "packageRules": [
     {
-      "description": "Disable all dependency updates in template/package.json except OpenSpec",
-      "matchManagers": ["npm"],
+      "description": "Disable non-OpenSpec dependency updates in template/package.json (keeps the npm manager active so its lockfile still updates)",
       "matchFileNames": ["template/package.json"],
+      "matchDepNames": ["@eslint/js", "eslint", "nx", "prettier", "typescript"],
+      "enabled": false
+    },
+    {
+      "description": "Block major pnpm updates (the packageManager pin); minor/patch pnpm still proposed as manual PRs",
+      "matchDepNames": ["pnpm"],
+      "matchUpdateTypes": ["major"],
       "enabled": false
     },
     {

@@ -58,6 +58,22 @@ Note on managers: dependency declarations inside any `package.json` (including o
 
 This refines the Renovate automation behaviour (scope + workflow auto-fix), so it is a minor version bump following the repository's per-change version convention.
 
+### Decision 6: Block major pnpm updates, keep minor/patch as manual
+
+The `packageManager` pin (pnpm) is read by the npm manager under the dep name `pnpm`. A `matchDepNames: ["pnpm"]` + `matchUpdateTypes: ["major"]` + `enabled: false` rule stops Renovate from proposing a pnpm major (for example v11) while still raising minor/patch pnpm bumps as ordinary manual PRs. This removes the noisy major-pnpm PR without freezing the pin entirely.
+
+### Decision 7: Template scope via dependency-level rules, not a file-level disable
+
+The previous file-level `matchFileNames: ["template/package.json"], enabled: false` disabled the npm manager for the whole file, which also disabled `template/pnpm-lock.yaml` maintenance. We instead disable only the non-OpenSpec dependencies (`@eslint/js`, `eslint`, `nx`, `prettier`, `typescript`) at the dependency level, leaving `@fission-ai/openspec` enabled and the npm manager active for the file. Renovate then regenerates `template/pnpm-lock.yaml` when OpenSpec changes in the template, while every other template dependency stays consumer-owned and un-proposed.
+
+### Decision 8: Conditional OpenSpec regeneration in the workflow
+
+The OpenSpec-scope workflow previously ran `openspec update` and the drift checks unconditionally on any pull request that touched `package.json` (including pnpm version bumps), which failed on changes unrelated to OpenSpec. We add a detection step that sets `changed` when the OpenSpec version changed, `openspec/config.yaml` changed, `.opencode/` tooling changed, or the head ref starts with `renovate/`. Regeneration, the Renovate-branch commit, and both drift-rejection steps are gated on `changed`; strict validation still runs on every pull request. Unrelated PRs therefore stay green and never invoke the OpenSpec commands.
+
+### Decision 9: Ignore the workflow bot-commit author so Renovate keeps ownership of its PRs
+
+The workflow commits regenerated tooling as `github-actions[bot]` (email `github-actions[bot]@users.noreply.github.com`). Renovate decides branch ownership by inspecting commit authors; a commit from an author it does not recognize makes Renovate mark the PR "Edited/Blocked" and stop rebasing/automerging it. Adding `gitIgnoredAuthors: ["github-actions[bot]@users.noreply.github.com"]` tells Renovate to ignore those commits when evaluating whether the branch was modified by someone else. After this, Renovate still treats its PRs as its own even after the workflow pushes tooling, so rebase and `platformAutomerge` proceed without manual intervention.
+
 ## Repository Structure
 
 Modified starter-repository files:
@@ -69,7 +85,7 @@ Modified starter-repository files:
 │       └── openspec-scope.yml   # modified: commits regenerated tooling on renovate/* PRs
 ├── docs/
 │   └── renovate.md              # modified: scope + dashboard-off + workflow auto-commit
-├── renovate.json                # modified: dashboard off, enabledManagers, template scope, matchDepNames
+├── renovate.json                # modified: dashboard off, enabledManagers, template scope, matchDepNames, gitIgnoredAuthors
 ├── openspec/
 │   ├── specs/
 │   │   └── dependency-automation/spec.md   # modified
@@ -107,7 +123,8 @@ No files under `template/` or `variants/` are added or modified.
 - The `github-actions`/`nvm` managers are now off, so workflow-action and `.nvmrc` updates are no longer proposed by Renovate from this repository; acceptable as intended scope reduction.
 - A malicious or broken OpenSpec release could be automerged on patch/minor; mitigated by the workflow's strict validation and drift gate running before automerge.
 - The `contents: write` permission on a PR workflow is broader than before; it is safe because the only write is the scoped idempotent tooling commit on `renovate/*` branches.
-- If OpenSpec's tooling regeneration ever touches files outside the generated-tooling paths, the non-generated-drift gate still fails and signals a contract change (addressed as a follow-up change).
+  - If OpenSpec's tooling regeneration ever touches files outside the generated-tooling paths, the non-generated-drift gate still fails and signals a contract change (addressed as a follow-up change).
+  - Skipping regeneration for non-OpenSpec-relevant PRs means a human PR that manually edits `.opencode/` tooling without an OpenSpec-version or `config.yaml` change would not be drift-checked; such edits are rare and the detection also keys on `.opencode/` path changes, so the common cases are covered.
 
 ## Migration Plan
 
@@ -124,7 +141,7 @@ Agent-verifiable, local validation:
 
 - `pnpm ospec:validate` passes for the change artifacts and all specs.
 - `pnpm validate` passes unchanged (no template files touched).
-- `renovate.json` parses as JSON, declares its `$schema`, has `dependencyDashboard: false`, `enabledManagers: ["npm","pnpm"]`, the template disable/re-enable rules, and uses `matchDepNames`.
+- `renovate.json` parses as JSON, declares its `$schema`, has `dependencyDashboard: false`, `enabledManagers: ["npm"]`, `gitIgnoredAuthors` for the `github-actions[bot]` email, the template disable/re-enable rules, and uses `matchDepNames`.
 - `npx --yes -p renovate renovate-config-validator renovate.json` passes.
 - The workflow YAML parses, references existing `pnpm` scripts, sets `permissions: contents: write`, checks out `github.head_ref`, and gates the commit step on `renovate/` head refs.
 - `git status` shows no changes under `.opencode/` introduced by this change.

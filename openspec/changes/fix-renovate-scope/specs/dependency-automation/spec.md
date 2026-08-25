@@ -17,6 +17,13 @@ The starter repository SHALL provide a root `renovate.json` that configures Reno
 - **THEN** the Renovate dependency dashboard SHALL be disabled (`dependencyDashboard: false`)
 - **AND** Renovate SHALL still auto-open configuration-migration pull requests when it detects deprecated options (`configMigration` defaults to `true`).
 
+#### Scenario: Workflow bot commits do not block Renovate ownership
+
+- **WHEN** `renovate.json` is inspected
+- **THEN** it SHALL declare `gitIgnoredAuthors` with the `github-actions[bot]` commit email used by the OpenSpec-scope workflow
+- **AND** Renovate SHALL still treat its own pull requests as owned by Renovate after the workflow commits regenerated tooling to them
+- **AND** Renovate SHALL continue to rebase and automerge those pull requests instead of marking them "Edited/Blocked".
+
 #### Scenario: Base branch targets the integration branch
 
 - **WHEN** `renovate.json` is inspected
@@ -94,11 +101,18 @@ The starter repository SHALL run a GitHub Actions workflow on pull requests that
 
 #### Scenario: Workflow regenerates tooling and rejects drift
 
-- **WHEN** the OpenSpec-scope workflow runs
+- **WHEN** the OpenSpec-scope workflow detects an OpenSpec-relevant change (the `@fission-ai/openspec` version changed, `openspec/config.yaml` changed, `.opencode/` tooling changed, or the head ref starts with `renovate/`)
 - **THEN** it SHALL install dependencies with the frozen lockfile
 - **AND** it SHALL configure the OpenSpec profile, delivery, and workflows
 - **AND** it SHALL regenerate assistant tooling
-- **AND** it MUST fail if the working tree differs afterwards, including untracked generated files.
+- **AND** it MUST fail if the working tree differs afterwards, including untracked generated files
+- **AND** when the change is not OpenSpec-relevant, it SHALL skip regeneration and drift rejection and SHALL still run strict validation.
+
+#### Scenario: Workflow detects OpenSpec-relevant changes
+
+- **WHEN** the OpenSpec-scope workflow starts
+- **THEN** it SHALL compute whether the change is OpenSpec-relevant from the pull-request diff (the `@fission-ai/openspec` version in `package.json` or `template/package.json`, a change to `openspec/config.yaml`, a change to `.opencode/commands/` or `.opencode/skills/`, or a `renovate/` head ref)
+- **AND** it SHALL gate regeneration, the Renovate-branch commit, and drift rejection on that result.
 
 #### Scenario: Workflow commits regenerated tooling on Renovate branches only
 
@@ -162,3 +176,35 @@ Renovate SHALL manage the root `package.json` dependencies, and inside `template
 
 - **WHEN** Renovate inspects `template/package.json`
 - **THEN** `@fission-ai/openspec` SHALL remain eligible for updates under the same automerge policy as the root dependency.
+
+## ADDED Requirements
+
+### Requirement: pnpm Version Pin Restriction
+
+Renovate SHALL NOT propose major updates to the pnpm `packageManager` pin.
+
+#### Scenario: Major pnpm updates are blocked
+
+- **WHEN** Renovate evaluates the root `packageManager` pin (pnpm)
+- **THEN** it SHALL NOT propose a major pnpm update
+- **AND** it SHALL keep the existing pin unchanged for major bumps.
+
+#### Scenario: Minor and patch pnpm updates remain manual
+
+- **WHEN** Renovate evaluates the root `packageManager` pin (pnpm)
+- **THEN** minor and patch pnpm updates SHALL still be proposed as manual pull requests.
+
+### Requirement: Template Dependency Lockfile Maintenance
+
+Renovate SHALL regenerate `template/pnpm-lock.yaml` when it updates a dependency in `template/package.json`.
+
+#### Scenario: Template lockfile updates with OpenSpec
+
+- **WHEN** Renovate updates `@fission-ai/openspec` in `template/package.json`
+- **THEN** it SHALL also update `template/pnpm-lock.yaml` to match.
+
+#### Scenario: Non-OpenSpec template dependencies stay disabled
+
+- **WHEN** Renovate inspects `template/package.json`
+- **THEN** every dependency other than `@fission-ai/openspec` SHALL be disabled from updates
+- **AND** the npm manager SHALL remain enabled for the file so its lockfile stays maintained.
