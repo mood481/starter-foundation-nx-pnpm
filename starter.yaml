@@ -1,7 +1,7 @@
 id: foundation-nx-pnpm
 name: Foundation Nx pnpm Monorepo
 kind: foundation
-version: 0.2.0
+version: 0.3.0
 
 template:
   path: template

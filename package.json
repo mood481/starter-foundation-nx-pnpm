@@ -1,6 +1,6 @@
 {
   "name": "starter-foundation-nx-pnpm",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Neutral foundation starter for strict Nx + pnpm multi-language monorepos.",
   "type": "module",

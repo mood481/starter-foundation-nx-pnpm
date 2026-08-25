@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format follows the change IDs tracked through OpenSpec. Each entry corresponds to an archived OpenSpec change.
 
+## 0.3.0
+
+### fix-renovate-scope
+
+Refine Renovate automation for the starter repository: the OpenSpec-scope workflow now regenerates and commits the assistant tooling on `renovate/*` pull requests so patch/minor `@fission-ai/openspec` updates automerge end-to-end even when the hosted app ignores `postUpgradeTasks`; Renovate scope is narrowed to the root `package.json` and only `@fission-ai/openspec` inside `template/package.json` by disabling the `github-actions` and `nvm` managers and adding template package rules; the Dependency Dashboard is disabled while configuration-migration pull requests still auto-open; and `matchPackageNames` is migrated to `matchDepNames`.
+
 ## 0.2.0
 
 ### add-renovate-automerge

@@ -1,11 +1,24 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "dependencyDashboard": true,
+  "dependencyDashboard": false,
   "baseBranches": ["devel"],
+  "enabledManagers": ["npm"],
   "packageRules": [
     {
-      "matchPackageNames": ["@fission-ai/openspec"],
+      "description": "Disable all dependency updates in template/package.json except OpenSpec",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["template/package.json"],
+      "enabled": false
+    },
+    {
+      "description": "Re-enable OpenSpec updates in template/package.json",
+      "matchFileNames": ["template/package.json"],
+      "matchDepNames": ["@fission-ai/openspec"],
+      "enabled": true
+    },
+    {
+      "matchDepNames": ["@fission-ai/openspec"],
       "matchUpdateTypes": ["patch", "minor"],
       "automerge": true,
       "automergeType": "pr",
@@ -26,7 +39,7 @@
       }
     },
     {
-      "matchPackageNames": ["@fission-ai/openspec"],
+      "matchDepNames": ["@fission-ai/openspec"],
       "matchUpdateTypes": ["major"],
       "automerge": false
     }
