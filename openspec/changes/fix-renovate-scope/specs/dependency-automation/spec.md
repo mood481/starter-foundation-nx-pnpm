@@ -129,8 +129,9 @@ The starter repository SHALL run a GitHub Actions workflow on pull requests that
 
 #### Scenario: Workflow runs strict OpenSpec validation
 
-- **WHEN** the OpenSpec-scope workflow runs
+- **WHEN** the OpenSpec-scope workflow runs and `changed` is true
 - **THEN** it SHALL run the strict all-artifacts OpenSpec validation script.
+- **AND** when `changed` is false (for example a pnpm version-bump pull request), it SHALL run no OpenSpec validation or regeneration steps.
 
 #### Scenario: Workflow failure on Renovate branches signals a contract change
 
@@ -205,6 +206,11 @@ The OpenSpec-scope workflow SHALL regenerate `template/pnpm-lock.yaml` when Reno
 - **AND** it SHALL run `pnpm install --ignore-scripts` in `template/` to regenerate `template/pnpm-lock.yaml`
 - **AND** it SHALL restore the placeholder `template/package.json`
 - **AND** it SHALL commit the regenerated `template/pnpm-lock.yaml` to the pull request head.
+
+#### Scenario: Renovate does not update the template lockfile itself
+
+- **WHEN** Renovate inspects `template/package.json`
+- **THEN** it SHALL set `updateLockFiles: false` for the OpenSpec dependency so it does not attempt to regenerate `template/pnpm-lock.yaml` (the template's placeholder `packageManager` would make `pnpm` fail with an artifact error).
 
 #### Scenario: Non-OpenSpec template dependencies stay disabled
 

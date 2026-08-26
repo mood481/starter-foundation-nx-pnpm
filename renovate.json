@@ -19,10 +19,11 @@
       "enabled": false
     },
     {
-      "description": "Re-enable OpenSpec updates in template/package.json",
+      "description": "Re-enable OpenSpec updates in template/package.json; Renovate must not try to update the template lockfile itself (placeholders make pnpm fail), the workflow owns that",
       "matchFileNames": ["template/package.json"],
       "matchDepNames": ["@fission-ai/openspec"],
-      "enabled": true
+      "enabled": true,
+      "updateLockFiles": false
     },
     {
       "matchDepNames": ["@fission-ai/openspec"],

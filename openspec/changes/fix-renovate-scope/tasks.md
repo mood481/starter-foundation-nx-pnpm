@@ -22,13 +22,14 @@
 
 ### pnpm, template lockfile, and conditional regeneration
 
-- [x] Add a package rule that blocks major pnpm updates (`matchDepNames: ["pnpm"]`, `matchUpdateTypes: ["major"]`, `enabled: false`); minor/patch pnpm bumps remain manual PRs.
-- [x] Replace the file-level `template/package.json` disable rule with a dependency-level rule that disables only `@eslint/js`, `eslint`, `nx`, `prettier`, `typescript`, keeping `@fission-ai/openspec` enabled so the npm manager stays active and `template/pnpm-lock.yaml` regenerates on OpenSpec changes.
+  - [x] Add a package rule that blocks major pnpm updates (`matchDepNames: ["pnpm"]`, `matchUpdateTypes: ["major"]`, `enabled: false`); minor/patch pnpm bumps remain manual PRs.
+  - [x] Replace the file-level `template/package.json` disable rule with a dependency-level rule that disables only `@eslint/js`, `eslint`, `nx`, `prettier`, `typescript`, keeping `@fission-ai/openspec` enabled so the npm manager stays active and `template/pnpm-lock.yaml` regenerates on OpenSpec changes.
+  - [x] Set `updateLockFiles: false` on the template OpenSpec rule so Renovate does not attempt to regenerate `template/pnpm-lock.yaml` itself (placeholder `packageManager` would fail with an "Artifact file update failure"); the workflow owns that regeneration.
   - [x] Add a "Detect OpenSpec-relevant change" step to `openspec-scope.yml` that sets `changed` when the OpenSpec version changed (in `package.json` or `template/package.json`), `openspec/config.yaml` changed, or `.opencode/` tooling changed, and sets `template_changed` when the OpenSpec line changed only in `template/package.json`. The `renovate/` head-ref prefix is intentionally NOT part of the detection, so pnpm version-bump PRs are treated as unrelated.
   - [x] Add `template/package.json` and `template/pnpm-lock.yaml` to the workflow `paths` trigger so template OpenSpec PRs run the workflow.
   - [x] Add a workflow step that regenerates `template/pnpm-lock.yaml` when `template_changed` is true: back up `template/package.json`, substitute the placeholders (`__PNPM_VERSION__`, `__NODE_VERSION__`, `__PROJECT_SLUG__`, `__PROJECT_DESCRIPTION__`) with concrete values, run `pnpm install --ignore-scripts` in `template/`, restore the placeholder `package.json`, and commit the regenerated lockfile on `renovate/*` branches alongside the OpenSpec tooling.
-  - [x] Gate the Configure-profile, Regenerate, Commit, and both drift-rejection steps on `steps.detect.outputs.changed == 'true'`; keep `pnpm ospec:validate` running on every pull request.
-  - [x] Confirm unrelated PRs (for example pnpm version bumps) no longer run OpenSpec regeneration and stay green.
+  - [x] Gate the Configure-profile, Regenerate, Commit, both drift-rejection steps, and the strict `pnpm ospec:validate` step on `steps.detect.outputs.changed == 'true'`; a pnpm version-bump PR therefore runs no OpenSpec logic (only the fast detection check).
+  - [x] Confirm unrelated PRs (for example pnpm version bumps) no longer run OpenSpec regeneration or validation and stay green.
 
 ### Documentation (`docs/renovate.md`)
 
