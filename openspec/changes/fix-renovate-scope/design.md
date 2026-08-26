@@ -68,11 +68,15 @@ The previous file-level `matchFileNames: ["template/package.json"], enabled: fal
 
 ### Decision 8: Conditional OpenSpec regeneration in the workflow
 
-The OpenSpec-scope workflow previously ran `openspec update` and the drift checks unconditionally on any pull request that touched `package.json` (including pnpm version bumps), which failed on changes unrelated to OpenSpec. We add a detection step that sets `changed` when the OpenSpec version changed, `openspec/config.yaml` changed, `.opencode/` tooling changed, or the head ref starts with `renovate/`. Regeneration, the Renovate-branch commit, and both drift-rejection steps are gated on `changed`; strict validation still runs on every pull request. Unrelated PRs therefore stay green and never invoke the OpenSpec commands.
+The OpenSpec-scope workflow previously ran `openspec update` and the drift checks unconditionally on any pull request that touched `package.json` (including pnpm version bumps), which failed on changes unrelated to OpenSpec. We add a detection step that sets `changed` only when the OpenSpec version changed (in `package.json` or `template/package.json`), `openspec/config.yaml` changed, or `.opencode/` tooling changed. It does **not** key on the `renovate/` head-ref prefix — keying on the prefix made pnpm version-bump PRs (which also carry a `renovate/` head ref) run the OpenSpec commands and fail. Regeneration, the Renovate-branch commit, and both drift-rejection steps are gated on `changed`; strict validation still runs on every pull request. A pnpm version-bump PR therefore stays green and never invokes the OpenSpec commands. The Renovate-branch commit additionally requires the `renovate/` head-ref prefix as its own guard, independent of `changed`. A separate `template_changed` output (true only when the OpenSpec line changed in `template/package.json`) drives the template lockfile regeneration step.
 
 ### Decision 9: Ignore the workflow bot-commit author so Renovate keeps ownership of its PRs
 
-The workflow commits regenerated tooling as `github-actions[bot]` (email `github-actions[bot]@users.noreply.github.com`). Renovate decides branch ownership by inspecting commit authors; a commit from an author it does not recognize makes Renovate mark the PR "Edited/Blocked" and stop rebasing/automerging it. Adding `gitIgnoredAuthors: ["github-actions[bot]@users.noreply.github.com"]` tells Renovate to ignore those commits when evaluating whether the branch was modified by someone else. After this, Renovate still treats its PRs as its own even after the workflow pushes tooling, so rebase and `platformAutomerge` proceed without manual intervention.
+The workflow commits regenerated tooling as `github-actions[bot]` (email `github-actions[bot]@users.noreply.github.com`). Renovate decides branch ownership by inspecting commit authors; a commit from an author it does not recognize makes Renovate mark the PR "Edited/Blocked" and stop rebasing/automerging it. Adding `gitIgnoredAuthors: ["github-actions[bot]@users.noreply.github.com", "41898282+github-actions[bot]@users.noreply.github.com"]` tells Renovate to ignore those commits when evaluating whether the branch was modified by someone else. After this, Renovate still treats its PRs as its own even after the workflow pushes tooling, so rebase and `platformAutomerge` proceed without manual intervention.
+
+### Decision 10: The workflow regenerates `template/pnpm-lock.yaml` despite template placeholders
+
+The template is a standalone project whose `package.json` uses placeholders (`__PNPM_VERSION__`, `__NODE_VERSION__`, `__PROJECT_SLUG__`, `__PROJECT_DESCRIPTION__`) so it is not installable as-is. Renovate can bump the `@fission-ai/openspec` specifier in `template/package.json` but cannot run `pnpm install` to refresh `template/pnpm-lock.yaml` (it cannot resolve `pnpm@__PNPM_VERSION__`). To keep the lockfile consistent on OpenSpec bumps, the OpenSpec-scope workflow regenerates it: it backs up `template/package.json`, substitutes the placeholders with concrete values derived from the root `package.json` (`packageManager` → pnpm version, `engines.node` → node version) plus fixed `template` slugs, runs `pnpm install --ignore-scripts` in `template/`, restores the placeholder `package.json`, and commits the regenerated `template/pnpm-lock.yaml` on `renovate/*` branches (alongside the OpenSpec tooling). `template/package.json` and `template/pnpm-lock.yaml` are added to the workflow `paths` trigger so template OpenSpec PRs actually run the workflow.
 
 ## Repository Structure
 
@@ -82,7 +86,7 @@ Modified starter-repository files:
 .
 ├── .github/
 │   └── workflows/
-│       └── openspec-scope.yml   # modified: commits regenerated tooling on renovate/* PRs
+│   └── openspec-scope.yml   # modified: commits regenerated tooling and template lockfile on renovate/* PRs; triggers on template package/lockfile
 ├── docs/
 │   └── renovate.md              # modified: scope + dashboard-off + workflow auto-commit
 ├── renovate.json                # modified: dashboard off, enabledManagers, template scope, matchDepNames, gitIgnoredAuthors

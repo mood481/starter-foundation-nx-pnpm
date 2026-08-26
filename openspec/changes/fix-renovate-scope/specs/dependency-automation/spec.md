@@ -89,7 +89,7 @@ The starter repository SHALL run a GitHub Actions workflow on pull requests that
 
 #### Scenario: Workflow triggers on OpenSpec-scope paths
 
-- **WHEN** a pull request targeting `devel` changes `openspec/config.yaml`, `.opencode/commands/**`, `.opencode/skills/**`, `package.json`, `pnpm-lock.yaml`, `renovate.json`, or the workflow itself
+- **WHEN** a pull request targeting `devel` changes `openspec/config.yaml`, `.opencode/commands/**`, `.opencode/skills/**`, `package.json`, `pnpm-lock.yaml`, `template/package.json`, `template/pnpm-lock.yaml`, `renovate.json`, or the workflow itself
 - **THEN** the OpenSpec-scope workflow SHALL run.
 
 #### Scenario: Workflow adapts the in-use example
@@ -111,7 +111,7 @@ The starter repository SHALL run a GitHub Actions workflow on pull requests that
 #### Scenario: Workflow detects OpenSpec-relevant changes
 
 - **WHEN** the OpenSpec-scope workflow starts
-- **THEN** it SHALL compute whether the change is OpenSpec-relevant from the pull-request diff (the `@fission-ai/openspec` version in `package.json` or `template/package.json`, a change to `openspec/config.yaml`, a change to `.opencode/commands/` or `.opencode/skills/`, or a `renovate/` head ref)
+- **THEN** it SHALL compute whether the change is OpenSpec-relevant from the pull-request diff (the `@fission-ai/openspec` version in `package.json` or `template/package.json`, a change to `openspec/config.yaml`, or a change to `.opencode/commands/` or `.opencode/skills/`)
 - **AND** it SHALL gate regeneration, the Renovate-branch commit, and drift rejection on that result.
 
 #### Scenario: Workflow commits regenerated tooling on Renovate branches only
@@ -196,15 +196,18 @@ Renovate SHALL NOT propose major updates to the pnpm `packageManager` pin.
 
 ### Requirement: Template Dependency Lockfile Maintenance
 
-Renovate SHALL regenerate `template/pnpm-lock.yaml` when it updates a dependency in `template/package.json`.
+The OpenSpec-scope workflow SHALL regenerate `template/pnpm-lock.yaml` when Renovate updates `@fission-ai/openspec` in `template/package.json`, because the template's `package.json` uses placeholders that prevent Renovate from running `pnpm install` itself.
 
 #### Scenario: Template lockfile updates with OpenSpec
 
-- **WHEN** Renovate updates `@fission-ai/openspec` in `template/package.json`
-- **THEN** it SHALL also update `template/pnpm-lock.yaml` to match.
+- **WHEN** the OpenSpec-scope workflow detects a change to `@fission-ai/openspec` in `template/package.json` on a `renovate/*` branch
+- **THEN** it SHALL substitute the template placeholders (`__PNPM_VERSION__`, `__NODE_VERSION__`, `__PROJECT_SLUG__`, `__PROJECT_DESCRIPTION__`) with concrete values
+- **AND** it SHALL run `pnpm install --ignore-scripts` in `template/` to regenerate `template/pnpm-lock.yaml`
+- **AND** it SHALL restore the placeholder `template/package.json`
+- **AND** it SHALL commit the regenerated `template/pnpm-lock.yaml` to the pull request head.
 
 #### Scenario: Non-OpenSpec template dependencies stay disabled
 
 - **WHEN** Renovate inspects `template/package.json`
 - **THEN** every dependency other than `@fission-ai/openspec` SHALL be disabled from updates
-- **AND** the npm manager SHALL remain enabled for the file so its lockfile stays maintained.
+- **AND** the npm manager SHALL remain enabled for the file so its lockfile stays maintained by the workflow.
