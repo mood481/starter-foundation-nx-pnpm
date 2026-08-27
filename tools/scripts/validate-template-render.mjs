@@ -79,14 +79,11 @@ placeholders:
 }
 
 function runPnpm(args, cwd) {
-  const npmExecPath = process.env.npm_execpath;
-  const command = npmExecPath ? process.execPath : 'pnpm';
-  const commandArgs = npmExecPath ? [npmExecPath, ...args] : args;
   const display = ['pnpm', ...args].join(' ');
 
   console.log(`\nRunning in ${cwd}: ${display}`);
 
-  const result = spawnSync(command, commandArgs, {
+  const result = spawnSync('pnpm', args, {
     cwd,
     env: process.env,
     stdio: 'inherit',

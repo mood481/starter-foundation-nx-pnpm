@@ -33,6 +33,9 @@ It is exposed via a `template:update-lock` pnpm script. The maintainer runs it a
 ### Decision 4 — Keep `gitIgnoredAuthors` and the pnpm major block
 `gitIgnoredAuthors` is retained so Renovate still owns its `renovate/*` PRs after the workflow commits tooling to them (unchanged from current behavior, now only for root). The pnpm major-version block on the root `packageManager` pin is retained.
 
+### Decision 5 — Omit Renovate `postUpgradeTasks` for OpenSpec updates
+The hosted Mend Renovate app restricts `allowedPostUpgradeCommands` to a small git-only allowlist, so any `pnpm exec openspec ...` post-upgrade command is rejected ("Post-upgrade task did not match any on allowedCommands list"). Rather than widen the allowlist (which would make Renovate execute pnpm and duplicate the workflow's job), we omit `postUpgradeTasks` entirely. The OpenSpec-scope workflow already regenerates and commits the tooling on `renovate/*` branches, so the checked-in tooling stays in sync without Renovate running commands. This also keeps `renovate.json` portable across hosted and self-hosted Renovate.
+
 ## Risks / Trade-offs
 
 - **Template dependency drift** → Mitigated by documenting the script in `docs/renovate.md` and keeping it trivial to run (`pnpm template:update-lock`). Affects generated-project freshness only, not starter CI.

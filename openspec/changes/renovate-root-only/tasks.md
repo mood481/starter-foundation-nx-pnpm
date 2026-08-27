@@ -1,6 +1,6 @@
 ## 1. Renovate root-only configuration
 
-- [ ] 1.1 Edit `renovate.json`: add a package rule `matchFileNames: ["template/package.json"], enabled: false` so Renovate never proposes template updates on GitHub; remove the template-specific rules (the non-OpenSpec disable and the OpenSpec re-enable with `updateLockFiles: false`). Keep `enabledManagers: ["npm"]`, `dependencyDashboard: false`, `baseBranches: ["devel"]`, `gitIgnoredAuthors`, the root OpenSpec patch/minor automerge, the pnpm major block, and the OpenSpec `postUpgradeTasks`. Verify with `npx --yes -p renovate renovate-config-validator renovate.json` (must report "Config validated successfully").
+- [ ] 1.1 Edit `renovate.json`: add a package rule `matchFileNames: ["template/package.json"], enabled: false` so Renovate never proposes template updates on GitHub; remove the template-specific rules (the non-OpenSpec disable and the OpenSpec re-enable with `updateLockFiles: false`); and remove the OpenSpec `postUpgradeTasks` block, because the hosted Renovate app blocks those commands via `allowedPostUpgradeCommands` and the OpenSpec-scope workflow already regenerates the tooling on `renovate/*` branches. Keep `enabledManagers: ["npm"]`, `dependencyDashboard: false`, `baseBranches: ["devel"]`, `gitIgnoredAuthors`, the root OpenSpec patch/minor automerge, and the pnpm major block. Verify with `npx --yes -p renovate renovate-config-validator renovate.json` (must report "Config validated successfully").
 
 ## 2. Simplify the OpenSpec-scope workflow
 

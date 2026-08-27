@@ -10,8 +10,6 @@ on:
       - .opencode/skills/**
       - package.json
       - pnpm-lock.yaml
-      - template/package.json
-      - template/pnpm-lock.yaml
       - pnpm-workspace.yaml
       - renovate.json
       - .github/workflows/openspec-scope.yml
@@ -49,21 +47,15 @@ jobs:
         id: detect
         run: |
           changed=false
-          template_changed=false
           if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" \
              | grep -E '^(openspec/config\.yaml|\.opencode/commands/|\.opencode/skills/|openspec/)' >/dev/null; then
             changed=true
           fi
-          if git diff "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" -- package.json template/package.json \
+          if git diff "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" -- package.json \
              | grep -E '^\+[^+]*"@fission-ai/openspec"'; then
             changed=true
           fi
-          if git diff "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" -- template/package.json \
-             | grep -E '^\+[^+]*"@fission-ai/openspec"'; then
-            template_changed=true
-          fi
           echo "changed=${changed}" >> "$GITHUB_OUTPUT"
-          echo "template_changed=${template_changed}" >> "$GITHUB_OUTPUT"
 
       - name: Configure the OpenSpec profile
         if: steps.detect.outputs.changed == 'true'
@@ -76,38 +68,14 @@ jobs:
         if: steps.detect.outputs.changed == 'true'
         run: pnpm ospec:update
 
-      - name: Regenerate template lockfile
-        if: steps.detect.outputs.template_changed == 'true'
-        run: |
-          PNPM_VER=$(node -p "require('./package.json').packageManager.replace(/^pnpm@/,'')")
-          NODE_VER=$(node -p "require('./package.json').engines.node.replace(/[^0-9.].*/,'')")
-          cp template/package.json /tmp/template-package.json.bak
-          node -e "
-            const fs=require('fs');
-            const p='template/package.json';
-            const j=fs.readFileSync(p,'utf8')
-              .split('__PNPM_VERSION__').join(process.env.PNPM_VER)
-              .split('__NODE_VERSION__').join(process.env.NODE_VER)
-              .split('__PROJECT_SLUG__').join('template')
-              .split('__PROJECT_DESCRIPTION__').join('template');
-            fs.writeFileSync(p,j);
-          "
-          cd template
-          pnpm install --ignore-scripts
-          cd ..
-          cp /tmp/template-package.json.bak template/package.json
-
       - name: Commit regenerated OpenSpec tooling (Renovate branches only)
         if: steps.detect.outputs.changed == 'true' && startsWith(github.head_ref, 'renovate/')
         run: |
           git add .opencode/commands .opencode/skills
-          if [[ "${{ steps.detect.outputs.template_changed }}" == 'true' ]]; then
-            git add template/pnpm-lock.yaml
-          fi
           if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git commit -m "chore: regenerate OpenSpec tooling and template lockfile for dependency update"
+            git commit -m "chore: regenerate OpenSpec tooling for dependency update"
             git push
           fi
 

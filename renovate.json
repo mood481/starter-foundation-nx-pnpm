@@ -7,9 +7,8 @@
   "enabledManagers": ["npm"],
   "packageRules": [
     {
-      "description": "Disable non-OpenSpec dependency updates in template/package.json (keeps the npm manager active so its lockfile still updates)",
+      "description": "Disable Renovate for template/package.json entirely; the template is maintained locally by the maintainer via the template lockfile script",
       "matchFileNames": ["template/package.json"],
-      "matchDepNames": ["@eslint/js", "eslint", "nx", "prettier", "typescript"],
       "enabled": false
     },
     {
@@ -19,31 +18,11 @@
       "enabled": false
     },
     {
-      "description": "Re-enable OpenSpec updates in template/package.json; Renovate must not try to update the template lockfile itself (placeholders make pnpm fail), the workflow owns that",
-      "matchFileNames": ["template/package.json"],
-      "matchDepNames": ["@fission-ai/openspec"],
-      "enabled": true,
-      "updateLockFiles": false
-    },
-    {
       "matchDepNames": ["@fission-ai/openspec"],
       "matchUpdateTypes": ["patch", "minor"],
       "automerge": true,
       "automergeType": "pr",
-      "platformAutomerge": true,
-      "postUpgradeTasks": {
-        "executionMode": "update",
-        "commands": [
-          "pnpm exec openspec config set profile custom",
-          "pnpm exec openspec config set delivery both",
-          "pnpm exec openspec config set workflows '[\"propose\",\"explore\",\"new\",\"continue\",\"apply\",\"update\",\"ff\",\"sync\",\"verify\",\"onboard\"]'",
-          "pnpm ospec:update"
-        ],
-        "fileFilters": [
-          ".opencode/commands/**",
-          ".opencode/skills/**"
-        ]
-      }
+      "platformAutomerge": true
     },
     {
       "matchDepNames": ["@fission-ai/openspec"],
