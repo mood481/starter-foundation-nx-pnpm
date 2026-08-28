@@ -2,9 +2,7 @@
 
 ## Purpose
 TBD - created by archiving change add-renovate-automerge. Update Purpose after archive.
-
 ## Requirements
-
 ### Requirement: Renovate Configuration
 
 The starter repository SHALL provide a root `renovate.json` that configures Renovate as an external service for the starter repository.
@@ -40,6 +38,12 @@ The starter repository SHALL provide a root `renovate.json` that configures Reno
 - **WHEN** the starter repository dependencies are inspected
 - **THEN** Renovate SHALL NOT be declared as a package dependency or devDependency.
 
+#### Scenario: Template package.json is excluded from Renovate
+
+- **WHEN** `renovate.json` is inspected
+- **THEN** it SHALL disable Renovate for `template/package.json` (`enabled: false`)
+- **AND** Renovate SHALL NOT propose any dependency update for the template on GitHub.
+
 ### Requirement: OpenSpec Automerge Policy
 
 The starter repository SHALL automerge `@fission-ai/openspec` patch and minor updates and SHALL keep major updates manual.
@@ -68,33 +72,13 @@ The starter repository SHALL automerge `@fission-ai/openspec` patch and minor up
 - **THEN** the OpenSpec rules SHALL match the dependency with `matchDepNames` (the current Renovate key)
 - **AND** they SHALL NOT use the deprecated `matchPackageNames` key.
 
-### Requirement: OpenSpec Tooling Regeneration on Dependency Update
-
-Renovate OpenSpec updates SHALL regenerate the checked-in OpenSpec assistant tooling as part of the update.
-
-#### Scenario: Post-upgrade tasks reconfigure the OpenSpec profile
-
-- **WHEN** Renovate processes an `@fission-ai/openspec` update
-- **THEN** post-upgrade tasks SHALL set the OpenSpec profile, delivery, and workflows configuration before regenerating tooling, because OpenSpec configuration is global and not checked in
-- **AND** the configuration commands SHALL follow the in-use example `tmp/renovate.json`, since they run with the updated OpenSpec version on the Renovate branch.
-
-#### Scenario: Post-upgrade tasks regenerate tooling through the package script
-
-- **WHEN** Renovate processes an `@fission-ai/openspec` update
-- **THEN** post-upgrade tasks SHALL regenerate assistant tooling through the `ospec:update` package script.
-
-#### Scenario: Post-upgrade side effects are limited to tooling paths
-
-- **WHEN** Renovate commits post-upgrade task results
-- **THEN** committed files SHALL be limited to `.opencode/commands/**` and `.opencode/skills/**`.
-
 ### Requirement: OpenSpec Scope Pull Request Gate
 
 The starter repository SHALL run a GitHub Actions workflow on pull requests that touch the OpenSpec scope, proving that checked-in assistant tooling matches the pinned OpenSpec version.
 
 #### Scenario: Workflow triggers on OpenSpec-scope paths
 
-- **WHEN** a pull request targeting `devel` changes `openspec/config.yaml`, `.opencode/commands/**`, `.opencode/skills/**`, `package.json`, `pnpm-lock.yaml`, `template/package.json`, `template/pnpm-lock.yaml`, `renovate.json`, or the workflow itself
+- **WHEN** a pull request targeting `devel` changes `openspec/config.yaml`, `.opencode/commands/**`, `.opencode/skills/**`, `package.json`, `pnpm-lock.yaml`, `renovate.json`, or the workflow itself
 - **THEN** the OpenSpec-scope workflow SHALL run.
 
 #### Scenario: Workflow adapts the in-use example
@@ -116,7 +100,7 @@ The starter repository SHALL run a GitHub Actions workflow on pull requests that
 #### Scenario: Workflow detects OpenSpec-relevant changes
 
 - **WHEN** the OpenSpec-scope workflow starts
-- **THEN** it SHALL compute whether the change is OpenSpec-relevant from the pull-request diff (the `@fission-ai/openspec` version in `package.json` or `template/package.json`, a change to `openspec/config.yaml`, or a change to `.opencode/commands/` or `.opencode/skills/`)
+- **THEN** it SHALL compute whether the change is OpenSpec-relevant from the pull-request diff (the `@fission-ai/openspec` version in `package.json`, a change to `openspec/config.yaml`, or a change to `.opencode/commands/` or `.opencode/skills/`)
 - **AND** it SHALL gate regeneration, the Renovate-branch commit, and drift rejection on that result.
 
 #### Scenario: Workflow commits regenerated tooling on Renovate branches only
@@ -195,23 +179,26 @@ Renovate SHALL NOT propose major updates to the pnpm `packageManager` pin.
 
 ### Requirement: Template Dependency Lockfile Maintenance
 
-The OpenSpec-scope workflow SHALL regenerate `template/pnpm-lock.yaml` when Renovate updates `@fission-ai/openspec` in `template/package.json`, because the template's `package.json` uses placeholders that prevent Renovate from running `pnpm install` itself.
+The starter SHALL provide a local mechanism to regenerate `template/pnpm-lock.yaml` when `template/package.json` changes, because the template's `package.json` uses placeholders that prevent `pnpm install` from running directly. Renovate SHALL NOT manage the template; the maintainer updates it locally at their discretion.
 
 #### Scenario: Template lockfile updates with OpenSpec
 
-- **WHEN** the OpenSpec-scope workflow detects a change to `@fission-ai/openspec` in `template/package.json` on a `renovate/*` branch
-- **THEN** it SHALL substitute the template placeholders (`__PNPM_VERSION__`, `__NODE_VERSION__`, `__PROJECT_SLUG__`, `__PROJECT_DESCRIPTION__`) with concrete values
+- **WHEN** a maintainer changes `@fission-ai/openspec` (or any dependency) in `template/package.json` and runs the template lockfile update script (for example `pnpm template:update-lock` or `node scripts/update-template-lockfile.mjs`)
+- **THEN** it SHALL substitute the template placeholders (`__PNPM_VERSION__`, `__NODE_VERSION__`, `__PROJECT_SLUG__`, `__PROJECT_DESCRIPTION__`) in `template/package.json` with concrete values derived from the root `package.json`
 - **AND** it SHALL run `pnpm install --ignore-scripts` in `template/` to regenerate `template/pnpm-lock.yaml`
 - **AND** it SHALL restore the placeholder `template/package.json`
-- **AND** it SHALL commit the regenerated `template/pnpm-lock.yaml` to the pull request head.
+- **AND** the maintainer SHALL commit the regenerated `template/pnpm-lock.yaml`.
 
 #### Scenario: Renovate does not update the template lockfile itself
 
-- **WHEN** Renovate inspects `template/package.json`
-- **THEN** it SHALL set `updateLockFiles: false` for the OpenSpec dependency so it does not attempt to regenerate `template/pnpm-lock.yaml` (the template's placeholder `packageManager` would make `pnpm` fail with an artifact error).
+- **WHEN** `renovate.json` is inspected
+- **THEN** it SHALL disable `template/package.json` entirely (`enabled: false`)
+- **AND** Renovate SHALL NOT propose OpenSpec or any other dependency update for the template on GitHub
+- **AND** Renovate SHALL NOT attempt to regenerate `template/pnpm-lock.yaml`.
 
 #### Scenario: Non-OpenSpec template dependencies stay disabled
 
-- **WHEN** Renovate inspects `template/package.json`
-- **THEN** every dependency other than `@fission-ai/openspec` SHALL be disabled from updates
-- **AND** the npm manager SHALL remain enabled for the file so its lockfile stays maintained by the workflow.
+- **WHEN** `renovate.json` is inspected
+- **THEN** every dependency in `template/package.json` SHALL be disabled from Renovate updates because the entire file is disabled (`enabled: false`)
+- **AND** the npm manager SHALL remain enabled for the repository root so the root lockfile stays maintained.
+
