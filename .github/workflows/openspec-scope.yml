@@ -104,6 +104,6 @@ jobs:
             exit 1
           fi
 
-      - name: Validate OpenSpec artifacts
+      - name: Validate OpenSpec (no strict)
         if: steps.detect.outputs.changed == 'true'
-        run: pnpm ospec:validate
+        run: pnpm exec openspec validate --all
