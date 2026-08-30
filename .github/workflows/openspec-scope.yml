@@ -47,12 +47,16 @@ jobs:
       - name: Detect OpenSpec-relevant change
         id: detect
         run: |
+          base_ref="${{ github.base_ref }}"
+          head_sha="${{ github.event.pull_request.head.sha }}"
+          git fetch --no-tags origin "+refs/heads/${base_ref}:refs/remotes/origin/${base_ref}"
+          merge_base=$(git merge-base "origin/${base_ref}" "$head_sha")
           changed=false
-          if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" \
+          if git diff --name-only "$merge_base" "$head_sha" \
              | grep -E '^(openspec/config\.yaml|\.opencode/commands/|\.opencode/skills/|openspec/)' >/dev/null; then
             changed=true
           fi
-          if git diff "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" -- package.json \
+          if git diff "$merge_base" "$head_sha" -- package.json \
              | grep -E '^\+[^+]*"@fission-ai/openspec"'; then
             changed=true
           fi
