@@ -24,7 +24,7 @@
     "template:update-lock": "node scripts/update-template-lockfile.mjs"
   },
   "devDependencies": {
-    "@fission-ai/openspec": "~1.4.0",
+    "@fission-ai/openspec": "~1.11.0",
     "yaml": "^2.9.0"
   },
   "pnpm": {
