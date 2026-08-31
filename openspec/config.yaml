@@ -1,113 +1,61 @@
 schema: spec-driven
 
 context: |
-  This repository defines and maintains the `starter-foundation-nx-pnpm` starter.
+  Repository: starter-foundation-nx-pnpm, a neutral renderable foundation for strict multi-language monorepos based on Nx and pnpm.
 
-  The starter provides a neutral, renderable foundation template for strict multi-language monorepos based on Nx and pnpm.
+  Keep two surfaces distinct:
+  - Starter repository: owns the starter source plus canonical OpenSpec specs and active changes under root openspec/. Root change artifacts must never become generated-project content.
+  - Generated project: sources live under template/. Importable baseline specs live under template/openspec/specs/ and become the generated repository's initial SDD baseline. The neutral template must remain independent from concrete variants.
 
-  This repository has two separate concerns:
-
-  1. The starter repository itself:
-     - Uses OpenSpec to define and evolve the starter.
-     - Stores its own canonical specs under `openspec/specs/`.
-     - Stores active changes under `openspec/changes/`.
-     - Must not leak its internal changes into generated projects.
-
-  2. The generated project template:
-     - Lives under `template/`.
-     - Includes importable OpenSpec specs under `template/openspec/specs/`.
-     - Provides the initial canonical SDD baseline for generated repositories.
-     - Must remain neutral and independent from concrete variants.
-
-  Variants:
-  - A variant is a declared adaptation of the neutral starter for a specific usage context.
-  - A variant may use an overlay to add, replace, or refine generated files.
-  - Concrete variants are allowed only when introduced by an approved change.
-  - Approved variant files live outside `template/`, under `variants/<variant-id>/overlay/`.
-  - The approved `mws` variant is a foundation-only overlay for MWS-compatible generated monorepos.
-  - The neutral template remains usable without selecting `mws` or any other variant.
-
-  Terminology:
-  - Use `variant` for the catalog-level option selected by a consumer.
-  - Use `overlay` for the technical file/rule layer applied on top of `template/`.
+  Variant model:
+  - `variant` is the catalog-level adaptation selected by a consumer.
+  - `overlay` is the technical file/rule layer applied on top of template/.
+  - Concrete variant files live under variants/<variant-id>/overlay/, never inside the neutral template.
+  - The approved `mws` variant is a foundation-only overlay; the neutral template must remain usable without it or any other variant.
 
   Technical baseline:
-  - Package manager: pnpm.
-  - Workspace orchestrator: Nx.
-  - SDD provider: OpenSpec.
-  - Primary orchestration language: JavaScript/TypeScript.
-  - Supported implementation languages in generated monorepos: TypeScript, Python, Go, and future approved runtimes.
-  - Generated monorepos must not require every app, service, or package to belong to the JavaScript ecosystem.
+  - Package manager: pnpm; workspace orchestrator: Nx; primary orchestration language: JavaScript/TypeScript.
+  - Generated monorepos may contain TypeScript, Python, Go, and future approved runtimes; do not assume every app, service, or package belongs to the JavaScript ecosystem.
 
-  Repository conventions:
-  - Use English for specs, changes, templates, docs, and metadata.
-  - Use kebab-case for change IDs and capability/spec IDs.
-  - Use the expanded OpenSpec workflow for structural starter changes.
-  - Change size should be proportional to risk and reviewability:
-    small changes are preferred for local refinements,
-    but larger cohesive changes are acceptable when they define a complete contract or foundation.
-  - Keep implementation tasks explicit and verifiable.
-  - Avoid variant-specific assumptions in neutral starter specs.
-
-  Starter boundaries:
-  - The neutral starter may define `starter.yaml`.
-  - The neutral starter may define `template/`.
-  - The neutral starter may define importable specs under `template/openspec/specs/`.
-  - The neutral starter may define validation expectations.
-  - The starter may declare approved concrete variants in `starter.yaml`.
-  - Approved concrete variant files must live outside `template/`.
-  - MWS-specific metadata belongs under `variants/mws/overlay/` and is applied only when the `mws` variant is selected.
-  - The neutral starter must not add API, mobile, web, service, auth, eventing, storage, or infrastructure modules.
+  Repository boundaries:
+  - Use English for specs, changes, templates, docs, and metadata; use kebab-case for change and capability IDs.
+  - The neutral starter may define starter.yaml, template/, importable baseline specs, validation expectations, and declarations of approved variants.
+  - MWS-specific generated files or metadata belong under variants/mws/overlay/ and apply only when the mws variant is selected.
+  - Neutral starter changes must not introduce concrete API, mobile, web, service, auth, eventing, storage, or infrastructure modules.
 
 rules:
   proposal:
-    - Use the canonical proposal sections `## Why`, `## What Changes`, and `## Impact`.
-    - "`## Why` must describe the problem, opportunity, or constraint that motivates the change."
-    - "`## What Changes` must describe the proposed change as concrete bullets."
-    - "`## Impact` must identify affected specs, generated-template files, starter-repository files, tooling, dependencies, and validation behaviour."
-    - "Add `## Out of Scope` when the change deliberately excludes related work."
-    - "Add `## Risks` when the change affects repository layout, generated-project layout, validation, rendering, variants, or future module starters."
-    - "Add `## Open Questions` only when unresolved decisions remain; otherwise omit it."
-    - State whether the change affects the starter repository, the generated template, or both.
-    - Identify whether generated-project files under `template/` are affected.
-    - Do not introduce concrete variants unless the change is explicitly about variants.
+    - State whether the change affects the starter repository, the generated template, or both; identify affected generated-project surfaces or files when relevant.
+    - Keep scope proportional to risk and reviewability; make deliberate exclusions and material risks explicit when they matter.
+    - Target about 25 implementation and validation tasks; if the expected plan exceeds 30, split the change unless it defines one cohesive foundation contract that would become harder to review or validate if divided.
+    - Do not introduce or modify concrete variants unless the change explicitly concerns variants.
     - Use `variant` and `overlay` terminology; do not introduce new `flavour` metadata.
 
   specs:
-    - "Use `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, or `## RENAMED Requirements`."
-    - "Each requirement must use `### Requirement: ...`."
-    - "Each requirement must include at least one `#### Scenario: ...`."
-    - Requirements must describe externally observable behaviour, contracts, constraints, or verifiable outcomes.
-    - "Move implementation details, file-by-file plans, library internals, and execution mechanics to `design.md` or `tasks.md`."
-    - "Use `SHALL` for required system or template behaviour."
-    - "Use `MUST` for hard process constraints, safety boundaries, compatibility guarantees, or prohibitions."
-    - "Use `SHOULD` for preferred behaviour where justified exceptions are allowed."
-    - "Use `MAY` for explicitly optional capabilities."
-    - "Use `SHALL NOT` or `MUST NOT` only for verifiable prohibitions or boundary constraints."
-    - "Avoid negative requirements when they only restate out-of-scope work; place those in `proposal.md` instead."
-    - Distinguish starter-repository requirements from generated-template requirements.
-    - "When referring to generated OpenSpec content, use `template/openspec/`."
-    - "Do not require root `openspec/changes/` from the starter repository to be copied into generated projects."
+    - Use SHALL for required starter/template behaviour and MUST/MUST NOT for hard compatibility, safety, process, or boundary constraints; avoid SHOULD/MAY for normative requirements.
+    - Distinguish starter-repository behaviour from generated-template behaviour when both surfaces are involved.
+    - When referring to generated OpenSpec content, use `template/openspec/`.
+    - Never require root `openspec/changes/` artifacts from the starter repository to be copied into generated projects.
+    - Keep neutral-template requirements free of concrete variant assumptions unless the change explicitly introduces or modifies variants.
 
   design:
-    - "Use these minimum sections: `## Context`, `## Goals / Non-Goals`, `## Decisions`, `## Constraints`, `## Alternatives Considered`, `## Risks / Trade-offs`, and `## Validation Strategy`."
-    - "Include `## Repository Structure` when the change affects the starter repository layout."
-    - "Include `## Template Structure` when the change affects generated files under `template/`."
-    - "Include `## Rendering Model` when the change affects placeholders, variants, overlays, or generated output."
-    - "Include `## Migration Plan` when existing files, metadata, terminology, or specs must be renamed or moved."
-    - "In `## Constraints`, explicitly list constraints agents must not violate."
-    - Design documents should explain how implementation will work, not redefine requirements already captured in specs.
-    - Separate starter-maintenance artifacts from importable generated-template artifacts.
-    - Call out compatibility with future variants, module starters, and multi-language projects when relevant.
-    - Do not add concrete variant assumptions to neutral starter design unless the change explicitly introduces variants.
+    - Keep starter-maintenance artifacts separate from importable generated-template artifacts.
+    - When relevant, address repository structure, template structure, rendering/overlay behaviour, migration implications, and compatibility with future variants, module starters, and multi-language generated projects within the standard design structure.
+    - Make starter/template separation and variant-neutrality constraints explicit when they affect implementation choices.
 
   tasks:
-    - "Use two top-level sections: `## Execution Plan` and `## Validation`."
-    - "Under `## Execution Plan`, group tasks by implementation area."
-    - "Under `## Validation`, include checks that prove specs, design constraints, generated-template files, and tooling expectations are satisfied."
-    - Use checkbox tasks only.
-    - Include a validation task for OpenSpec strict validation.
-    - Include a validation task for unresolved placeholders when template rendering is involved.
-    - Include a validation task to confirm forbidden variant-specific files are not introduced by neutral changes.
-    - Include a validation task to confirm design constraints were respected.
-    - "Include a validation task to confirm terminology consistency, especially `variant` and `overlay`."
+    - Keep the complete implementation and validation plan within 30 checkboxes; target about 25. If the plan exceeds that, revisit the proposal scope before proceeding.
+    - Place broader integration validation in a final numbered `## N. Validation` group; include OpenSpec strict validation there.
+    - Validation tasks must prefer repository-declared, lockfile-resolved tooling when available; external resolution is appropriate only when it is itself under test.
+    - When template rendering is affected, include deterministic verification that generated output is complete and contains no unresolved placeholders.
+    - When the neutral template is affected, verify that no forbidden variant-specific files or assumptions were introduced.
+    - When variants or overlays are affected, verify correct overlay placement and consistent `variant`/`overlay` terminology.
+
+operations:
+  apply:
+    guidance:
+      - Preserve starter-repository/generated-template separation and variant neutrality throughout implementation.
+      - Never copy root openspec/changes/ artifacts into template/ or generated output.
+      - Make variant-specific edits only when the active change explicitly introduces or modifies that variant, and keep variant files under variants/<variant-id>/overlay/.
+      - Use repository-declared, lockfile-resolved tooling when available. Do not use commands that may download or resolve an external tool as a substitute for an installed project tool, unless that resolution mechanism is itself the behavior being tested.
+      - Do not mark a task complete until the verification stated by that task has inspectable local evidence.
