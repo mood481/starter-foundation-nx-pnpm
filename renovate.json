@@ -22,6 +22,7 @@
       "matchUpdateTypes": ["patch", "minor"],
       "automerge": true,
       "automergeType": "pr",
+      "automergeStrategy": "rebase",
       "platformAutomerge": true
     },
     {
