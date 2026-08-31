@@ -1,0 +1,8 @@
+output:
+  path: dist/
+
+placeholders:
+  PROJECT_NAME: Example Foundation
+  PROJECT_SLUG: example-foundation
+  PROJECT_DESCRIPTION: Example generated foundation repository.
+  DEFAULT_PACKAGE_SCOPE: "@example"

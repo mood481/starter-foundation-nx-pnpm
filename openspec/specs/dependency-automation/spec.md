@@ -1,7 +1,7 @@
 # dependency-automation Specification
 
 ## Purpose
-TBD - created by archiving change add-renovate-automerge. Update Purpose after archive.
+The dependency-automation specification defines the starter repository's Renovate scope, OpenSpec update policy, workflow safeguards, and maintenance expectations for the template lockfile.
 ## Requirements
 ### Requirement: Renovate Configuration
 
@@ -201,4 +201,3 @@ The starter SHALL provide a local mechanism to regenerate `template/pnpm-lock.ya
 - **WHEN** `renovate.json` is inspected
 - **THEN** every dependency in `template/package.json` SHALL be disabled from Renovate updates because the entire file is disabled (`enabled: false`)
 - **AND** the npm manager SHALL remain enabled for the repository root so the root lockfile stays maintained.
-

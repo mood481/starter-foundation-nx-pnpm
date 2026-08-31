@@ -8,9 +8,9 @@ This starter defines a neutral, renderable foundation template for monorepos bas
 
 ## Usage
 
-The starter is consumed with the starter-owned renderer. The renderer reads structured YAML or JSON input, copies the neutral `template/`, optionally applies a selected variant overlay, resolves double-underscore placeholders, and fails if unresolved placeholders remain.
+The starter is consumed with the starter-owned renderer. The renderer reads structured YAML or JSON input in file mode, or accepts inline values in CLI mode. It copies the neutral `template/`, optionally applies a selected variant overlay, resolves double-underscore placeholders, and fails if unresolved placeholders remain.
 
-Render with the default input file, `starter.render.yaml`:
+Render with the root default input file, `starter.render.yaml`:
 
 ```bash
 pnpm starter:render
@@ -22,10 +22,25 @@ Render with an explicit input file:
 pnpm starter:render -- --input examples/render-input.neutral.yaml
 ```
 
-Render with an optional variant:
+Render in CLI mode without a render input file:
 
 ```bash
-pnpm starter:render -- --variant example --input ./starter.render.yaml
+pnpm starter:render -- --output ./my-project --set PROJECT_NAME="My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=Generated foundation repository." --set DEFAULT_PACKAGE_SCOPE=@my-project
+```
+
+In CLI mode, `--output` is optional and defaults to `dist/` relative to the current directory. `--set` is repeatable, and values are preserved after the first `=`. When `--input` is present, its `output.path`, `variant`, and `placeholders` are authoritative; concurrent `--variant`, `--output`, and `--set` flags are ignored with a warning.
+
+Render the approved MWS variant with inline values:
+
+```bash
+starter-foundation-render --variant mws --output ../tmp/rendered-mws-example --set PROJECT_ID=example-mws-foundation --set "PROJECT_NAME=Example MWS Foundation" --set PROJECT_SLUG=example-mws-foundation --set "PROJECT_DESCRIPTION=Example MWS-compatible foundation repository." --set DEFAULT_PACKAGE_SCOPE=@example-mws
+```
+
+The same published renderer can be invoked with `npx`:
+
+```bash
+npx @mood481/starter-foundation-nx-pnpm@0.4.0 --input ./render-input.mws.yaml
+npx @mood481/starter-foundation-nx-pnpm@0.4.0 --variant mws --output ./my-project --set PROJECT_ID=my-project --set "PROJECT_NAME=My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project
 ```
 
 The neutral input shape is:
@@ -52,6 +67,7 @@ The renderer derives starter and runtime placeholders such as `STARTER_ID`, `STA
 ├── template/          # Importable generated-project baseline
 ├── docs/              # Starter-maintenance documentation
 ├── starter.yaml       # Starter contract metadata
+├── starter.render.yaml # Default neutral render input
 ├── renovate.json      # Renovate dependency automation config
 ├── README.md          # This file
 ├── VALIDATION.md      # Validation instructions
@@ -99,7 +115,7 @@ The approved `mws` variant adds MWS foundation metadata, generated-project MWS d
 Render the MWS variant with the generic starter renderer:
 
 ```bash
-pnpm starter:render -- --variant mws --input examples/render-input.mws.yaml
+pnpm starter:render -- --input examples/render-input.mws.yaml
 ```
 
 The MWS render input provides `PROJECT_ID` and the base project placeholders through structured YAML. The renderer applies `variants/mws/overlay/` before placeholder rendering.
@@ -151,7 +167,7 @@ validation
 
 Overlay files may add or replace generated files according to deterministic renderer semantics. Validation must prove the effective rendered output is complete and contains no unresolved placeholders.
 
-Variant selection is an input to `pnpm starter:render`; variants do not require variant-specific renderers. A variant may be selected with `--variant <id>` or by declaring `variant: <id>` in the render input file. If both are provided, they must match.
+Variant selection is an input to `pnpm starter:render`; variants do not require variant-specific renderers. A variant may be selected with `--variant <id>` or by declaring `variant: <id>` in the render input file. If `--input` is present, the file variant is authoritative and a concurrent CLI variant is ignored with a warning.
 
 ### Validation Contract
 
@@ -171,6 +187,23 @@ An overlay-provided `openspec/config.yaml` must preserve these base guarantees:
 - Pass rendered-template and variant validation.
 
 Variants may add stricter rules but must not weaken the base validation and safety guarantees.
+
+### Local OpenSpec Commands
+
+OpenSpec is installed locally in this starter. Use the package scripts for normal validation:
+
+```bash
+pnpm validate:spec
+pnpm ospec:validate
+```
+
+To validate only the active change, use the local passthrough script:
+
+```bash
+pnpm ospec validate "add-starter-foundation-render-cli-and-npx" --strict
+```
+
+Do not use `npx openspec`; the `npx` commands above are only for the published renderer package.
 
 ## Dependency Automation
 

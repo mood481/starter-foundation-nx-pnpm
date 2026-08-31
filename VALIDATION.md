@@ -22,11 +22,15 @@ Validate all OpenSpec artifacts:
 pnpm validate:spec
 ```
 
+`pnpm validate:spec` calls the local `ospec:validate` package script, which already enables `--all --strict`. Do not append another `--strict` or use `npx openspec`.
+
 Validate the current change in strict mode:
 
 ```bash
-pnpm ospec validate <change-id> --strict
+pnpm ospec validate "add-starter-foundation-render-cli-and-npx" --strict
 ```
+
+If a direct executable invocation is required, use `pnpm exec openspec` so OpenSpec is resolved from local `node_modules`.
 
 ### Constraint Validation
 
@@ -38,7 +42,7 @@ Confirm the following after implementation:
 - Root `openspec/changes/` is not copied into `template/` or generated outputs.
 - Neutral generated-project OpenSpec content only uses `template/openspec/`; variant-specific generated OpenSpec content lives in approved overlays.
 - All references use `variant` and `overlay` terminology.
-- No `flavour` metadata remains.
+- No alternate variant metadata remains.
 
 ### Variant/Overlay Contract Validation
 
@@ -96,7 +100,7 @@ This intentionally injects an unresolved placeholder after the validation render
 
 ## Starter Rendering
 
-Render a project from the starter with the default `starter.render.yaml` input file:
+Render a project from the starter with the root default `starter.render.yaml` input file:
 
 ```bash
 pnpm starter:render
@@ -108,10 +112,10 @@ Render with an explicit YAML or JSON input file:
 pnpm starter:render -- --input examples/render-input.neutral.yaml
 ```
 
-Render with a selected variant:
+Render a selected variant in file mode by declaring it in the input file:
 
 ```bash
-pnpm starter:render -- --variant <variant-id> --input ./starter.render.yaml
+pnpm starter:render -- --input examples/render-input.mws.yaml
 ```
 
 Render inputs declare `output.path` and `placeholders`. Placeholder keys omit double-underscore delimiters:
@@ -127,7 +131,28 @@ placeholders:
   DEFAULT_PACKAGE_SCOPE: "@my-project"
 ```
 
-If an input file declares `variant:` and `--variant` is also provided, both values must match. Unknown variants, missing required placeholders, non-empty output directories, and unresolved placeholders fail rendering.
+If `--input` is present, the input file's `output.path`, `variant`, and `placeholders` are authoritative. Concurrent `--variant`, `--output`, and `--set` flags are ignored with a warning. Unknown variants, missing required placeholders, non-empty output directories, and unresolved placeholders fail rendering.
+
+Render in CLI mode without a YAML or JSON render input file:
+
+```bash
+pnpm starter:render -- --variant mws --output ../tmp/rendered-mws-example --set PROJECT_ID=example-mws-foundation --set "PROJECT_NAME=Example MWS Foundation" --set PROJECT_SLUG=example-mws-foundation --set "PROJECT_DESCRIPTION=Example MWS-compatible foundation repository." --set DEFAULT_PACKAGE_SCOPE=@example-mws
+```
+
+In CLI mode, `--output` defaults to `dist/` relative to the current directory. `--set` is repeatable and preserves values after the first `=`. The same published binary can be checked with:
+
+Install the packed renderer without development dependencies, then invoke its local `npx` binary:
+
+```bash
+PACKAGE_DIR=$(mktemp -d)
+CONSUMER_DIR=$(mktemp -d)
+ARCHIVE=$(npm pack --pack-destination "$PACKAGE_DIR" --silent)
+npm install --ignore-scripts --omit=dev --prefix "$CONSUMER_DIR" "$PACKAGE_DIR/$ARCHIVE"
+npx --prefix "$CONSUMER_DIR" --no-install starter-foundation-render --help
+npx --prefix "$CONSUMER_DIR" --no-install starter-foundation-render --variant mws --output /tmp/npx-mws-render --set PROJECT_ID=npx-test --set "PROJECT_NAME=Npx Test" --set PROJECT_SLUG=npx-test --set "PROJECT_DESCRIPTION=Npx via local package" --set DEFAULT_PACKAGE_SCOPE=@npx-test
+```
+
+These `npx` commands validate the published renderer package. OpenSpec itself remains local and is invoked through the `pnpm` commands above.
 
 ## Variant Validation
 

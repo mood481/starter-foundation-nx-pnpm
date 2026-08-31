@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format follows the change IDs tracked through OpenSpec. Each entry corresponds to an archived OpenSpec change.
 
+## 0.4.0
+
+### add-starter-foundation-render-cli-and-npx
+
+Add inline CLI rendering with `--output` and repeatable `--set` assignments, publish the renderer through the `starter-foundation-render` binary and `npx`, and make file-mode input authoritative when concurrent CLI flags are supplied.
+
 ## 0.3.0
 
 ### fix-renovate-scope

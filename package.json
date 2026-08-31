@@ -1,7 +1,7 @@
 {
-  "name": "starter-foundation-nx-pnpm",
-  "version": "0.3.0",
-  "private": true,
+  "name": "@mood481/starter-foundation-nx-pnpm",
+  "version": "0.4.0",
+  "private": false,
   "description": "Neutral foundation starter for strict Nx + pnpm multi-language monorepos.",
   "type": "module",
   "packageManager": "pnpm@10.0.0",
@@ -23,9 +23,30 @@
     "validate": "pnpm validate:spec && pnpm validate:template",
     "template:update-lock": "node scripts/update-template-lockfile.mjs"
   },
-  "devDependencies": {
-    "@fission-ai/openspec": "~1.11.0",
+  "bin": {
+    "starter-foundation-render": "tools/scripts/render-template.mjs"
+  },
+  "files": [
+    "tools/scripts/render-template.mjs",
+    "tools/scripts/validate-template-render.mjs",
+    "starter.yaml",
+    "starter.render.yaml",
+    "template/**",
+    "template/.gitignore",
+    "template/.npmrc",
+    "variants/**/overlay/**",
+    "README.md",
+    "VALIDATION.md",
+    "package.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
     "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@fission-ai/openspec": "~1.11.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -1,42 +1,76 @@
-import { cp, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import { dirname, extname, join, relative, resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+#!/usr/bin/env node
+
+import { cp, mkdir, readFile, readdir, rename, stat, writeFile } from 'node:fs/promises';
+import { existsSync, realpathSync } from 'node:fs';
+import { basename, dirname, extname, join, relative, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, '../..');
 const placeholderPattern = /__[A-Z0-9_]+__/g;
 const ignoredDirectories = new Set(['.git', 'node_modules', 'dist', 'build']);
+const defaultCliOutputPath = 'dist';
 
 export async function renderTemplate(options = {}) {
   const args = options.args ?? [];
   const parsedArgs = parseArgs(args);
-  const inputPath = resolve(options.cwd ?? process.cwd(), options.inputPath ?? parsedArgs.input ?? 'starter.render.yaml');
-  const input = await readStructuredFile(inputPath);
+  const cwd = resolve(options.cwd ?? process.cwd());
+  const hasInput = options.inputPath !== undefined || parsedArgs.input !== undefined;
+  const hasInlineArgs = parsedArgs.variant !== undefined
+    || parsedArgs.output !== undefined
+    || (parsedArgs.sets?.length ?? 0) > 0;
+  const fileMode = hasInput || !hasInlineArgs;
   const starter = await readStructuredFile(join(repoRoot, 'starter.yaml'));
   const rootPackage = JSON.parse(await readFile(join(repoRoot, 'package.json'), 'utf8'));
-  const variant = resolveVariant(input.variant, options.variant ?? parsedArgs.variant);
-  const outputPath = options.outputPathOverride
-    ? resolve(options.outputPathOverride)
-    : resolveOutputPath(inputPath, input);
+  let input;
+  let inputPath;
+  let variant;
+  let outputPath;
+
+  if (fileMode) {
+    inputPath = resolve(cwd, options.inputPath ?? parsedArgs.input ?? 'starter.render.yaml');
+    input = await readStructuredFile(inputPath);
+    if (hasInput && hasInlineArgs) {
+      console.warn('Ignored --variant/--output/--set because --input is present.');
+    }
+    validateInput(input);
+    variant = input.variant;
+    outputPath = options.outputPathOverride !== undefined
+      ? resolve(cwd, options.outputPathOverride)
+      : resolveOutputPath(inputPath, input);
+  } else {
+    const cliPlaceholders = parseSetArgs(parsedArgs.sets ?? []);
+    input = {
+      output: { path: parsedArgs.output ?? defaultCliOutputPath },
+      placeholders: Object.fromEntries(cliPlaceholders),
+    };
+    variant = options.variant ?? parsedArgs.variant;
+    outputPath = options.outputPathOverride !== undefined
+      ? resolve(cwd, options.outputPathOverride)
+      : resolve(cwd, parsedArgs.output ?? defaultCliOutputPath);
+  }
 
   validateStarter(starter);
-  validateInput(input);
   validateOutputPath(outputPath);
   const selectedVariant = validateVariant(starter, variant);
   const placeholders = buildPlaceholderMap({ input, rootPackage, selectedVariant, starter });
 
   await ensureOutputWritable(outputPath);
-  await cp(resolve(repoRoot, starter.template.path), outputPath, { recursive: true });
+  await cp(resolve(repoRoot, starter.template.path), outputPath, {
+    recursive: true,
+    filter: shouldCopyPath,
+  });
 
   if (selectedVariant?.overlay?.path) {
     await cp(resolve(repoRoot, selectedVariant.overlay.path), outputPath, {
       force: true,
+      filter: shouldCopyPath,
       recursive: true,
     });
   }
 
+  await normalizeIgnoreFile(outputPath);
   await renderDirectory(outputPath, placeholders);
   const unresolved = await findUnresolvedPlaceholders(outputPath);
   if (unresolved.length > 0) {
@@ -68,6 +102,20 @@ export function parseArgs(args) {
       continue;
     }
 
+    if (arg === '--output') {
+      parsed.output = readOptionValue(args, index, arg);
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--set') {
+      const value = readOptionValue(args, index, arg);
+      parsed.sets ??= [];
+      parsed.sets.push(value);
+      index += 1;
+      continue;
+    }
+
     if (arg === '--help' || arg === '-h') {
       parsed.help = true;
       continue;
@@ -77,6 +125,27 @@ export function parseArgs(args) {
   }
 
   return parsed;
+}
+
+export function parseSetArgs(sets = []) {
+  const values = new Map();
+
+  for (const entry of sets) {
+    const equalsIndex = entry.indexOf('=');
+    const key = equalsIndex >= 0 ? entry.slice(0, equalsIndex).trim() : '';
+    if (
+      equalsIndex < 0
+      || !key
+      || !/^[A-Z0-9_]+$/.test(key)
+      || key.includes('__')
+    ) {
+      throw new Error(`Malformed --set: ${entry}`);
+    }
+
+    values.set(key, entry.slice(equalsIndex + 1));
+  }
+
+  return values;
 }
 
 export async function findUnresolvedPlaceholders(directory) {
@@ -178,13 +247,6 @@ function validateOutputPath(outputPath) {
   }
 }
 
-function resolveVariant(inputVariant, cliVariant) {
-  if (inputVariant && cliVariant && inputVariant !== cliVariant) {
-    throw new Error(`Variant conflict: input declares '${inputVariant}' but CLI declares '${cliVariant}'.`);
-  }
-  return cliVariant || inputVariant || undefined;
-}
-
 function validateVariant(starter, variant) {
   if (!variant) {
     return undefined;
@@ -281,6 +343,18 @@ async function renderDirectory(directory, replacements) {
   }
 }
 
+function shouldCopyPath(sourcePath) {
+  return !ignoredDirectories.has(basename(sourcePath));
+}
+
+async function normalizeIgnoreFile(directory) {
+  const npmIgnorePath = join(directory, '.npmignore');
+  const gitIgnorePath = join(directory, '.gitignore');
+  if (existsSync(npmIgnorePath) && !existsSync(gitIgnorePath)) {
+    await rename(npmIgnorePath, gitIgnorePath);
+  }
+}
+
 async function* walkFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
 
@@ -302,7 +376,33 @@ async function* walkFiles(directory) {
 }
 
 function printHelp() {
-  console.log(`Usage: pnpm starter:render -- [--input <path>] [--variant <id>]\n\nOptions:\n  --input <path>    YAML or JSON render input. Defaults to starter.render.yaml.\n  --variant <id>    Optional variant override. Must match input variant when both are set.`);
+  console.log(`Usage: starter-foundation-render [options]
+
+Local invocation:
+  pnpm starter:render -- [options]
+
+Published invocation:
+  npx @mood481/starter-foundation-nx-pnpm@0.4.0 [options]
+
+Modes:
+  File mode: provide --input <filepath>. The input file supplies output.path,
+             variant, and placeholders. Concurrent --variant, --output, and
+             --set flags are ignored with a warning.
+  CLI mode: omit --input. Use --variant and repeatable --set; --output is
+            optional and defaults to dist/ relative to the current directory.
+
+Options:
+  --input <filepath>  YAML or JSON render input for file mode.
+  --variant <name>    Declared variant to apply in CLI mode.
+  --output <path>     Generated project destination in CLI mode.
+  --set <KEY=VALUE>   Placeholder assignment; repeatable.
+  --help, -h          Print this help without writing files.
+
+Examples:
+  starter-foundation-render --input ./render-input.mws.yaml
+  starter-foundation-render --variant mws --output ./my-project --set PROJECT_ID=my-project --set "PROJECT_NAME=My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project
+  npx @mood481/starter-foundation-nx-pnpm@0.4.0 --input ./render-input.mws.yaml
+  npx @mood481/starter-foundation-nx-pnpm@0.4.0 --variant mws --output ./my-project --set PROJECT_ID=my-project --set "PROJECT_NAME=My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project`);
 }
 
 async function main() {
@@ -316,7 +416,9 @@ async function main() {
   console.log(`Rendered starter template: ${result.outputPath}`);
 }
 
-const isMain = import.meta.url === pathToFileURL(process.argv[1]).href;
+const isMain = process.argv[1] !== undefined
+  && existsSync(process.argv[1])
+  && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
 
 if (isMain) {
   main().catch((error) => {
