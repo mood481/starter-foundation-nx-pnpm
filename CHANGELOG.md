@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 
 The format follows the change IDs tracked through OpenSpec. Each entry corresponds to an archived OpenSpec change.
 
+## 0.5.0
+
+### decouple-sdd-and-add-extension-contract
+
+BREAKING: Neutral generated projects no longer receive implicit OpenSpec files,
+dependencies, scripts, or validation. Add an optional extension selection to
+render input or use `--extensions <name1,name2>`; extension resolution is
+source-agnostic and no concrete extension is bundled. The root starter keeps
+its OpenSpec maintenance workflow, and the existing MWS variant continues to
+provide its own OpenSpec overlay.
+
 ## 0.4.0
 
 ### add-starter-foundation-render-cli-and-npx

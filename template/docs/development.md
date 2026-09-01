@@ -54,6 +54,10 @@ Builds all projects. Builds respect dependency order through Nx.
 3. Include required tags: `type:*` and `lang:*`.
 4. Add required targets: `lint` and `test`.
 
+The foundation does not prescribe an SDD provider or other capability. Add
+capability-specific files and commands only through the approved integration
+that owns them.
+
 Example `project.json`:
 
 ```json

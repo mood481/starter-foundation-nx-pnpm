@@ -5,7 +5,7 @@ context: |
 
   Keep two surfaces distinct:
   - Starter repository: owns the starter source plus canonical OpenSpec specs and active changes under root openspec/. Root change artifacts must never become generated-project content.
-  - Generated project: sources live under template/. Importable baseline specs live under template/openspec/specs/ and become the generated repository's initial SDD baseline. The neutral template must remain independent from concrete variants.
+  - Generated project: sources live under template/ as the neutral Nx + pnpm baseline. Generated SDD content is opt-in and must come from an explicitly selected variant overlay or extension artifact. The neutral template must remain independent from concrete variants and extensions.
 
   Variant model:
   - `variant` is the catalog-level adaptation selected by a consumer.
@@ -19,7 +19,7 @@ context: |
 
   Repository boundaries:
   - Use English for specs, changes, templates, docs, and metadata; use kebab-case for change and capability IDs.
-  - The neutral starter may define starter.yaml, template/, importable baseline specs, validation expectations, and declarations of approved variants.
+  - The neutral starter may define starter.yaml, template/, validation expectations, and declarations of approved variants and optional extensions. External extension artifacts do not need a repository-local directory.
   - MWS-specific generated files or metadata belong under variants/mws/overlay/ and apply only when the mws variant is selected.
   - Neutral starter changes must not introduce concrete API, mobile, web, service, auth, eventing, storage, or infrastructure modules.
 
@@ -34,7 +34,7 @@ rules:
   specs:
     - Use SHALL for required starter/template behaviour and MUST/MUST NOT for hard compatibility, safety, process, or boundary constraints; avoid SHOULD/MAY for normative requirements.
     - Distinguish starter-repository behaviour from generated-template behaviour when both surfaces are involved.
-    - When referring to generated OpenSpec content, use `template/openspec/`.
+     - When referring to generated SDD content, identify the selected variant or extension that owns it; do not describe it as part of the neutral template baseline.
     - Never require root `openspec/changes/` artifacts from the starter repository to be copied into generated projects.
     - Keep neutral-template requirements free of concrete variant assumptions unless the change explicitly introduces or modifies variants.
 

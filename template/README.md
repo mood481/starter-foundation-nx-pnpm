@@ -22,8 +22,7 @@ pnpm validate
 ├── services/          # Backend services, APIs, workers
 ├── packages/          # Shared libraries and reusable packages
 ├── tools/             # Scripts, generators, automation
-├── docs/              # Project documentation
-└── openspec/          # SDD specs and changes
+└── docs/              # Project documentation
 ```
 
 ## Commands
@@ -35,8 +34,7 @@ pnpm validate
 | `pnpm test`       | Run tests across all projects        |
 | `pnpm build`      | Build all projects                   |
 | `pnpm validate`   | Run full validation suite            |
-| `pnpm ospec`      | Run local OpenSpec CLI               |
-| `pnpm validate:spec` | Validate OpenSpec specs and changes |
+| `pnpm nx graph`   | Generate the workspace project graph |
 
 ## Adding a Project
 
@@ -45,11 +43,12 @@ Each project should include a `project.json` for Nx registration with at least:
 - A `type:*` tag (e.g., `type:app`, `type:service`, `type:lib`)
 - A `lang:*` tag (e.g., `lang:typescript`, `lang:python`, `lang:go`)
 
-## SDD
+## Optional Capabilities
 
-This project uses [OpenSpec](https://openspec.dev) for spec-driven development.
+This foundation is SDD-neutral. It does not install or select a concrete
+specification workflow by default. Consumers may add an approved SDD or other
+capability through the starter's variant or extension contract.
 
-- Specs live under `openspec/specs/`
-- Changes live under `openspec/changes/`
-- Archived changes live under `openspec/archive/`
-- Configuration lives at `openspec/config.yaml`
+The generated project contains only the Nx and pnpm workspace baseline. Any
+capability-specific files and commands must be attributable to the selected
+variant or extension that provided them.

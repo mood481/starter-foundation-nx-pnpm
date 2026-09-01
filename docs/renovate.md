@@ -1,6 +1,8 @@
 # Renovate for the Starter Repository
 
-This starter repository automates dependency updates for `@fission-ai/openspec` with [Renovate](https://docs.renovatebot.com/). Renovate runs as an external service; it is not an npm dependency.
+This starter repository automates root starter-maintenance dependency updates,
+including `@fission-ai/openspec`, with [Renovate](https://docs.renovatebot.com/).
+Renovate runs as an external service; it is not an npm dependency.
 
 ## What the Configuration Does
 
@@ -59,11 +61,11 @@ Renovate's default behaviour is to manage every dependency it detects across all
 - `npm` reads dependencies from `package.json` files (root and `template/package.json`), including the `packageManager` field pin (the pnpm version). It does not matter that the project installs with pnpm — dependency extraction from a `package.json` is always the npm manager's job.
 - `github-actions` (which scans workflow `uses:` such as `actions/checkout`) and `nvm` (which scans `.nvmrc` files such as `template/.nvmrc`) are **disabled**, so Renovate never opens PRs for workflow actions or Node version pins.
 
-**Template scope (`packageRules`).** Inside `template/package.json` the starter declares eslint, nx, prettier, typescript, and OpenSpec. None of these are managed by Renovate: a single file-level package rule disables `template/package.json` entirely (`matchFileNames: ["template/package.json"], enabled: false`). The template is intentionally consumer-owned and is kept in sync locally by the maintainer, not by Renovate.
+**Template scope (`packageRules`).** Inside `template/package.json` the starter declares only neutral workspace dependencies. None of these are managed by Renovate: a single file-level package rule disables `template/package.json` entirely (`matchFileNames: ["template/package.json"], enabled: false`). The template is intentionally consumer-owned and is kept in sync locally by the maintainer, not by Renovate.
 
 The root `package.json` is untouched by that rule, so all of its dependencies remain eligible for updates (manual pull requests by default; only OpenSpec automerges).
 
-**Template lockfile maintenance (local).** Because `template/package.json` uses placeholders (`__PNPM_VERSION__`, `__NODE_VERSION__`, `__PROJECT_SLUG__`, `__PROJECT_DESCRIPTION__`) that prevent `pnpm install` from running directly, Renovate cannot regenerate `template/pnpm-lock.yaml`. The maintainer regenerates it locally with `pnpm template:update-lock` (see `scripts/update-template-lockfile.mjs`), which substitutes the placeholders from the root `package.json`, runs `pnpm install --ignore-scripts` inside `template/`, and restores the placeholder `package.json`. Running Renovate against the template via a Docker image (with the placeholders pre-resolved) is a possible future alternative, but it is not required.
+**Template lockfile maintenance (local).** Because `template/package.json` uses placeholders (`__PNPM_VERSION__`, `__NODE_VERSION__`, `__PROJECT_SLUG__`, `__PROJECT_DESCRIPTION__`) that prevent `pnpm install` from running directly, Renovate cannot regenerate `template/pnpm-lock.yaml`. The maintainer regenerates it locally with `pnpm template:update-lock` (see `tools/scripts/update-template-lockfile.mjs`), which substitutes the placeholders from the root `package.json`, runs `pnpm install --ignore-scripts` inside `template/`, and restores the placeholder `package.json`. Running Renovate against the template via a Docker image (with the placeholders pre-resolved) is a possible future alternative, but it is not required.
 
 ## Dependency Dashboard Is Disabled
 
@@ -75,9 +77,10 @@ A Renovate branch carries the latest OpenSpec version, so the OpenSpec-scope wor
 
 ## Template Config Is Not Synchronized
 
-OpenSpec dependency updates do **not** modify `template/openspec/config.yaml`. That file is user-owned starter content, and `openspec update` only regenerates assistant tooling files.
-
-On every OpenSpec update, review the OpenSpec release notes and consider whether the generated-template config (and its MWS variant overlay counterpart) needs new or refined rules. Template config improvements are handled as a separate OpenSpec change in this repository; the generated projects' own configs are always consumer-owned.
+Root OpenSpec dependency updates affect starter-maintenance tooling only. They do
+not add OpenSpec to the neutral `template/`. Optional generated SDD integrations
+are supplied by their selected variant overlay or extension and must be reviewed
+through their own changes rather than by modifying the neutral template.
 
 ## Validating the Renovate Configuration
 

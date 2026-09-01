@@ -1,6 +1,6 @@
 {
   "name": "@mood481/starter-foundation-nx-pnpm",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": false,
   "description": "Neutral foundation starter for strict Nx + pnpm multi-language monorepos.",
   "type": "module",
@@ -21,13 +21,17 @@
     "validate:template": "node tools/scripts/validate-template-render.mjs",
     "validate:spec": "pnpm ospec:validate",
     "validate": "pnpm validate:spec && pnpm validate:template",
-    "template:update-lock": "node scripts/update-template-lockfile.mjs"
+    "template:update-lock": "node tools/scripts/update-template-lockfile.mjs"
   },
   "bin": {
     "starter-foundation-render": "tools/scripts/render-template.mjs"
   },
   "files": [
     "tools/scripts/render-template.mjs",
+    "tools/scripts/extension-contract.mjs",
+    "tools/scripts/extension-utils.mjs",
+    "tools/scripts/extension-resolver.mjs",
+    "tools/scripts/extension-composer.mjs",
     "tools/scripts/validate-template-render.mjs",
     "starter.yaml",
     "starter.render.yaml",

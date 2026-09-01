@@ -61,3 +61,7 @@ pnpm nx graph
 ## Multi-Language Support
 
 The workspace supports TypeScript, Python, Go, and future approved runtimes. Non-JavaScript projects use command-based Nx targets.
+
+The foundation is intentionally independent from any specific SDD provider.
+Optional development workflows are selected separately and must not be assumed
+by the base workspace.

@@ -273,7 +273,7 @@ docs/renovate.md
 examples/render-input.neutral.yaml
 examples/render-input.mws.yaml
 starter.render.yaml
-scripts/update-template-lockfile.mjs # used to regenerate the neutral template lockfile
+tools/scripts/update-template-lockfile.mjs # used to regenerate the neutral template lockfile
 ```
 
 ### Removed or changed generated-template paths

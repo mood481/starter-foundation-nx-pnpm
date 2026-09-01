@@ -183,7 +183,7 @@ The starter SHALL provide a local mechanism to regenerate `template/pnpm-lock.ya
 
 #### Scenario: Template lockfile updates with OpenSpec
 
-- **WHEN** a maintainer changes `@fission-ai/openspec` (or any dependency) in `template/package.json` and runs the template lockfile update script (for example `pnpm template:update-lock` or `node scripts/update-template-lockfile.mjs`)
+- **WHEN** a maintainer changes `@fission-ai/openspec` (or any dependency) in `template/package.json` and runs the template lockfile update script (for example `pnpm template:update-lock` or `node tools/scripts/update-template-lockfile.mjs`)
 - **THEN** it SHALL substitute the template placeholders (`__PNPM_VERSION__`, `__NODE_VERSION__`, `__PROJECT_SLUG__`, `__PROJECT_DESCRIPTION__`) in `template/package.json` with concrete values derived from the root `package.json`
 - **AND** it SHALL run `pnpm install --ignore-scripts` in `template/` to regenerate `template/pnpm-lock.yaml`
 - **AND** it SHALL restore the placeholder `template/package.json`

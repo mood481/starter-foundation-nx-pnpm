@@ -5,6 +5,15 @@ import { existsSync, realpathSync } from 'node:fs';
 import { basename, dirname, extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
+import {
+  createExtensionResolver,
+  listRelativeFiles,
+  normalizeExtensionNames,
+  preflightExtensionComposition,
+  resolveExtensions,
+  runExtensionValidations,
+  validateStarterExtensionDeclarations,
+} from './extension-contract.mjs';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, '../..');
@@ -18,6 +27,7 @@ export async function renderTemplate(options = {}) {
   const cwd = resolve(options.cwd ?? process.cwd());
   const hasInput = options.inputPath !== undefined || parsedArgs.input !== undefined;
   const hasInlineArgs = parsedArgs.variant !== undefined
+    || parsedArgs.extensions !== undefined
     || parsedArgs.output !== undefined
     || (parsedArgs.sets?.length ?? 0) > 0;
   const fileMode = hasInput || !hasInlineArgs;
@@ -26,16 +36,18 @@ export async function renderTemplate(options = {}) {
   let input;
   let inputPath;
   let variant;
+  let extensionNames;
   let outputPath;
 
   if (fileMode) {
     inputPath = resolve(cwd, options.inputPath ?? parsedArgs.input ?? 'starter.render.yaml');
     input = await readStructuredFile(inputPath);
     if (hasInput && hasInlineArgs) {
-      console.warn('Ignored --variant/--output/--set because --input is present.');
+      console.warn('Ignored --variant/--extensions/--output/--set because --input is present.');
     }
     validateInput(input);
     variant = input.variant;
+    extensionNames = input.extensions;
     outputPath = options.outputPathOverride !== undefined
       ? resolve(cwd, options.outputPathOverride)
       : resolveOutputPath(inputPath, input);
@@ -44,40 +56,92 @@ export async function renderTemplate(options = {}) {
     input = {
       output: { path: parsedArgs.output ?? defaultCliOutputPath },
       placeholders: Object.fromEntries(cliPlaceholders),
+      extensions: normalizeExtensionNames(parsedArgs.extensions),
     };
     variant = options.variant ?? parsedArgs.variant;
+    extensionNames = input.extensions;
     outputPath = options.outputPathOverride !== undefined
       ? resolve(cwd, options.outputPathOverride)
       : resolve(cwd, parsedArgs.output ?? defaultCliOutputPath);
   }
 
   validateStarter(starter);
+  await recordStep(options, 'load-starter-and-input');
   validateOutputPath(outputPath);
+  await recordStep(options, 'validate-output');
   const selectedVariant = validateVariant(starter, variant);
+  await recordStep(options, 'resolve-variant');
+  const extensionResolver = options.extensionResolver
+    ?? (options.extensionProviders ? createExtensionResolver({ providers: options.extensionProviders }) : undefined);
+  const extensions = await resolveExtensions({
+    names: extensionNames,
+    starter,
+    variant,
+    resolver: extensionResolver,
+    repoRoot,
+  });
+  await recordStep(options, 'resolve-extensions');
+
+  const templateRoot = resolve(repoRoot, starter.template.path);
+  const variantOverlayRoot = selectedVariant?.overlay?.path
+    ? resolve(repoRoot, selectedVariant.overlay.path)
+    : undefined;
+  const templateFiles = await listRelativeFiles(templateRoot);
+  const variantFiles = variantOverlayRoot ? await listRelativeFiles(variantOverlayRoot) : [];
+  const templatePackage = JSON.parse(await readFile(join(templateRoot, 'package.json'), 'utf8'));
+  const composition = await preflightExtensionComposition({
+    extensions,
+    starter,
+    templateRoot,
+    variantOverlayRoot,
+    templateFiles,
+    variantFiles,
+    packageJson: templatePackage,
+  });
+  await recordStep(options, 'preflight-extensions');
   const placeholders = buildPlaceholderMap({ input, rootPackage, selectedVariant, starter });
 
   await ensureOutputWritable(outputPath);
-  await cp(resolve(repoRoot, starter.template.path), outputPath, {
+  await recordStep(options, 'copy-neutral-template');
+  await cp(templateRoot, outputPath, {
     recursive: true,
     filter: shouldCopyPath,
   });
 
   if (selectedVariant?.overlay?.path) {
-    await cp(resolve(repoRoot, selectedVariant.overlay.path), outputPath, {
+    await cp(variantOverlayRoot, outputPath, {
       force: true,
       filter: shouldCopyPath,
       recursive: true,
     });
   }
+  await recordStep(options, 'apply-variant-overlay');
+
+  await applyExtensionFiles(outputPath, composition.contributions);
+  await recordStep(options, 'apply-extension-files');
+  await writePackageJsonMutations(outputPath, composition.packageJson);
+  await recordStep(options, 'apply-package-json-mutations');
 
   await normalizeIgnoreFile(outputPath);
   await renderDirectory(outputPath, placeholders);
+  await recordStep(options, 'resolve-placeholders');
   const unresolved = await findUnresolvedPlaceholders(outputPath);
   if (unresolved.length > 0) {
     throw new Error(formatUnresolvedPlaceholders(unresolved));
   }
+  if (extensions.length > 0) {
+    await runExtensionValidations(extensions, outputPath);
+  }
+  if (!selectedVariant && extensions.length === 0) {
+    await validateNeutralOutput(outputPath);
+  }
+  await recordStep(options, 'validate-rendered-output');
 
-  return { outputPath, variant: variant ?? null };
+  return {
+    outputPath,
+    variant: variant ?? null,
+    extensions: extensions.map(({ manifest }) => manifest.id),
+  };
 }
 
 export function parseArgs(args) {
@@ -98,6 +162,12 @@ export function parseArgs(args) {
 
     if (arg === '--variant') {
       parsed.variant = readOptionValue(args, index, arg);
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--extensions') {
+      parsed.extensions = readOptionValue(args, index, arg);
       index += 1;
       continue;
     }
@@ -215,6 +285,14 @@ function validateStarter(starter) {
   if (!Array.isArray(placeholders?.required)) {
     throw new Error('starter.yaml must declare template.placeholders.required.');
   }
+
+  validateStarterExtensionDeclarations(starter);
+  if (starter.extensionGroups !== undefined
+    && (starter.extensionGroups === null
+      || typeof starter.extensionGroups !== 'object'
+      || Array.isArray(starter.extensionGroups))) {
+    throw new Error('starter.yaml extensionGroups must be a map.');
+  }
 }
 
 function validateInput(input) {
@@ -233,6 +311,8 @@ function validateInput(input) {
   if (!input.placeholders || typeof input.placeholders !== 'object' || Array.isArray(input.placeholders)) {
     throw new Error('Render input must declare placeholders as an object.');
   }
+
+  input.extensions = normalizeExtensionNames(input.extensions);
 
   for (const key of Object.keys(input.placeholders)) {
     if (key.startsWith('__') || key.endsWith('__')) {
@@ -355,8 +435,70 @@ async function normalizeIgnoreFile(directory) {
   }
 }
 
-async function* walkFiles(directory) {
+async function applyExtensionFiles(outputPath, contributions) {
+  for (const contribution of contributions) {
+    const targetPath = join(outputPath, contribution.targetPath);
+    await mkdir(dirname(targetPath), { recursive: true });
+    const content = contribution.content ?? await readFile(contribution.sourcePath);
+    await writeFile(targetPath, content, { encoding: 'utf8', flag: 'wx' });
+  }
+}
+
+async function writePackageJsonMutations(outputPath, packageJson) {
+  await writeFile(join(outputPath, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`, 'utf8');
+}
+
+export async function validateNeutralOutput(directory) {
+  await validateNeutralDirectories(directory);
+  for await (const filePath of walkFiles(directory)) {
+    const pathParts = relative(directory, filePath).split(/[\\/]/);
+    if (pathParts.some((part) => part.toLowerCase() === 'openspec')) {
+      throw new Error(`Neutral output contains forbidden OpenSpec path: ${relative(directory, filePath)}`);
+    }
+  }
+
+  const packageJson = JSON.parse(await readFile(join(directory, 'package.json'), 'utf8'));
+  const dependencies = {
+    ...packageJson.dependencies,
+    ...packageJson.devDependencies,
+    ...packageJson.optionalDependencies,
+  };
+  const forbiddenDependency = Object.keys(dependencies).find((name) => name.toLowerCase().includes('openspec'));
+  if (forbiddenDependency) {
+    throw new Error(`Neutral output contains forbidden SDD dependency: ${forbiddenDependency}`);
+  }
+
+  const forbiddenScript = Object.entries(packageJson.scripts ?? {}).find(([name, command]) =>
+    `${name} ${command}`.toLowerCase().includes('openspec')
+      || name.toLowerCase() === 'ospec'
+      || name.toLowerCase() === 'validate:spec');
+  if (forbiddenScript) {
+    throw new Error(`Neutral output contains forbidden SDD script: ${forbiddenScript[0]}`);
+  }
+}
+
+async function validateNeutralDirectories(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    if (entry.name.toLowerCase() === 'openspec') {
+      throw new Error(`Neutral output contains forbidden OpenSpec directory: ${join(directory, entry.name)}`);
+    }
+    await validateNeutralDirectories(join(directory, entry.name));
+  }
+}
+
+async function recordStep(options, step) {
+  if (typeof options.onStep === 'function') {
+    await options.onStep(step);
+  }
+}
+
+async function* walkFiles(directory) {
+  const entries = (await readdir(directory, { withFileTypes: true }))
+    .sort((left, right) => left.name.localeCompare(right.name));
 
   for (const entry of entries) {
     const entryPath = join(directory, entry.name);
@@ -382,18 +524,20 @@ Local invocation:
   pnpm starter:render -- [options]
 
 Published invocation:
-  npx @mood481/starter-foundation-nx-pnpm@0.4.0 [options]
+  npx @mood481/starter-foundation-nx-pnpm@0.5.0 [options]
 
 Modes:
   File mode: provide --input <filepath>. The input file supplies output.path,
-             variant, and placeholders. Concurrent --variant, --output, and
-             --set flags are ignored with a warning.
-  CLI mode: omit --input. Use --variant and repeatable --set; --output is
-            optional and defaults to dist/ relative to the current directory.
+             variant, extensions, and placeholders. Concurrent --variant,
+             --extensions, --output, and --set flags are ignored with a warning.
+  CLI mode: omit --input. Use --variant, --extensions, and repeatable --set;
+             --output is optional and defaults to dist/ relative to the current directory.
 
 Options:
   --input <filepath>  YAML or JSON render input for file mode.
   --variant <name>    Declared variant to apply in CLI mode.
+  --extensions <name1,name2>
+                      Comma-separated extension names to apply in CLI mode.
   --output <path>     Generated project destination in CLI mode.
   --set <KEY=VALUE>   Placeholder assignment; repeatable.
   --help, -h          Print this help without writing files.
@@ -401,8 +545,8 @@ Options:
 Examples:
   starter-foundation-render --input ./render-input.mws.yaml
   starter-foundation-render --variant mws --output ./my-project --set PROJECT_ID=my-project --set "PROJECT_NAME=My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project
-  npx @mood481/starter-foundation-nx-pnpm@0.4.0 --input ./render-input.mws.yaml
-  npx @mood481/starter-foundation-nx-pnpm@0.4.0 --variant mws --output ./my-project --set PROJECT_ID=my-project --set "PROJECT_NAME=My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project`);
+  npx @mood481/starter-foundation-nx-pnpm@0.5.0 --input ./render-input.mws.yaml
+  npx @mood481/starter-foundation-nx-pnpm@0.5.0 --variant mws --output ./my-project --set PROJECT_ID=my-project --set "PROJECT_NAME=My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project`);
 }
 
 async function main() {

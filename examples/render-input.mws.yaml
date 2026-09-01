@@ -1,4 +1,5 @@
 variant: mws
+extensions: []
 
 output:
   path: ../tmp/rendered-mws-example
