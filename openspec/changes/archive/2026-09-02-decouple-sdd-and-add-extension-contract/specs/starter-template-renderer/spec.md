@@ -215,6 +215,22 @@ The renderer invoked via `npx` SHALL have identical no-extension and extension-s
 - **WHEN** a consumer runs `npx @mood481/starter-foundation-nx-pnpm@0.5.0 --help`
 - **THEN** it SHALL print the same help as the local invocation and exit 0.
 
+### Requirement: Render Input Examples
+
+The starter repository SHALL provide examples for structured render inputs, including the zero-extension default.
+
+#### Scenario: Neutral render input example exists
+
+- **WHEN** the starter repository is inspected
+- **THEN** `examples/render-input.neutral.yaml` SHALL exist.
+
+#### Scenario: Neutral example stays variant-independent
+
+- **WHEN** `examples/render-input.neutral.yaml` is inspected
+- **THEN** it SHALL NOT select a concrete variant
+- **AND** it SHALL declare `extensions: []`
+- **AND** it SHALL NOT include variant-specific placeholders or a concrete extension selection.
+
 ## ADDED Requirements
 
 ### Requirement: CLI Extension Selection
@@ -265,19 +281,3 @@ The starter renderer SHALL execute the render pipeline in a stable order that se
 
 - **WHEN** input, variant, extension, compatibility, duplicate, conflict, or required-placeholder validation fails before rendering
 - **THEN** the renderer MUST fail before generated files are written.
-
-### Requirement: Render Input Examples
-
-The starter repository SHALL provide examples for structured render inputs, including the zero-extension default.
-
-#### Scenario: Neutral render input example exists
-
-- **WHEN** the starter repository is inspected
-- **THEN** `examples/render-input.neutral.yaml` SHALL exist.
-
-#### Scenario: Neutral example stays variant- and extension-independent
-
-- **WHEN** `examples/render-input.neutral.yaml` is inspected
-- **THEN** it SHALL NOT select a concrete variant
-- **AND** it SHALL declare `extensions: []`
-- **AND** it SHALL NOT include variant-specific placeholders or a concrete extension selection.

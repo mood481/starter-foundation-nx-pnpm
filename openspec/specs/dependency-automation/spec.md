@@ -2,7 +2,9 @@
 
 ## Purpose
 The dependency-automation specification defines the starter repository's Renovate scope, OpenSpec update policy, workflow safeguards, and maintenance expectations for the template lockfile.
+
 ## Requirements
+
 ### Requirement: Renovate Configuration
 
 The starter repository SHALL provide a root `renovate.json` that configures Renovate as an external service for the starter repository.
@@ -131,7 +133,7 @@ The starter repository SHALL run a GitHub Actions workflow on pull requests that
 
 ### Requirement: Renovate Activation Documentation
 
-The starter repository SHALL document how to activate and install Renovate for the repository on GitHub and on other Git servers.
+The starter repository SHALL document how to activate and install Renovate for the repository on GitHub and on other Git servers without implying that generated projects use OpenSpec.
 
 #### Scenario: GitHub activation is documented
 
@@ -153,9 +155,9 @@ The starter repository SHALL document how to activate and install Renovate for t
 #### Scenario: Template config is not synchronized automatically
 
 - **WHEN** a maintainer reads the Renovate documentation
-- **THEN** it SHALL state that OpenSpec dependency updates do not modify `template/openspec/config.yaml`
-- **AND** it SHALL instruct maintainers to review the OpenSpec release notes on each update
-- **AND** it SHALL state that template config improvements are handled through a separate OpenSpec change.
+- **THEN** it SHALL state that root OpenSpec dependency updates affect starter-maintenance tooling only
+- **AND** it SHALL state that optional generated SDD integrations are supplied by separate variants or extensions
+- **AND** it SHALL instruct maintainers to review those integrations through their own changes rather than modifying the neutral template.
 
 #### Scenario: Documentation is discoverable
 
@@ -183,7 +185,7 @@ The starter SHALL provide a local mechanism to regenerate `template/pnpm-lock.ya
 
 #### Scenario: Template lockfile updates with OpenSpec
 
-- **WHEN** a maintainer changes `@fission-ai/openspec` (or any dependency) in `template/package.json` and runs the template lockfile update script (for example `pnpm template:update-lock` or `node tools/scripts/update-template-lockfile.mjs`)
+- **WHEN** a maintainer changes a dependency in `template/package.json` and runs the template lockfile update script
 - **THEN** it SHALL substitute the template placeholders (`__PNPM_VERSION__`, `__NODE_VERSION__`, `__PROJECT_SLUG__`, `__PROJECT_DESCRIPTION__`) in `template/package.json` with concrete values derived from the root `package.json`
 - **AND** it SHALL run `pnpm install --ignore-scripts` in `template/` to regenerate `template/pnpm-lock.yaml`
 - **AND** it SHALL restore the placeholder `template/package.json`
@@ -193,7 +195,7 @@ The starter SHALL provide a local mechanism to regenerate `template/pnpm-lock.ya
 
 - **WHEN** `renovate.json` is inspected
 - **THEN** it SHALL disable `template/package.json` entirely (`enabled: false`)
-- **AND** Renovate SHALL NOT propose OpenSpec or any other dependency update for the template on GitHub
+- **AND** Renovate SHALL NOT propose any dependency update for the template on GitHub
 - **AND** Renovate SHALL NOT attempt to regenerate `template/pnpm-lock.yaml`.
 
 #### Scenario: Non-OpenSpec template dependencies stay disabled

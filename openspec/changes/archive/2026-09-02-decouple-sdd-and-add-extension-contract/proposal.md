@@ -31,7 +31,7 @@ The next `0.5.0` release should make the generated foundation SDD-agnostic and e
 
 - `foundation-starter`: Make starter metadata and starter/template separation SDD-agnostic while declaring extension defaults and preserving independent variants and overlays.
 - `foundation-template`: Remove OpenSpec from the neutral template directory and define the generated foundation's SDD-neutral boundary.
-- `sdd-contract`: Remove requirements that force OpenSpec layout, configuration, specs, dependency, or scripts into every generated project.
+- `sdd-contract` (retired): All five requirements are removed because they force OpenSpec layout, configuration, specs, dependency, or scripts into every generated project. The capability is retired and its spec deleted via `retire_capabilities: true`, superseded by `extension-contract` and by variant-provided OpenSpec (e.g. `mws`).
 - `starter-template-renderer`: Add extension input, `--extensions` CLI selection, and deterministic extension-aware rendering while preserving zero-extension and existing variant behaviour.
 - `quality-gates`: Remove generated-project OpenSpec validation from the neutral quality baseline while retaining starter-repository OpenSpec gates and workspace validation.
 - `dependency-automation`: Generalize template lockfile maintenance and remove documentation requirements tied to a generated `template/openspec/config.yaml`.

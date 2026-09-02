@@ -3,7 +3,9 @@
 ## Purpose
 
 The mws-foundation-variant specification defines the contract for the MWS-compatible variant overlay, including MWS project metadata, generated documentation, OpenSpec baseline, and variant render validation.
+
 ## Requirements
+
 ### Requirement: MWS Foundation Variant Overlay
 
 The starter repository SHALL provide an `mws` variant overlay for generating MWS-compatible foundation repositories.
@@ -113,7 +115,7 @@ Projects generated with the `mws` variant SHALL include MWS-specific foundation 
 
 ### Requirement: MWS Generated OpenSpec Baseline
 
-Projects generated with the `mws` variant SHALL include an importable OpenSpec spec for MWS foundation lifecycle expectations.
+Projects generated with the `mws` variant SHALL include an MWS-provided OpenSpec baseline as an explicit variant contribution; this requirement does not make OpenSpec part of the neutral template.
 
 #### Scenario: MWS lifecycle spec is added
 
@@ -129,7 +131,9 @@ Projects generated with the `mws` variant SHALL include an importable OpenSpec s
 #### Scenario: MWS variant replaces generated OpenSpec config
 
 - **WHEN** the `mws` overlay is applied
-- **THEN** it SHALL replace `openspec/config.yaml` as a full file.
+- **THEN** it SHALL add `openspec/config.yaml` as a complete variant-provided file
+- **AND** it SHALL NOT depend on a neutral `openspec/config.yaml`
+- **AND** it SHALL not be interpreted through YAML merge or partial override semantics.
 
 #### Scenario: MWS OpenSpec config is stricter than neutral config
 
@@ -174,4 +178,3 @@ The starter repository SHALL validate the rendered output of the `mws` variant.
 - **AND** it SHALL NOT include `docs/mws.md`
 - **AND** it SHALL NOT include `docs/mws-openspec.md`
 - **AND** it SHALL NOT include `openspec/specs/mws-project-lifecycle/spec.md`.
-
