@@ -62,3 +62,7 @@ Thumbs.db
 
 opencode.local.json
 opencode.local.jsonc
+
+# Local registry credentials
+/.npmrc
+.env

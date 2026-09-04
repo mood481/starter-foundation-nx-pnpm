@@ -150,7 +150,7 @@ lowercase kebab-case name grammar used by structured input:
 pnpm starter:render -- --extensions name1,name2 --output ../tmp/rendered-extension --set PROJECT_NAME="Extension Project" --set PROJECT_SLUG=extension-project --set "PROJECT_DESCRIPTION=Extension project" --set DEFAULT_PACKAGE_SCOPE=@extension
 ```
 
-The 0.5.0 starter bundles no concrete extension. A selected extension must be
+The 0.6.0 starter bundles no concrete extension. A selected extension must be
 provided by a configured resolver and fails before output writes when no
 provider resolves it. Extensions are composed after a selected variant; their
 files are add-only, and package metadata changes are limited to structured
@@ -159,6 +159,8 @@ be supplied by an external source declaration; it does not need to live under
 an `extensions/` directory in this repository.
 
 Install the packed renderer without development dependencies, then invoke its local `npx` binary:
+
+For Gitea publication and published-package checks, see [docs/publishing.md](docs/publishing.md).
 
 ```bash
 PACKAGE_DIR=$(mktemp -d)

@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file.
 
 The format follows the change IDs tracked through OpenSpec. Each entry corresponds to an archived OpenSpec change.
 
+## 0.6.0
+
+### add-gitea-npm-package-distribution
+
+Distribute the renderer package through the private Gitea npm registry with a
+repository-owned pnpm publish entrypoint, channel gating, GitHub Actions
+publishing, scoped consumer configuration, and publishing documentation.
+
 ## 0.5.0
 
 ### decouple-sdd-and-add-extension-contract

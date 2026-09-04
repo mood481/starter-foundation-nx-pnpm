@@ -1,0 +1,2 @@
+@mood481:registry=https://git.mood481.es/api/packages/mood/npm/
+//git.mood481.es/api/packages/mood/npm/:_authToken=${GITEA_TOKEN}

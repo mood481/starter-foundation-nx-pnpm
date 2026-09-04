@@ -524,7 +524,7 @@ Local invocation:
   pnpm starter:render -- [options]
 
 Published invocation:
-  npx @mood481/starter-foundation-nx-pnpm@0.5.0 [options]
+  npx @mood481/starter-foundation-nx-pnpm@0.6.0 [options]
 
 Modes:
   File mode: provide --input <filepath>. The input file supplies output.path,
@@ -545,8 +545,8 @@ Options:
 Examples:
   starter-foundation-render --input ./render-input.mws.yaml
   starter-foundation-render --variant mws --output ./my-project --set PROJECT_ID=my-project --set "PROJECT_NAME=My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project
-  npx @mood481/starter-foundation-nx-pnpm@0.5.0 --input ./render-input.mws.yaml
-  npx @mood481/starter-foundation-nx-pnpm@0.5.0 --variant mws --output ./my-project --set PROJECT_ID=my-project --set "PROJECT_NAME=My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project`);
+  npx @mood481/starter-foundation-nx-pnpm@0.6.0 --input ./render-input.mws.yaml
+  npx @mood481/starter-foundation-nx-pnpm@0.6.0 --variant mws --output ./my-project --set PROJECT_ID=my-project --set "PROJECT_NAME=My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project`);
 }
 
 async function main() {

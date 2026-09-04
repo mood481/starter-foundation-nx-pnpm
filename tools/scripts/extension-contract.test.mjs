@@ -12,7 +12,7 @@ import {
 import { renderTemplate } from './render-template.mjs';
 
 const starter = {
-  version: '0.5.0',
+  version: '0.6.0',
   extensions: [],
   extensionGroups: {},
   provides: ['extension-support'],
@@ -24,7 +24,7 @@ function fixtureManifest(id, contributions = {}) {
     version: '1.0.0',
     source: { kind: 'memory', locator: id },
     compatibility: {
-      starter: '>=0.5.0 <0.6.0',
+      starter: '>=0.6.0 <0.7.0',
       requires: { capabilities: [] },
     },
     contributions,

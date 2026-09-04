@@ -46,9 +46,15 @@ starter-foundation-render --variant mws --output ../tmp/rendered-mws-example --s
 The same published renderer can be invoked with `npx`:
 
 ```bash
-npx @mood481/starter-foundation-nx-pnpm@0.5.0 --input ./render-input.mws.yaml
-npx @mood481/starter-foundation-nx-pnpm@0.5.0 --variant mws --output ./my-project --set PROJECT_ID=my-project --set "PROJECT_NAME=My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project
+npx @mood481/starter-foundation-nx-pnpm@<version> --variant mws --output ./my-project --set PROJECT_ID=my-project --set "PROJECT_NAME=My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project
 ```
+
+## Publishing
+
+The renderer package is privately distributed through Gitea. Configure the
+`@mood481` scope mapping and read token before using `npx`. Maintainers should
+use `pnpm starter:publish`; the full publishing and GitHub Actions configuration
+is documented in [docs/publishing.md](docs/publishing.md).
 
 The neutral input shape is:
 

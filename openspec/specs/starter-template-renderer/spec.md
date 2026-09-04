@@ -50,7 +50,7 @@ The starter repository SHALL provide a generic starter-owned renderer for genera
 
 - **WHEN** `package.json` is inspected
 - **THEN** `name` SHALL be `@mood481/starter-foundation-nx-pnpm`
-- **AND** `version` SHALL be `0.5.0`
+- **AND** `version` SHALL be `0.6.0`
 - **AND** `private` SHALL be `false`
 - **AND** `publishConfig` and `files` SHALL allow publishing the renderer, extension resolver boundary, metadata, neutral template, and approved variant overlays
 - **AND** runtime packages imported by the published renderer SHALL be declared in `dependencies`
@@ -343,17 +343,17 @@ The renderer invoked via `npx` SHALL have identical no-extension and extension-s
 
 #### Scenario: Npx file mode
 
-- **WHEN** a consumer runs `npx @mood481/starter-foundation-nx-pnpm@0.5.0 --input ./render-input.yaml`
+- **WHEN** a consumer runs `npx @mood481/starter-foundation-nx-pnpm@0.6.0 --input ./render-input.yaml`
 - **THEN** the binary SHALL read the specified input file, resolve its `output.path`, apply its selected variant overlay and extension-name selection, and render placeholders exactly as `pnpm starter:render -- --input ./render-input.yaml` does.
 
 #### Scenario: Npx CLI mode
 
-- **WHEN** a consumer runs `npx @mood481/starter-foundation-nx-pnpm@0.5.0 --output ./my-project --set PROJECT_NAME="My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project`
+- **WHEN** a consumer runs `npx @mood481/starter-foundation-nx-pnpm@0.6.0 --output ./my-project --set PROJECT_NAME="My Project" --set PROJECT_SLUG=my-project --set "PROJECT_DESCRIPTION=My project" --set DEFAULT_PACKAGE_SCOPE=@my-project`
 - **THEN** it SHALL render the neutral template to `./my-project` via CLI inline mode with an empty extension selection.
 
 #### Scenario: Npx help
 
-- **WHEN** a consumer runs `npx @mood481/starter-foundation-nx-pnpm@0.5.0 --help`
+- **WHEN** a consumer runs `npx @mood481/starter-foundation-nx-pnpm@0.6.0 --help`
 - **THEN** it SHALL print the same help as the local invocation and exit 0.
 
 ### Requirement: CLI Inline Mode Rendering Contract
