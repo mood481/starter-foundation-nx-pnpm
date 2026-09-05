@@ -1,3 +1,5 @@
+extensions: []
+
 output:
   path: ../tmp/rendered-neutral-example
 

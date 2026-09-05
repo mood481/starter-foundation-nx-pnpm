@@ -3,7 +3,9 @@
 ## Purpose
 
 This specification outlines the quality gate requirements for generated projects to ensure they meet the baseline validation standards defined by the OpenSpec project.
+
 ## Requirements
+
 ### Requirement: Baseline Validation Commands
 
 The generated project SHALL expose baseline validation commands from the root package metadata.
@@ -120,7 +122,7 @@ The starter repository SHALL expose working OpenSpec package scripts from the ro
 
 ### Requirement: Rendered Template Validation
 
-The starter repository SHALL provide an automated validation command that renders the neutral template through the generic starter renderer and verifies the rendered generated project.
+The starter repository SHALL provide an automated validation command that renders the neutral template through the generic starter renderer and verifies the rendered SDD-neutral generated project.
 
 #### Scenario: Template validation command exists
 
@@ -131,18 +133,25 @@ The starter repository SHALL provide an automated validation command that render
 
 - **WHEN** the root `package.json` scripts are inspected
 - **THEN** a `validate:spec` script SHALL exist
-- **AND** it SHALL run strict OpenSpec validation without rendered-template validation.
+- **AND** it SHALL run strict OpenSpec validation for the starter repository
+- **AND** it MUST NOT be required in the generated neutral project.
 
 #### Scenario: Template is rendered to temporary output
 
 - **WHEN** `pnpm validate:template` is run
 - **THEN** it SHALL render the neutral template through the generic starter renderer into a temporary generated-project directory
-- **AND** it SHALL resolve the neutral starter placeholders using deterministic validation values.
+- **AND** it SHALL resolve the neutral starter placeholders using deterministic validation values
+- **AND** it SHALL use zero selected extensions.
 
 #### Scenario: Validation uses renderer semantics
 
 - **WHEN** `pnpm validate:template` renders the neutral template
-- **THEN** it SHALL use the same template path, placeholder resolution, output safety, and unresolved-placeholder semantics as `pnpm starter:render`.
+- **THEN** it SHALL use the same template path, placeholder resolution, output safety, extension-empty-set, and unresolved-placeholder semantics as `pnpm starter:render`.
+
+#### Scenario: Neutral output has no SDD artifacts
+
+- **WHEN** rendered-template validation scans the generated-project directory
+- **THEN** it MUST fail if OpenSpec or another concrete SDD artifact, dependency, or generated-project SDD script is present in a neutral render.
 
 #### Scenario: Unresolved placeholders fail validation
 
@@ -158,7 +167,8 @@ The starter repository SHALL provide an automated validation command that render
 #### Scenario: Rendered project validation runs
 
 - **WHEN** `pnpm validate:template` validates the rendered generated project
-- **THEN** it SHALL run `pnpm validate` in the rendered generated-project directory.
+- **THEN** it SHALL run `pnpm validate` in the rendered generated-project directory
+- **AND** that validation MUST use the neutral workspace quality gates without a concrete SDD validator.
 
 #### Scenario: Rendered project graph is generated
 
@@ -168,13 +178,13 @@ The starter repository SHALL provide an automated validation command that render
 #### Scenario: Repository validation includes template validation
 
 - **WHEN** `pnpm validate` is run in the starter repository
-- **THEN** it SHALL run strict OpenSpec validation
+- **THEN** it SHALL run strict OpenSpec validation for the starter repository
 - **AND** it SHALL run rendered-template validation.
 
 #### Scenario: Template validation remains neutral
 
 - **WHEN** rendered-template validation is implemented
-- **THEN** it MUST NOT introduce concrete variant, overlay, module, application, service, API, auth, storage, observability, or infrastructure behaviour.
+- **THEN** it MUST NOT introduce concrete SDD, variant, overlay, extension, module, application, service, API, auth, storage, observability, or infrastructure behaviour.
 
 ### Requirement: Generated Nx Telemetry Defaults
 
@@ -189,23 +199,3 @@ The generated template SHALL disable Nx telemetry and block Nx Cloud connections
 
 - **WHEN** `template/nx.json` is inspected
 - **THEN** `neverConnectToCloud` SHALL be `true`.
-
-### Requirement: Generated Spec Validation Gate
-
-Generated projects SHALL include OpenSpec validation in their baseline validation flow.
-
-#### Scenario: Validate includes spec validation
-
-- **WHEN** `pnpm validate` is run in a generated project
-- **THEN** it SHALL run strict OpenSpec validation before workspace lint, typecheck, and test checks.
-
-#### Scenario: Spec-only validation remains available
-
-- **WHEN** generated-project maintainers need only OpenSpec validation
-- **THEN** `pnpm validate:spec` SHALL be executable.
-
-#### Scenario: Frozen install supports OpenSpec dependency
-
-- **WHEN** a generated project is validated with `pnpm install --frozen-lockfile`
-- **THEN** the lockfile SHALL include the local OpenSpec dependency required by generated-project scripts.
-

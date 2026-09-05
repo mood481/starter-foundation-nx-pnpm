@@ -12,7 +12,7 @@ This document describes the validation expectations for the generated project.
 pnpm validate
 ```
 
-Runs the complete validation suite: spec validation, linting, type checking, and testing.
+Runs the complete workspace validation suite: linting, type checking, and testing.
 
 ### Individual Checks
 
@@ -21,15 +21,6 @@ pnpm lint        # Lint all projects
 pnpm typecheck   # Type check all projects
 pnpm test        # Test all projects
 ```
-
-### Spec Validation
-
-```bash
-pnpm validate:spec   # Validate OpenSpec specs and changes
-pnpm ospec           # Access the local OpenSpec CLI
-```
-
-Spec validation runs strict OpenSpec validation across all specs and changes.
 
 ## Dependency Installation
 
@@ -53,8 +44,12 @@ After rendering, no unresolved double-underscore placeholders should remain. Sca
 
 ## Neutral Boundary Validation
 
-The generated project should not contain:
+The neutral foundation should not contain:
 
 - Concrete variant directories
 - Variant-specific metadata files
 - Module-specific files (API, mobile, web, auth, etc.)
+- A concrete SDD provider, SDD configuration, or SDD-specific package script
+
+An explicitly selected variant or extension may add its own additive
+validation and capability-specific files.

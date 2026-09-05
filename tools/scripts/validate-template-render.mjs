@@ -2,7 +2,13 @@ import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { parseArgs, renderTemplate, findUnresolvedPlaceholders, formatUnresolvedPlaceholders } from './render-template.mjs';
+import {
+  parseArgs,
+  renderTemplate,
+  findUnresolvedPlaceholders,
+  formatUnresolvedPlaceholders,
+  validateNeutralOutput,
+} from './render-template.mjs';
 
 const keepTemp = process.env.TEMPLATE_VALIDATE_KEEP_TEMP === '1';
 const testUnresolvedPlaceholderScanner = process.env.TEMPLATE_VALIDATE_TEST_UNRESOLVED_PLACEHOLDER === '1';
@@ -27,11 +33,15 @@ try {
     await writeFile(inputPath, getNeutralValidationInput(), 'utf8');
   }
 
-  await renderTemplate({
+  const renderResult = await renderTemplate({
     inputPath,
     outputPathOverride: renderedDir,
     variant: args.variant,
   });
+
+  if (!renderResult.variant && renderResult.extensions.length === 0) {
+    await validateNeutralOutput(renderedDir);
+  }
 
   if (testUnresolvedPlaceholderScanner) {
     console.log('Injecting unresolved placeholder to test the scanner failure path.');
@@ -75,18 +85,16 @@ placeholders:
   PROJECT_SLUG: template-validation-project
   PROJECT_DESCRIPTION: Rendered project used to validate the neutral starter template.
   DEFAULT_PACKAGE_SCOPE: "@template-validation"
+extensions: []
 `;
 }
 
 function runPnpm(args, cwd) {
-  const npmExecPath = process.env.npm_execpath;
-  const command = npmExecPath ? process.execPath : 'pnpm';
-  const commandArgs = npmExecPath ? [npmExecPath, ...args] : args;
   const display = ['pnpm', ...args].join(' ');
 
   console.log(`\nRunning in ${cwd}: ${display}`);
 
-  const result = spawnSync(command, commandArgs, {
+  const result = spawnSync('pnpm', args, {
     cwd,
     env: process.env,
     stdio: 'inherit',

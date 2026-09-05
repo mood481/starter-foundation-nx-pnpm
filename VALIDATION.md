@@ -12,7 +12,7 @@ Run full starter validation:
 pnpm validate
 ```
 
-This runs strict OpenSpec validation and validates a rendered copy of the generated template.
+This runs strict OpenSpec validation for the starter repository and validates a rendered copy of the neutral generated template.
 
 ### Spec Validation
 
@@ -22,11 +22,15 @@ Validate all OpenSpec artifacts:
 pnpm validate:spec
 ```
 
+`pnpm validate:spec` calls the local `ospec:validate` package script, which already enables `--all --strict`. Do not append another `--strict` or use `npx openspec`.
+
 Validate the current change in strict mode:
 
 ```bash
-pnpm ospec validate <change-id> --strict
+pnpm ospec validate "add-starter-foundation-render-cli-and-npx" --strict
 ```
+
+If a direct executable invocation is required, use `pnpm exec openspec` so OpenSpec is resolved from local `node_modules`.
 
 ### Constraint Validation
 
@@ -36,9 +40,9 @@ Confirm the following after implementation:
 - Variant-specific metadata files live outside the neutral `template/` and are applied through overlays.
 - No API, mobile, web, service, auth, eventing, storage, observability, or infrastructure module is added.
 - Root `openspec/changes/` is not copied into `template/` or generated outputs.
-- Neutral generated-project OpenSpec content only uses `template/openspec/`; variant-specific generated OpenSpec content lives in approved overlays.
+- Neutral generated output is SDD-neutral; selected variants or extensions own any generated SDD content.
 - All references use `variant` and `overlay` terminology.
-- No `flavour` metadata remains.
+- No alternate variant metadata remains.
 
 ### Variant/Overlay Contract Validation
 
@@ -58,7 +62,7 @@ When adding or modifying a variant, confirm the following contract checks:
 
 - `starter.yaml` declares the expected contract fields.
 - `template/` contains the expected directory structure.
-- All importable OpenSpec specs exist under `template/openspec/specs/`.
+- The neutral template does not require an OpenSpec directory or provider.
 
 ### Rendered Output Validation
 
@@ -96,7 +100,7 @@ This intentionally injects an unresolved placeholder after the validation render
 
 ## Starter Rendering
 
-Render a project from the starter with the default `starter.render.yaml` input file:
+Render a project from the starter with the root default `starter.render.yaml` input file:
 
 ```bash
 pnpm starter:render
@@ -108,15 +112,17 @@ Render with an explicit YAML or JSON input file:
 pnpm starter:render -- --input examples/render-input.neutral.yaml
 ```
 
-Render with a selected variant:
+Render a selected variant in file mode by declaring it in the input file:
 
 ```bash
-pnpm starter:render -- --variant <variant-id> --input ./starter.render.yaml
+pnpm starter:render -- --input examples/render-input.mws.yaml
 ```
 
-Render inputs declare `output.path` and `placeholders`. Placeholder keys omit double-underscore delimiters:
+Render inputs declare `extensions`, `output.path`, and `placeholders`. The extension list defaults to `[]`; placeholder keys omit double-underscore delimiters:
 
 ```yaml
+extensions: []
+
 output:
   path: ../my-project
 
@@ -127,7 +133,47 @@ placeholders:
   DEFAULT_PACKAGE_SCOPE: "@my-project"
 ```
 
-If an input file declares `variant:` and `--variant` is also provided, both values must match. Unknown variants, missing required placeholders, non-empty output directories, and unresolved placeholders fail rendering.
+If `--input` is present, the input file's `output.path`, `variant`, `extensions`, and `placeholders` are authoritative. Concurrent `--variant`, `--extensions`, `--output`, and `--set` flags are ignored with a warning. Unknown variants, unresolved extensions, missing required placeholders, non-empty output directories, and unresolved placeholders fail rendering before output writes where possible.
+
+Render in CLI mode without a YAML or JSON render input file:
+
+```bash
+pnpm starter:render -- --variant mws --output ../tmp/rendered-mws-example --set PROJECT_ID=example-mws-foundation --set "PROJECT_NAME=Example MWS Foundation" --set PROJECT_SLUG=example-mws-foundation --set "PROJECT_DESCRIPTION=Example MWS-compatible foundation repository." --set DEFAULT_PACKAGE_SCOPE=@example-mws
+```
+
+In CLI mode, `--output` defaults to `dist/` relative to the current directory. `--set` is repeatable and preserves values after the first `=`. The same published binary can be checked with:
+
+Select future externally resolved extensions in CLI mode with the same
+lowercase kebab-case name grammar used by structured input:
+
+```bash
+pnpm starter:render -- --extensions name1,name2 --output ../tmp/rendered-extension --set PROJECT_NAME="Extension Project" --set PROJECT_SLUG=extension-project --set "PROJECT_DESCRIPTION=Extension project" --set DEFAULT_PACKAGE_SCOPE=@extension
+```
+
+The 0.6.0 starter bundles no concrete extension. A selected extension must be
+provided by a configured resolver and fails before output writes when no
+provider resolves it. Extensions are composed after a selected variant; their
+files are add-only, and package metadata changes are limited to structured
+`dependencies`, `devDependencies`, and `scripts` additions. An extension may
+be supplied by an external source declaration; it does not need to live under
+an `extensions/` directory in this repository.
+
+Install the packed renderer without development dependencies, then invoke its local `npx` binary:
+
+For Gitea publication and published-package checks, see [docs/publishing.md](docs/publishing.md).
+
+```bash
+PACKAGE_DIR=$(mktemp -d)
+CONSUMER_DIR=$(mktemp -d)
+ARCHIVE=$(npm pack --pack-destination "$PACKAGE_DIR" --silent)
+npm install --ignore-scripts --omit=dev --prefix "$CONSUMER_DIR" "$PACKAGE_DIR/$ARCHIVE"
+npx --prefix "$CONSUMER_DIR" --no-install starter-foundation-render --help
+npx --prefix "$CONSUMER_DIR" --no-install starter-foundation-render --variant mws --output /tmp/npx-mws-render --set PROJECT_ID=npx-test --set "PROJECT_NAME=Npx Test" --set PROJECT_SLUG=npx-test --set "PROJECT_DESCRIPTION=Npx via local package" --set DEFAULT_PACKAGE_SCOPE=@npx-test
+```
+
+These `npx` commands validate the published renderer package. OpenSpec remains
+root starter-maintenance tooling and is invoked through the local `pnpm`
+commands above; it is not installed in a neutral generated project.
 
 ## Variant Validation
 
@@ -146,7 +192,7 @@ For MWS validation, confirm:
 - `variants.mws.placeholders.required` includes `PROJECT_ID`.
 - `examples/render-input.mws.yaml` selects `mws` and includes `PROJECT_ID`.
 - Rendered output includes `mws.project.yaml`, `docs/mws.md`, `docs/mws-openspec.md`, and `openspec/specs/mws-project-lifecycle/spec.md`.
-- Rendered output uses the MWS full-file replacement for `openspec/config.yaml`.
+- Rendered output uses the MWS overlay's complete `openspec/config.yaml` contribution; the neutral template has no OpenSpec config to replace.
 
 Inside a generated project, run:
 

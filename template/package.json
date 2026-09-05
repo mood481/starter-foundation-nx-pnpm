@@ -14,18 +14,13 @@
     "typecheck": "nx run-many --target=typecheck --all",
     "test": "nx run-many --target=test --all",
     "build": "nx run-many --target=build --all",
-    "ospec": "openspec",
-    "ospec:validate": "openspec validate --all --strict",
-    "validate:spec": "pnpm ospec:validate",
-    "validate": "pnpm validate:spec && pnpm lint && pnpm typecheck && pnpm test",
+    "validate": "pnpm lint && pnpm typecheck && pnpm test",
     "nx": "nx"
   },
   "devDependencies": {
-    "@eslint/js": "^9.0.0",
-    "@fission-ai/openspec": "~1.4.0",
-    "eslint": "^9.0.0",
-    "nx": "22.7.5",
-    "prettier": "^3.0.0",
-    "typescript": "^5.0.0"
+    "@eslint/js": "^10.0.0",
+    "eslint": "^10.9.1",
+    "nx": "^23.1.1",
+    "typescript": "^6.0.3"
   }
 }

@@ -1,7 +1,7 @@
 id: foundation-nx-pnpm
 name: Foundation Nx pnpm Monorepo
 kind: foundation
-version: 0.2.0
+version: 0.6.0
 
 template:
   path: template
@@ -15,11 +15,8 @@ template:
       - PROJECT_DESCRIPTION
       - DEFAULT_PACKAGE_SCOPE
 
-sdd:
-  provider: openspec
-  root: openspec
-  importable:
-    - template/openspec/specs
+extensions: []
+extensionGroups: {}
 
 variants:
   mws:
@@ -37,7 +34,7 @@ provides:
   - monorepo
   - nx-workspace
   - pnpm-workspace
-  - openspec-sdd
+  - extension-support
   - quality-gates
   - multi-language-workspace
 
@@ -47,7 +44,6 @@ paths:
   packages: packages
   tools: tools
   docs: docs
-  sdd: openspec
 
 projectRules:
   configFile: project.json

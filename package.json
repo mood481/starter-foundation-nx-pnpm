@@ -1,10 +1,10 @@
 {
-  "name": "starter-foundation-nx-pnpm",
-  "version": "0.2.0",
-  "private": true,
+  "name": "@mood481/starter-foundation-nx-pnpm",
+  "version": "0.6.0",
+  "private": false,
   "description": "Neutral foundation starter for strict Nx + pnpm multi-language monorepos.",
   "type": "module",
-  "packageManager": "pnpm@10.0.0",
+  "packageManager": "pnpm@10.34.5",
   "engines": {
     "node": ">=22.22.2",
     "pnpm": ">=10.0.0"
@@ -17,14 +17,42 @@
     "ospec:validate": "openspec validate --all --strict",
     "ospec:validate:json": "openspec validate --all --strict --json",
     "starter:render": "node tools/scripts/render-template.mjs",
+    "starter:publish": "node tools/scripts/publish-package.mjs",
     "validate:template:mws": "node tools/scripts/validate-template-render.mjs --variant mws --input examples/render-input.mws.yaml",
     "validate:template": "node tools/scripts/validate-template-render.mjs",
     "validate:spec": "pnpm ospec:validate",
-    "validate": "pnpm validate:spec && pnpm validate:template"
+    "validate": "pnpm validate:spec && pnpm validate:template",
+    "template:update-lock": "node tools/scripts/update-template-lockfile.mjs"
+  },
+  "bin": {
+    "starter-foundation-render": "tools/scripts/render-template.mjs"
+  },
+  "files": [
+    "tools/scripts/render-template.mjs",
+    "tools/scripts/extension-contract.mjs",
+    "tools/scripts/extension-utils.mjs",
+    "tools/scripts/extension-resolver.mjs",
+    "tools/scripts/extension-composer.mjs",
+    "tools/scripts/validate-template-render.mjs",
+    "starter.yaml",
+    "starter.render.yaml",
+    "template/**",
+    "!template/**/node_modules/**",
+    "template/.gitignore",
+    "template/.npmrc",
+    "variants/**/overlay/**",
+    "README.md",
+    "VALIDATION.md",
+    "package.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@fission-ai/openspec": "~1.4.0",
-    "yaml": "^2.9.0"
+    "@fission-ai/openspec": "~1.12.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

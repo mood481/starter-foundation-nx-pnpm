@@ -1,32 +1,32 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "dependencyDashboard": true,
+  "dependencyDashboard": false,
   "baseBranches": ["devel"],
+  "gitIgnoredAuthors": ["github-actions[bot]@users.noreply.github.com", "41898282+github-actions[bot]@users.noreply.github.com"],
+  "enabledManagers": ["npm"],
   "packageRules": [
     {
-      "matchPackageNames": ["@fission-ai/openspec"],
+      "description": "Disable Renovate for template/package.json entirely; the template is maintained locally by the maintainer via the template lockfile script",
+      "matchFileNames": ["template/package.json"],
+      "enabled": false
+    },
+    {
+      "description": "Block major pnpm updates (the packageManager pin); minor/patch pnpm still proposed as manual PRs",
+      "matchDepNames": ["pnpm"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "matchDepNames": ["@fission-ai/openspec"],
       "matchUpdateTypes": ["patch", "minor"],
       "automerge": true,
       "automergeType": "pr",
-      "platformAutomerge": true,
-      "postUpgradeTasks": {
-        "executionMode": "update",
-        "commands": [
-          "pnpm exec openspec config set profile custom",
-          "pnpm exec openspec config set delivery both",
-          "pnpm exec openspec config set workflows '[\"propose\",\"explore\",\"new\",\"continue\",\"apply\",\"update\",\"ff\",\"sync\",\"verify\",\"onboard\"]'",
-          "pnpm ospec:update"
-        ],
-        "fileFilters": [
-          ".agents/skills/**",
-          ".opencode/commands/**",
-          ".opencode/skills/**"
-        ]
-      }
+      "automergeStrategy": "rebase",
+      "platformAutomerge": true
     },
     {
-      "matchPackageNames": ["@fission-ai/openspec"],
+      "matchDepNames": ["@fission-ai/openspec"],
       "matchUpdateTypes": ["major"],
       "automerge": false
     }
