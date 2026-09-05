@@ -4,7 +4,7 @@
   "private": false,
   "description": "Neutral foundation starter for strict Nx + pnpm multi-language monorepos.",
   "type": "module",
-  "packageManager": "pnpm@10.0.0",
+  "packageManager": "pnpm@10.34.5",
   "engines": {
     "node": ">=22.22.2",
     "pnpm": ">=10.0.0"
@@ -52,7 +52,7 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@fission-ai/openspec": "~1.11.0"
+    "@fission-ai/openspec": "~1.12.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
