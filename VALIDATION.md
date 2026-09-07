@@ -100,7 +100,7 @@ This intentionally injects an unresolved placeholder after the validation render
 
 ## Starter Rendering
 
-Render a project from the starter with the root default `starter.render.yaml` input file:
+Render a project from the starter with the root default `render.yaml` input file:
 
 ```bash
 pnpm starter:render

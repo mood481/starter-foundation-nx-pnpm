@@ -1,6 +1,6 @@
 # MWS Foundation
 
-This repository was generated with the `mws` variant of `__STARTER_ID__` version `__STARTER_VERSION__`.
+This repository was generated with the `mws` variant of `starter-foundation-nx-pnpm` version `__VERSION__`.
 
 ## Project Metadata
 

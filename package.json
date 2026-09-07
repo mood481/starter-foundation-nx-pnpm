@@ -16,26 +16,23 @@
     "ospec:update": "openspec update",
     "ospec:validate": "openspec validate --all --strict",
     "ospec:validate:json": "openspec validate --all --strict --json",
-    "starter:render": "node tools/scripts/render-template.mjs",
-    "starter:publish": "node tools/scripts/publish-package.mjs",
+    "old:render": "node tools/scripts/render-template.mjs",
     "validate:template:mws": "node tools/scripts/validate-template-render.mjs --variant mws --input examples/render-input.mws.yaml",
     "validate:template": "node tools/scripts/validate-template-render.mjs",
     "validate:spec": "pnpm ospec:validate",
     "validate": "pnpm validate:spec && pnpm validate:template",
-    "template:update-lock": "node tools/scripts/update-template-lockfile.mjs"
+    "template:update-lock": "node tools/scripts/update-template-lockfile.mjs",
+    "starter:validate": "starter-validate --type starter starter.yaml",
+    "test:render": "starter-render --input examples/render.neutral.yaml",
+    "test:render:mws": "starter-render --input examples/render.mws.yaml",
+    "publish:render": "node tools/scripts/publish-package.mjs"
   },
   "bin": {
     "starter-foundation-render": "tools/scripts/render-template.mjs"
   },
   "files": [
-    "tools/scripts/render-template.mjs",
-    "tools/scripts/extension-contract.mjs",
-    "tools/scripts/extension-utils.mjs",
-    "tools/scripts/extension-resolver.mjs",
-    "tools/scripts/extension-composer.mjs",
     "tools/scripts/validate-template-render.mjs",
     "starter.yaml",
-    "starter.render.yaml",
     "template/**",
     "!template/**/node_modules/**",
     "template/.gitignore",
@@ -49,10 +46,13 @@
     "access": "public"
   },
   "dependencies": {
+    "@mood481/starter-renderer": "0.4.0",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@fission-ai/openspec": "~1.12.0"
+    "@fission-ai/openspec": "~1.12.0",
+    "@mood481/starter-contracts": "0.4.0",
+    "@mood481/starter-validator": "0.4.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -38,7 +38,7 @@ jobs:
           fi
 
       - name: Publish package
-        run: pnpm starter:publish
+        run: pnpm publish:render
         env:
           GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
           PUBLISH_RELEASE: ${{ github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}

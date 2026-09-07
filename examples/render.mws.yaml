@@ -1,8 +1,8 @@
+mode: standalone
 variant: mws
-extensions: []
 
-output:
-  path: ../tmp/rendered-mws-example
+paths:
+  root: tmp/rendered-mws
 
 placeholders:
   PROJECT_ID: example-mws-foundation
@@ -10,3 +10,7 @@ placeholders:
   PROJECT_SLUG: example-mws-foundation
   PROJECT_DESCRIPTION: Example MWS-compatible foundation repository.
   DEFAULT_PACKAGE_SCOPE: "@example-mws"
+  NODE_VERSION: "24.20.0"
+  NODE_VERSION_SINGLE: "24"
+  PNPM_VERSION: "11.25.0"
+  VERSION: 0.1.0

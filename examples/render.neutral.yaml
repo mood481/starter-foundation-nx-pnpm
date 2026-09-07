@@ -1,10 +1,13 @@
-extensions: []
+mode: standalone
 
-output:
-  path: ../tmp/rendered-neutral-example
+paths:
+  root: tmp/rendered-neutral
 
 placeholders:
   PROJECT_NAME: Example Foundation
   PROJECT_SLUG: example-foundation
   PROJECT_DESCRIPTION: Example generated foundation repository.
   DEFAULT_PACKAGE_SCOPE: "@example"
+  NODE_VERSION: "24.20.0"
+  NODE_VERSION_SINGLE: "24"
+  PNPM_VERSION: "11.25.0"

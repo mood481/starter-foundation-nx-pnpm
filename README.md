@@ -10,7 +10,7 @@ This starter defines a neutral, renderable foundation template for monorepos bas
 
 The starter is consumed with the starter-owned renderer. The renderer reads structured YAML or JSON input in file mode, or accepts inline values in CLI mode. It copies the neutral `template/`, optionally applies a selected variant overlay and extensions, resolves double-underscore placeholders, and fails if unresolved placeholders remain.
 
-Render with the root default input file, `starter.render.yaml`:
+Render with the root default input file, `render.yaml`:
 
 ```bash
 pnpm starter:render
