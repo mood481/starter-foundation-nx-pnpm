@@ -1,7 +1,7 @@
 # dependency-automation Specification
 
 ## Purpose
-The dependency-automation specification defines the starter repository's Renovate scope, OpenSpec update policy, workflow safeguards, and maintenance expectations for the template lockfile.
+The dependency-automation specification defines the starter repository's Renovate scope, OpenSpec update policy, and workflow safeguards.
 
 ## Requirements
 

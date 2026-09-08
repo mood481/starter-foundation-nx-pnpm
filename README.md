@@ -176,7 +176,7 @@ placeholder rendering
 validation
 ```
 
-Variant overlay files may add or replace generated files as complete files. Extension files are add-only and conflicts fail before writes; extension package metadata uses the structured mutation contract. Validation must prove the effective rendered output is complete and contains no unresolved placeholders.
+Variant overlay files may add or replace generated files as complete files. Extensions are optional external contributions resolved by the canonical renderer under the toolkit render-extension contract (this repository does not declare or implement them); their composition and structured-mutation rules are defined by the toolkit, not here. Validation must prove the effective rendered output is complete and contains no unresolved placeholders.
 
 Variant selection is an input to `starter-render`; variants do not require variant-specific renderers. A variant may be selected with `--variant <id>` or by declaring `variant: <id>` in the render request. When both are present, the canonical renderer's precedence rules apply.
 
@@ -184,20 +184,9 @@ Variant selection is an input to `starter-render`; variants do not require varia
 
 Future variants may declare additional validation commands. These validations are additive to the neutral starter validations — variants must not remove or weaken base validations unless a later approved change modifies the base validation contract.
 
-### MWS Variant OpenSpec Content
+### SDD and OpenSpec
 
-The MWS overlay contributes `openspec/config.yaml` as a complete file because the neutral template has no OpenSpec config. It is an MWS variant contribution, not a neutral baseline and not an extension.
-
-An overlay-provided `openspec/config.yaml` must preserve these base guarantees:
-- Declare `schema: spec-driven`.
-- Retain rendered project identity and starter provenance.
-- Not copy starter-maintenance root context.
-- Preserve or strengthen generated-project authoring and validation rules.
-- Render without unresolved placeholders.
-- Remain renderable through the same placeholder contract.
-- Pass rendered-template and variant validation.
-
-Variants may add stricter rules but must not weaken the base validation and safety guarantees.
+OpenSpec is an optional external extension, not part of the neutral template or any variant. A generated project gets SDD content only when an SDD extension is explicitly selected and resolved by the canonical renderer. This starter repository keeps its own root `openspec/` for maintenance regardless.
 
 ### Local OpenSpec Commands
 

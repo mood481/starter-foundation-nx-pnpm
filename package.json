@@ -23,7 +23,8 @@
     "starter:validate": "starter-validate --type starter starter.yaml",
     "test:render": "starter-render --input examples/render.neutral.yaml",
     "test:render:mws": "starter-render --input examples/render.mws.yaml",
-    "publish:render": "node tools/scripts/publish-package.mjs"
+    "publish:render": "node tools/scripts/publish-package.mjs",
+    "publish:render:dev": "cp .npmrc.example dist/.npmrc && source .env.publish && PNPM_CONFIG_NPMRC_AUTH_FILE=dist/.npmrc && pnpm publish:render && rm dist/.npmrc"
   },
   "bin": {
     "starter-foundation-render": "bin/starter-foundation-render.mjs"

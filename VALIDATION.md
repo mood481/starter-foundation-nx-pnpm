@@ -40,7 +40,7 @@ Confirm the following after implementation:
 - Variant-specific metadata files live outside the neutral `template/` and are applied through overlays.
 - No API, mobile, web, service, auth, eventing, storage, observability, or infrastructure module is added.
 - Root `openspec/changes/` is not copied into `template/` or generated outputs.
-- Neutral generated output is SDD-neutral; selected variants or extensions own any generated SDD content.
+- Neutral generated output is SDD-neutral; generated SDD content is owned only by an explicitly selected external extension, never by a variant or the neutral template.
 - All references use `variant` and `overlay` terminology.
 - No alternate variant metadata remains.
 
@@ -51,8 +51,8 @@ When adding or modifying a variant, confirm the following contract checks:
 - Variant metadata is declared in `starter.yaml` as a map keyed by variant id.
 - Overlay paths are relative to the starter repository root, not to `template/`.
 - Overlay content lives outside `template/`.
-- Overlay-provided `openspec/config.yaml` uses full-file replacement, not YAML merge or partial override.
-- Overlay `openspec/config.yaml` declares `schema: spec-driven`, retains rendered project identity and starter provenance, and preserves or strengthens base validation rules.
+- Overlay files are applied as complete files (added or fully replaced), not through YAML merge or partial override.
+- A variant contributes no SDD/OpenSpec baseline; SDD content requires an explicitly selected external extension.
 - Variant validations are additive to the neutral starter validations.
 - Documentation describes the conceptual overlay order (template base, overlay files, placeholder rendering, validation).
 
@@ -163,8 +163,8 @@ For MWS validation, confirm:
 - `variants.mws.overlay.path` is `variants/mws/overlay`.
 - `variants.mws.placeholders.required` includes `PROJECT_ID`.
 - `examples/render.mws.yaml` selects `mws` and includes `PROJECT_ID`.
-- Rendered output includes `mws.project.yaml`, `docs/mws.md`, `docs/mws-openspec.md`, and `openspec/specs/mws-project-lifecycle/spec.md`.
-- Rendered output uses the MWS overlay's complete `openspec/config.yaml` contribution; the neutral template has no OpenSpec config to replace.
+- Rendered output includes `mws.project.yaml` and `docs/mws.md`.
+- Rendered output contains no `openspec/**`; the `mws` variant ships no SDD baseline.
 
 Inside a generated project, run (the first install produces the project's `pnpm-lock.yaml`; a later `--frozen-lockfile` install then reproduces from it):
 
