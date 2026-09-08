@@ -4,6 +4,23 @@ All notable changes to this project are documented in this file.
 
 The format follows the change IDs tracked through OpenSpec. Each entry corresponds to an archived OpenSpec change.
 
+## 0.7.0
+
+### adopt-canonical-starter-toolkit-runtime
+
+BREAKING: Adopt the canonical starter-toolkit runtime. The local renderer
+(`tools/scripts/render-template.mjs`) and its render-time extension machinery are
+removed; generation is delegated to `@mood481/starter-renderer` and contract
+validation to `@mood481/starter-validator`. The exported `starter-foundation-render`
+binary is now a thin shim that delegates to the canonical `starter-render`. The
+neutral `template/` no longer ships a `pnpm-lock.yaml` and its placeholder-
+substituting regeneration script is removed; a generated project's lockfile is
+produced by a real `pnpm install` during validation. The toolkit packages are
+consumed as published `0.4.0` artifacts by role (renderer runtime, contracts and
+validator devDependencies); the starter toolchain baseline is intentionally left
+unchanged. The `starter-template-renderer` capability is retired and a
+`starter-toolkit-integration` capability added.
+
 ## 0.6.0
 
 ### add-gitea-npm-package-distribution

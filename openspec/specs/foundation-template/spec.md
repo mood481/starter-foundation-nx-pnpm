@@ -51,7 +51,7 @@ A project generated from the template SHALL use a predictable monorepo layout.
 
 ### Requirement: Workspace Configuration
 
-The template SHALL provide the base workspace configuration for pnpm and Nx without requiring a concrete SDD provider.
+The template SHALL provide the base workspace configuration for pnpm and Nx without requiring a concrete SDD provider, and SHALL NOT ship a committed lockfile (the generated project's lockfile is created by installing its resolved dependencies, which may change with render-time variants or extensions).
 
 #### Scenario: pnpm workspace file exists
 
@@ -61,7 +61,8 @@ The template SHALL provide the base workspace configuration for pnpm and Nx with
 #### Scenario: pnpm lockfile exists
 
 - **WHEN** the template is inspected
-- **THEN** `pnpm-lock.yaml` SHALL exist to support reproducible dependency installation.
+- **THEN** `pnpm-lock.yaml` SHALL NOT be committed to the neutral template
+- **AND** it SHALL be produced in the generated project by `pnpm install` to support reproducible dependency installation thereafter.
 
 #### Scenario: Nx configuration file exists
 

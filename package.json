@@ -1,6 +1,6 @@
 {
   "name": "@mood481/starter-foundation-nx-pnpm",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": false,
   "description": "Neutral foundation starter for strict Nx + pnpm multi-language monorepos.",
   "type": "module",
@@ -16,21 +16,20 @@
     "ospec:update": "openspec update",
     "ospec:validate": "openspec validate --all --strict",
     "ospec:validate:json": "openspec validate --all --strict --json",
-    "old:render": "node tools/scripts/render-template.mjs",
-    "validate:template:mws": "node tools/scripts/validate-template-render.mjs --variant mws --input examples/render-input.mws.yaml",
-    "validate:template": "node tools/scripts/validate-template-render.mjs",
+    "validate:template:mws": "node tools/scripts/validate-template-render.mjs --input examples/render.mws.yaml",
+    "validate:template": "node tools/scripts/validate-template-render.mjs --input examples/render.neutral.yaml",
     "validate:spec": "pnpm ospec:validate",
     "validate": "pnpm validate:spec && pnpm validate:template",
-    "template:update-lock": "node tools/scripts/update-template-lockfile.mjs",
     "starter:validate": "starter-validate --type starter starter.yaml",
     "test:render": "starter-render --input examples/render.neutral.yaml",
     "test:render:mws": "starter-render --input examples/render.mws.yaml",
     "publish:render": "node tools/scripts/publish-package.mjs"
   },
   "bin": {
-    "starter-foundation-render": "tools/scripts/render-template.mjs"
+    "starter-foundation-render": "bin/starter-foundation-render.mjs"
   },
   "files": [
+    "bin/starter-foundation-render.mjs",
     "tools/scripts/validate-template-render.mjs",
     "starter.yaml",
     "template/**",

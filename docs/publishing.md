@@ -1,9 +1,14 @@
 # Publishing
 
-This document covers publishing the starter-owned renderer package and consuming
-it from the organization's private Gitea npm registry. It is a starter-
-maintenance document; root `openspec/` artifacts are never copied into a
-generated project.
+This document covers publishing the starter package and consuming it from the
+organization's private Gitea npm registry. The published package exports
+`starter-foundation-render` as a thin shim that delegates to the canonical
+`@mood481/starter-renderer`, which is a runtime dependency; the toolkit
+`@mood481/starter-contracts` and `@mood481/starter-validator` are devDependencies
+used for local validation. All three are consumed from Gitea at their published
+`0.4.0` versions, and the neutral `template/` no longer ships a lockfile. This is
+a starter-maintenance document; root `openspec/` artifacts are never copied into
+a generated project.
 
 ## Registry
 
@@ -42,7 +47,7 @@ and cannot find this private package.
 
 ## Local Publishing
 
-The repository-owned `starter:publish` script is the only manual publish
+The repository-owned `pnpm publish:render` script is the only manual publish
 entrypoint. It supplies the Gitea registry to `pnpm publish` and creates a
 short-lived userconfig when `GITEA_TOKEN` is set. It prints the selected
 package, registry, and channel, then stages a clean temporary package directory
@@ -57,7 +62,7 @@ Local and manual publishing requires a prerelease version. For example:
 pnpm version prerelease --preid=devel --no-git-tag-version
 read -r -s GITEA_TOKEN
 export GITEA_TOKEN
-pnpm starter:publish
+pnpm publish:render
 ```
 
 The channel policy is:
@@ -78,7 +83,7 @@ select the registry or provide authentication.
 ## GitHub Actions Configuration
 
 The workflow lives at `.github/workflows/publish.yml` and calls the same
-`pnpm starter:publish` entrypoint used locally. It publishes to external Gitea,
+`pnpm publish:render` entrypoint used locally. It publishes to external Gitea,
 not GitHub Packages.
 
 Configure the repository before using it:
@@ -107,12 +112,10 @@ workflow.
 With the `@mood481` mapping and a `package:read` token loaded:
 
 ```bash
-npx @mood481/starter-foundation-nx-pnpm@<version> --help
+npx @mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --help
 ```
 
-The published binary and local `pnpm starter:render` entrypoint must expose the
-same renderer behavior. A scoped package is private even though unscoped npm
-dependencies remain public.
+The `starter-foundation-render` binary delegates to the canonical `starter-render`, so its behavior matches invoking `starter-render` directly. Because the package's runtime dependency `@mood481/starter-renderer` (and its transitive `@mood481/starter-contracts`/`starter-validator`) also resolve from the `@mood481` scope on Gitea, consumers need the mapping even for `npx`. Scoped packages are private; unscoped dependencies such as `yaml` and `ajv` still resolve from the public npm registry.
 
 ## Validation
 
@@ -120,10 +123,14 @@ Run the local checks before publishing:
 
 ```bash
 pnpm validate
-pnpm ospec validate "add-gitea-npm-package-distribution" --strict
+pnpm ospec validate "<change-id>" --strict
 ```
 
-For an actual Gitea smoke test, use a test owner and a prerelease version. Get
+Confirm the published `files` ship `bin/starter-foundation-render.mjs` and do not
+contain the removed local renderer, the extension machinery, or a
+`template/pnpm-lock.yaml`.
+
+For an actual Gitea smoke test (operator-only; needs a real token), use a test owner and a prerelease version. Get
 metadata with `pnpm view`, inspect the `dist.tarball` URL with an authenticated
 GET, and list the package contents with `tar -tzf`. Confirm that
 `template/**/node_modules/**` is absent.

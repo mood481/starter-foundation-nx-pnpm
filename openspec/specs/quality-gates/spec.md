@@ -32,17 +32,18 @@ The generated project SHALL expose baseline validation commands from the root pa
 
 ### Requirement: Deterministic Foundation Validation
 
-The generated project SHALL support deterministic validation of the neutral foundation.
+The generated project SHALL support deterministic validation of the neutral foundation, with dependencies resolved by a real install from the template's `package.json` rather than from a lockfile shipped in the neutral template.
 
 #### Scenario: Dependencies can be installed reproducibly
 
 - **WHEN** a generated project is validated
-- **THEN** dependency installation SHOULD support frozen-lockfile mode.
+- **THEN** dependency installation SHALL resolve from the generated `package.json`, and a later `pnpm install --frozen-lockfile` SHALL be supported from the install-produced lockfile.
 
 #### Scenario: Lockfile exists
 
-- **WHEN** the generated project is inspected
-- **THEN** `pnpm-lock.yaml` SHALL exist.
+- **WHEN** the generated project is inspected after dependencies are installed
+- **THEN** `pnpm-lock.yaml` SHALL exist in the generated project
+- **AND** the neutral `template/` SHALL NOT ship a committed `pnpm-lock.yaml`.
 
 #### Scenario: Workspace validation can be run
 
@@ -122,7 +123,7 @@ The starter repository SHALL expose working OpenSpec package scripts from the ro
 
 ### Requirement: Rendered Template Validation
 
-The starter repository SHALL provide an automated validation command that renders the neutral template through the generic starter renderer and verifies the rendered SDD-neutral generated project.
+The starter repository SHALL provide an automated validation command that renders the neutral template through the canonical `@mood481/starter-renderer` and verifies the rendered SDD-neutral generated project, and SHALL validate its contract documents through the canonical `@mood481/starter-validator`.
 
 #### Scenario: Template validation command exists
 
@@ -136,17 +137,24 @@ The starter repository SHALL provide an automated validation command that render
 - **AND** it SHALL run strict OpenSpec validation for the starter repository
 - **AND** it MUST NOT be required in the generated neutral project.
 
+#### Scenario: Contract validation command uses the canonical validator
+
+- **WHEN** the root `package.json` scripts are inspected
+- **THEN** a starter-contract validation script SHALL exist that runs `starter-validate --type starter starter.yaml`
+- **AND** render-input examples SHALL be validatable with the canonical validator `--type render`.
+
 #### Scenario: Template is rendered to temporary output
 
 - **WHEN** `pnpm validate:template` is run
-- **THEN** it SHALL render the neutral template through the generic starter renderer into a temporary generated-project directory
+- **THEN** it SHALL render the neutral template through the canonical renderer into a temporary generated-project directory
 - **AND** it SHALL resolve the neutral starter placeholders using deterministic validation values
 - **AND** it SHALL use zero selected extensions.
 
 #### Scenario: Validation uses renderer semantics
 
 - **WHEN** `pnpm validate:template` renders the neutral template
-- **THEN** it SHALL use the same template path, placeholder resolution, output safety, extension-empty-set, and unresolved-placeholder semantics as `pnpm starter:render`.
+- **THEN** it SHALL use the canonical `starter-render` semantics for template path, placeholder resolution, output safety, extension-empty-set, and unresolved-placeholder handling
+- **AND** it MUST NOT depend on a deleted local renderer script.
 
 #### Scenario: Neutral output has no SDD artifacts
 
@@ -162,7 +170,8 @@ The starter repository SHALL provide an automated validation command that render
 #### Scenario: Rendered project installs reproducibly
 
 - **WHEN** `pnpm validate:template` validates the rendered generated project
-- **THEN** it SHALL run `pnpm install --frozen-lockfile` in the rendered generated-project directory.
+- **THEN** it SHALL run a real `pnpm install` in the rendered generated-project directory
+- **AND** that install SHALL create the generated project's `pnpm-lock.yaml`.
 
 #### Scenario: Rendered project validation runs
 
