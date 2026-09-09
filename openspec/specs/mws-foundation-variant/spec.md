@@ -24,8 +24,8 @@ The starter repository SHALL provide an `mws` variant overlay for generating MWS
 #### Scenario: MWS overlay adds only foundation content
 
 - **WHEN** the `mws` overlay is inspected
-- **THEN** it SHALL add only foundation metadata, documentation, and OpenSpec specs
-- **AND** it MUST NOT add application, API, mobile, web, worker, service, package, infrastructure, auth, storage, eventing, or observability modules.
+- **THEN** it SHALL add only MWS foundation metadata and foundation documentation
+- **AND** it SHALL NOT add an OpenSpec/SDD baseline, application, API, mobile, web, worker, service, package, infrastructure, auth, storage, eventing, or observability modules.
 
 ### Requirement: MWS Project Metadata
 
@@ -59,89 +59,32 @@ Projects generated with the `mws` variant SHALL include root MWS project metadat
 
 ### Requirement: MWS Variant Selection Input
 
-The starter repository SHALL document MWS variant selection through the generic starter renderer and a structured render input file.
+The starter repository SHALL document MWS variant selection through the canonical `@mood481/starter-renderer` and a structured render request file.
 
 #### Scenario: MWS render input example exists
 
 - **WHEN** the starter repository is inspected
-- **THEN** `examples/render-input.mws.yaml` SHALL exist.
+- **THEN** `examples/render.mws.yaml` SHALL exist.
 
 #### Scenario: MWS render input selects variant
 
-- **WHEN** `examples/render-input.mws.yaml` is inspected
+- **WHEN** `examples/render.mws.yaml` is inspected
 - **THEN** it SHALL select the `mws` variant.
 
 #### Scenario: MWS render input includes required project id
 
-- **WHEN** `examples/render-input.mws.yaml` is inspected
+- **WHEN** `examples/render.mws.yaml` is inspected
 - **THEN** it SHALL include `PROJECT_ID` under structured placeholders.
 
 #### Scenario: MWS render input includes base placeholders
 
-- **WHEN** `examples/render-input.mws.yaml` is inspected
+- **WHEN** `examples/render.mws.yaml` is inspected
 - **THEN** it SHALL include base project placeholders for project name, project slug, project description, and default package scope.
 
 #### Scenario: MWS uses generic renderer selection
 
 - **WHEN** a project is generated with the `mws` variant
-- **THEN** the `mws` overlay SHALL be selected through the generic starter renderer.
-
-### Requirement: MWS Generated Documentation
-
-Projects generated with the `mws` variant SHALL include MWS-specific foundation documentation.
-
-#### Scenario: MWS documentation is added
-
-- **WHEN** a project is generated with the `mws` variant
-- **THEN** `docs/mws.md` SHALL exist.
-
-#### Scenario: MWS OpenSpec operation documentation is added
-
-- **WHEN** a project is generated with the `mws` variant
-- **THEN** `docs/mws-openspec.md` SHALL exist.
-
-#### Scenario: MWS documentation explains variant usage
-
-- **WHEN** `docs/mws.md` is inspected
-- **THEN** it SHALL explain that the repository was generated with the `mws` variant
-- **AND** it SHALL identify `mws.project.yaml` as the generated project metadata file
-- **AND** it SHOULD explain that later modules and capabilities are added through module starters and OpenSpec changes.
-
-#### Scenario: MWS OpenSpec operation documentation explains human workflow
-
-- **WHEN** `docs/mws-openspec.md` is inspected
-- **THEN** it SHALL explain how human maintainers use local OpenSpec scripts for development and review
-- **AND** it SHALL explain that local assistant command packs are not part of the generated template or MWS variant contract.
-
-### Requirement: MWS Generated OpenSpec Baseline
-
-Projects generated with the `mws` variant SHALL include an MWS-provided OpenSpec baseline as an explicit variant contribution; this requirement does not make OpenSpec part of the neutral template.
-
-#### Scenario: MWS lifecycle spec is added
-
-- **WHEN** a project is generated with the `mws` variant
-- **THEN** `openspec/specs/mws-project-lifecycle/spec.md` SHALL exist.
-
-#### Scenario: MWS lifecycle spec stays generated-project focused
-
-- **WHEN** `openspec/specs/mws-project-lifecycle/spec.md` is inspected
-- **THEN** it SHALL describe generated-project expectations
-- **AND** it MUST NOT describe the internal implementation of MWS orchestration services.
-
-#### Scenario: MWS variant replaces generated OpenSpec config
-
-- **WHEN** the `mws` overlay is applied
-- **THEN** it SHALL add `openspec/config.yaml` as a complete variant-provided file
-- **AND** it SHALL NOT depend on a neutral `openspec/config.yaml`
-- **AND** it SHALL not be interpreted through YAML merge or partial override semantics.
-
-#### Scenario: MWS OpenSpec config is stricter than neutral config
-
-- **WHEN** rendered `openspec/config.yaml` is inspected for an MWS generated project
-- **THEN** it SHALL declare `schema: spec-driven`
-- **AND** it SHALL retain rendered project identity and starter provenance
-- **AND** it SHALL include MWS-specific rules for deterministic, high-reliability implementation
-- **AND** it SHALL NOT copy starter-maintenance root context.
+- **THEN** the `mws` overlay SHALL be selected through the canonical `starter-render`.
 
 ### Requirement: MWS Variant Render Validation
 
@@ -155,7 +98,7 @@ The starter repository SHALL validate the rendered output of the `mws` variant.
 #### Scenario: MWS validation uses generic renderer
 
 - **WHEN** `validate:template:mws` is run
-- **THEN** it SHALL render the `mws` variant through the generic starter renderer semantics.
+- **THEN** it SHALL render the `mws` variant through the canonical `starter-render` semantics.
 
 #### Scenario: MWS render resolves all placeholders
 
@@ -166,15 +109,26 @@ The starter repository SHALL validate the rendered output of the `mws` variant.
 
 - **WHEN** MWS variant render validation runs
 - **THEN** the rendered output SHALL include `mws.project.yaml`
-- **AND** it SHALL include `docs/mws.md`
-- **AND** it SHALL include `docs/mws-openspec.md`
-- **AND** it SHALL include `openspec/config.yaml`
-- **AND** it SHALL include `openspec/specs/mws-project-lifecycle/spec.md`.
+- **AND** it SHALL include `docs/mws.md`.
 
 #### Scenario: Neutral render excludes MWS overlay files
 
 - **WHEN** neutral template render validation runs without selecting a variant
 - **THEN** the rendered output SHALL NOT include `mws.project.yaml`
-- **AND** it SHALL NOT include `docs/mws.md`
-- **AND** it SHALL NOT include `docs/mws-openspec.md`
-- **AND** it SHALL NOT include `openspec/specs/mws-project-lifecycle/spec.md`.
+- **AND** it SHALL NOT include `docs/mws.md`.
+
+### Requirement: MWS Generated Variant Documentation
+
+Projects generated with the `mws` variant SHALL include MWS-specific foundation documentation that describes the variant without implying a bundled SDD provider.
+
+#### Scenario: MWS documentation is added
+
+- **WHEN** a project is generated with the `mws` variant
+- **THEN** `docs/mws.md` SHALL exist.
+
+#### Scenario: MWS documentation explains variant usage
+
+- **WHEN** `docs/mws.md` is inspected
+- **THEN** it SHALL explain that the repository was generated with the `mws` variant
+- **AND** it SHALL identify `mws.project.yaml` as the generated project metadata file
+- **AND** it SHALL NOT claim that the `mws` variant provides an OpenSpec/SDD baseline.

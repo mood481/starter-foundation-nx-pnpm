@@ -8,15 +8,14 @@ The foundation-starter specification defines the contract for a neutral Nx + pnp
 
 ### Requirement: Neutral Foundation Starter
 
-The starter repository SHALL define a neutral foundation starter for Nx + pnpm monorepos while allowing approved variants and optional extensions outside the neutral template.
+The starter repository SHALL define a neutral foundation starter for Nx + pnpm monorepos, delegating render/validation contracts to the canonical starter-toolkit while allowing approved variants and optional external extensions outside the neutral template.
 
 #### Scenario: Starter identity is declared
 
 - **WHEN** a consumer inspects the starter metadata
 - **THEN** the starter id SHALL be `foundation-nx-pnpm`
 - **AND** the starter kind SHALL be `foundation`
-- **AND** the starter SHALL declare a semantic version
-- **AND** the `0.5.0` release SHALL identify version `0.5.0`.
+- **AND** the release version SHALL be owned by package/distribution metadata such as `package.json` rather than a hard-coded number in the specification.
 
 #### Scenario: Neutral template remains variant-independent
 
@@ -28,13 +27,19 @@ The starter repository SHALL define a neutral foundation starter for Nx + pnpm m
 
 #### Scenario: Approved variants may exist outside the neutral template
 
-- **WHEN** a concrete variant or optional extension is selected by an approved render contract
+- **WHEN** a concrete variant or an optional external extension is selected by the canonical render contract
 - **THEN** its contributions SHALL be applied separately from the neutral template
 - **AND** the neutral template SHALL remain usable without that variant or extension.
 
 ### Requirement: Starter Metadata Contract
 
-The starter repository SHALL provide a root `starter.yaml` file describing how the starter is consumed, including placeholder, variant, and optional-extension declarations.
+The starter repository SHALL provide a root `starter.yaml` conforming to the canonical starter contract (schema version, identity, modes, template, variants, and provides) and SHALL NOT declare repository-owned extension descriptors or a default SDD provider.
+
+#### Scenario: Schema version and modes are declared
+
+- **WHEN** the `starter.yaml` file is read
+- **THEN** it SHALL declare `schemaVersion`
+- **AND** it SHALL declare `modes` and a `defaultMode` that names an enabled mode.
 
 #### Scenario: Template path is declared
 
@@ -44,7 +49,7 @@ The starter repository SHALL provide a root `starter.yaml` file describing how t
 #### Scenario: Placeholder strategy is declared
 
 - **WHEN** the `starter.yaml` file is read
-- **THEN** it SHALL declare the placeholder style
+- **THEN** it SHALL declare the required placeholder keys
 - **AND** it SHALL require unresolved placeholders to fail rendering.
 
 #### Scenario: SDD provider is declared
@@ -57,10 +62,9 @@ The starter repository SHALL provide a root `starter.yaml` file describing how t
 #### Scenario: Extension defaults are declared without bundling an extension
 
 - **WHEN** the `starter.yaml` file is read
-- **THEN** its `extensions` field SHALL be an empty list (`[]`)
-- **AND** its optional `extensionGroups` field SHALL be an empty map when no group is provided
-- **AND** its `provides` list SHALL include `extension-support`
-- **AND** it MUST NOT declare a concrete extension descriptor.
+- **THEN** it SHALL NOT contain a repository extension-declaration or extension-group block
+- **AND** `provides` SHALL list only capabilities this starter actually provides (for example `workspace`, `nx`, `pnpm`, `multi-language`)
+- **AND** any concrete extension SHALL be supplied externally under the toolkit render-extension contract, not declared here.
 
 #### Scenario: Variant map is declared
 
@@ -165,8 +169,9 @@ The starter repository SHALL allow concrete variants only when introduced by app
 
 #### Scenario: MWS variant validation is declared
 
-- **WHEN** `starter.yaml` is inspected
-- **THEN** `variants.mws.validations` SHALL include a command that validates the rendered MWS variant.
+- **WHEN** the starter repository is inspected
+- **THEN** the repository SHALL provide a `validate:template:mws` command that validates the rendered `mws` variant
+- **AND** the variant MAY optionally declare additional validation commands in `starter.yaml` but is not required to.
 
 #### Scenario: Neutral template remains default
 
