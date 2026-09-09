@@ -1,6 +1,6 @@
 {
   "name": "@mood481/starter-foundation-nx-pnpm",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": false,
   "description": "Neutral foundation starter for strict Nx + pnpm multi-language monorepos.",
   "type": "module",
@@ -16,26 +16,23 @@
     "ospec:update": "openspec update",
     "ospec:validate": "openspec validate --all --strict",
     "ospec:validate:json": "openspec validate --all --strict --json",
-    "starter:render": "node tools/scripts/render-template.mjs",
-    "starter:publish": "node tools/scripts/publish-package.mjs",
-    "validate:template:mws": "node tools/scripts/validate-template-render.mjs --variant mws --input examples/render-input.mws.yaml",
-    "validate:template": "node tools/scripts/validate-template-render.mjs",
+    "validate:template:mws": "node tools/scripts/validate-template-render.mjs --input examples/render.mws.yaml",
+    "validate:template": "node tools/scripts/validate-template-render.mjs --input examples/render.neutral.yaml",
     "validate:spec": "pnpm ospec:validate",
     "validate": "pnpm validate:spec && pnpm validate:template",
-    "template:update-lock": "node tools/scripts/update-template-lockfile.mjs"
+    "starter:validate": "starter-validate --type starter starter.yaml",
+    "test:render": "starter-render --input examples/render.neutral.yaml",
+    "test:render:mws": "starter-render --input examples/render.mws.yaml",
+    "publish:render": "node tools/scripts/publish-package.mjs",
+    "publish:render:dev": "cp .npmrc.example dist/.npmrc && source .env.publish && PNPM_CONFIG_NPMRC_AUTH_FILE=dist/.npmrc && pnpm publish:render && rm dist/.npmrc"
   },
   "bin": {
-    "starter-foundation-render": "tools/scripts/render-template.mjs"
+    "starter-foundation-render": "bin/starter-foundation-render.mjs"
   },
   "files": [
-    "tools/scripts/render-template.mjs",
-    "tools/scripts/extension-contract.mjs",
-    "tools/scripts/extension-utils.mjs",
-    "tools/scripts/extension-resolver.mjs",
-    "tools/scripts/extension-composer.mjs",
+    "bin/starter-foundation-render.mjs",
     "tools/scripts/validate-template-render.mjs",
     "starter.yaml",
-    "starter.render.yaml",
     "template/**",
     "!template/**/node_modules/**",
     "template/.gitignore",
@@ -49,10 +46,13 @@
     "access": "public"
   },
   "dependencies": {
+    "@mood481/starter-renderer": "0.4.0",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@fission-ai/openspec": "~1.12.0"
+    "@fission-ai/openspec": "~1.12.0",
+    "@mood481/starter-contracts": "0.4.0",
+    "@mood481/starter-validator": "0.4.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

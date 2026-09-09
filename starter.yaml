@@ -1,22 +1,19 @@
+schemaVersion: 1
 id: foundation-nx-pnpm
 name: Foundation Nx pnpm Monorepo
 kind: foundation
-version: 0.6.0
+modes:
+  standalone: {}
+defaultMode: standalone
 
 template:
   path: template
-  engine: starter-renderer
   placeholders:
-    style: double-underscore
-    failOnUnresolved: true
     required:
       - PROJECT_NAME
       - PROJECT_SLUG
       - PROJECT_DESCRIPTION
       - DEFAULT_PACKAGE_SCOPE
-
-extensions: []
-extensionGroups: {}
 
 variants:
   mws:
@@ -27,40 +24,9 @@ variants:
     placeholders:
       required:
         - PROJECT_ID
-    validations:
-      - pnpm validate:template:mws
 
 provides:
-  - monorepo
-  - nx-workspace
-  - pnpm-workspace
-  - extension-support
-  - quality-gates
-  - multi-language-workspace
-
-paths:
-  apps: apps
-  services: services
-  packages: packages
-  tools: tools
-  docs: docs
-
-projectRules:
-  configFile: project.json
-  requiredTargets:
-    - lint
-    - test
-  optionalTargets:
-    - typecheck
-    - build
-    - e2e
-    - serve
-    - docker
-  requiredTags:
-    - type
-    - lang
-
-validations:
-  - pnpm install --frozen-lockfile
-  - pnpm validate
-  - pnpm nx graph --file=tmp/nx-graph.json
+  - workspace
+  - nx
+  - pnpm
+  - multi-language

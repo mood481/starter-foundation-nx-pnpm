@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The foundation-starter specification defines the contract for a neutral starter template that provides a baseline structure for generating new projects using the OpenSpec framework. This specification outlines the expected directory layout, project structure, and workspace configuration for generated projects.
+The foundation-starter specification defines the contract for a neutral Nx + pnpm starter whose rendering and validation are delegated to the canonical starter-toolkit. It outlines the expected directory layout, project structure, and workspace configuration for generated projects; any SDD content comes from an explicitly selected external extension, not from a framework baked into the starter.
 
 ## Requirements
 

@@ -1,7 +1,7 @@
 # dependency-automation Specification
 
 ## Purpose
-The dependency-automation specification defines the starter repository's Renovate scope, OpenSpec update policy, workflow safeguards, and maintenance expectations for the template lockfile.
+The dependency-automation specification defines the starter repository's Renovate scope, OpenSpec update policy, and workflow safeguards.
 
 ## Requirements
 
@@ -178,28 +178,3 @@ Renovate SHALL NOT propose major updates to the pnpm `packageManager` pin.
 
 - **WHEN** Renovate evaluates the root `packageManager` pin (pnpm)
 - **THEN** minor and patch pnpm updates SHALL still be proposed as manual pull requests.
-
-### Requirement: Template Dependency Lockfile Maintenance
-
-The starter SHALL provide a local mechanism to regenerate `template/pnpm-lock.yaml` when `template/package.json` changes, because the template's `package.json` uses placeholders that prevent `pnpm install` from running directly. Renovate SHALL NOT manage the template; the maintainer updates it locally at their discretion.
-
-#### Scenario: Template lockfile updates with OpenSpec
-
-- **WHEN** a maintainer changes a dependency in `template/package.json` and runs the template lockfile update script
-- **THEN** it SHALL substitute the template placeholders (`__PNPM_VERSION__`, `__NODE_VERSION__`, `__PROJECT_SLUG__`, `__PROJECT_DESCRIPTION__`) in `template/package.json` with concrete values derived from the root `package.json`
-- **AND** it SHALL run `pnpm install --ignore-scripts` in `template/` to regenerate `template/pnpm-lock.yaml`
-- **AND** it SHALL restore the placeholder `template/package.json`
-- **AND** the maintainer SHALL commit the regenerated `template/pnpm-lock.yaml`.
-
-#### Scenario: Renovate does not update the template lockfile itself
-
-- **WHEN** `renovate.json` is inspected
-- **THEN** it SHALL disable `template/package.json` entirely (`enabled: false`)
-- **AND** Renovate SHALL NOT propose any dependency update for the template on GitHub
-- **AND** Renovate SHALL NOT attempt to regenerate `template/pnpm-lock.yaml`.
-
-#### Scenario: Non-OpenSpec template dependencies stay disabled
-
-- **WHEN** `renovate.json` is inspected
-- **THEN** every dependency in `template/package.json` SHALL be disabled from Renovate updates because the entire file is disabled (`enabled: false`)
-- **AND** the npm manager SHALL remain enabled for the repository root so the root lockfile stays maintained.

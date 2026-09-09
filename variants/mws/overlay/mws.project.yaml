@@ -5,22 +5,18 @@ project:
   slug: "__PROJECT_SLUG__"
   description: "__PROJECT_DESCRIPTION__"
 starter:
-  id: "__STARTER_ID__"
-  version: "__STARTER_VERSION__"
+  id: starter-foundation-nx-pnpm
+  version: "__VERSION__"
   variant: mws
 workspace:
   packageManager: pnpm
   orchestrator: nx
-sdd:
-  provider: openspec
-  root: openspec
 paths:
   apps: apps
   services: services
   packages: packages
   tools: tools
   docs: docs
-  sdd: openspec
 lifecycle:
   phase: foundation
   modules: []

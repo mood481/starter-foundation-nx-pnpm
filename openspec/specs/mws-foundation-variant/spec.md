@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The mws-foundation-variant specification defines the contract for the MWS-compatible variant overlay, including MWS project metadata, generated documentation, OpenSpec baseline, and variant render validation.
+The mws-foundation-variant specification defines the contract for the MWS-compatible variant overlay, including MWS project metadata, generated variant documentation, and variant render validation. The overlay contributes only foundation metadata and documentation; any SDD content comes from an explicitly selected external extension, not from this variant.
 
 ## Requirements
 
