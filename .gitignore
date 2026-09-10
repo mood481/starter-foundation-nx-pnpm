@@ -64,7 +64,9 @@ opencode.local.json
 opencode.local.jsonc
 
 # Local registry credentials
-/.npmrc
+.npmrc
+.npmrc.*
+!.npmrc.example
 .env
 .env.*
 !.env.example

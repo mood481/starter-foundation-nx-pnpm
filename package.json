@@ -1,6 +1,6 @@
 {
   "name": "@mood481/starter-foundation-nx-pnpm",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "private": false,
   "description": "Neutral foundation starter for strict Nx + pnpm multi-language monorepos.",
   "type": "module",
@@ -24,7 +24,7 @@
     "test:render": "starter-render --input examples/render.neutral.yaml",
     "test:render:mws": "starter-render --input examples/render.mws.yaml",
     "publish:render": "node tools/scripts/publish-package.mjs",
-    "publish:render:dev": "cp .npmrc.example dist/.npmrc && source .env.publish && PNPM_CONFIG_NPMRC_AUTH_FILE=dist/.npmrc && pnpm publish:render && rm dist/.npmrc"
+    "publish:render:dev": "cp .npmrc.example .npmrc && source .env.publish && NPM_CONFIG_USERCONFIG=.npmrc pnpm publish:render"
   },
   "bin": {
     "starter-foundation-render": "bin/starter-foundation-render.mjs"
@@ -46,7 +46,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@mood481/starter-renderer": "0.4.0",
+    "@mood481/starter-renderer": "0.4.1",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
