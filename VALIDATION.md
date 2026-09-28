@@ -12,25 +12,11 @@ Run full starter validation:
 pnpm validate
 ```
 
-This runs strict OpenSpec validation for the starter repository and validates a rendered copy of the neutral generated template.
+This runs the starter validation: it renders a copy of the neutral generated template and validates it.
 
-### Spec Validation
+### Planning Artifacts
 
-Validate all OpenSpec artifacts:
-
-```bash
-pnpm validate:spec
-```
-
-`pnpm validate:spec` calls the local `ospec:validate` package script, which already enables `--all --strict`. Do not append another `--strict` or use `npx openspec`.
-
-Validate the current change in strict mode:
-
-```bash
-pnpm ospec validate "<change-id>" --strict
-```
-
-If a direct executable invocation is required, use `pnpm exec openspec` so OpenSpec is resolved from local `node_modules`.
+The former OpenSpec specs and changes are retired as a read-only archive under `docs/openspec-archive/`. There is no spec-validation gate anymore; current planning artifacts live in the repository's own SDD-integrated task system.
 
 ### Constraint Validation
 
@@ -39,7 +25,7 @@ Confirm the following after implementation:
 - Concrete variant directories exist only for approved variants declared in `starter.yaml`.
 - Variant-specific metadata files live outside the neutral `template/` and are applied through overlays.
 - No API, mobile, web, service, auth, eventing, storage, observability, or infrastructure module is added.
-- Root `openspec/changes/` is not copied into `template/` or generated outputs.
+- Retired planning artifacts (`docs/openspec-archive/`) are not copied into `template/` or generated outputs.
 - Neutral generated output is SDD-neutral; generated SDD content is owned only by an explicitly selected external extension, never by a variant or the neutral template.
 - All references use `variant` and `overlay` terminology.
 - No alternate variant metadata remains.
@@ -52,7 +38,7 @@ When adding or modifying a variant, confirm the following contract checks:
 - Overlay paths are relative to the starter repository root, not to `template/`.
 - Overlay content lives outside `template/`.
 - Overlay files are applied as complete files (added or fully replaced), not through YAML merge or partial override.
-- A variant contributes no SDD/OpenSpec baseline; SDD content requires an explicitly selected external extension.
+- A variant contributes no SDD baseline; SDD content requires an explicitly selected external extension.
 - Variant validations are additive to the neutral starter validations.
 - Documentation describes the conceptual overlay order (template base, overlay files, placeholder rendering, validation).
 
@@ -62,7 +48,7 @@ When adding or modifying a variant, confirm the following contract checks:
 
 - `starter.yaml` declares the expected contract fields.
 - `template/` contains the expected directory structure.
-- The neutral template does not require an OpenSpec directory or provider.
+- The neutral template does not require an SDD directory or provider.
 
 ### Rendered Output Validation
 
@@ -145,7 +131,7 @@ node bin/starter-foundation-render.mjs --help
 node bin/starter-foundation-render.mjs --input examples/render.neutral.yaml --output tmp/shim-check
 ```
 
-Published-package packing and the Gitea consumer/`npx` checks (which need the `@mood481` scope mapping and a `package:read` `GITEA_TOKEN`) are covered in [docs/publishing.md](docs/publishing.md). OpenSpec remains root starter-maintenance tooling, invoked through the local `pnpm` commands above; it is not installed in a neutral generated project.
+Published-package packing and the Gitea consumer/`npx` checks (which need the `@mood481` scope mapping and a `package:read` `GITEA_TOKEN`) are covered in [docs/publishing.md](docs/publishing.md). The retired OpenSpec archive under `docs/openspec-archive/` is not installed in a neutral generated project.
 
 ## Variant Validation
 

@@ -10,16 +10,9 @@
     "pnpm": ">=10.0.0"
   },
   "scripts": {
-    "ospec": "openspec",
-    "ospec:list": "openspec list",
-    "ospec:list:specs": "openspec list --specs",
-    "ospec:update": "openspec update",
-    "ospec:validate": "openspec validate --all --strict",
-    "ospec:validate:json": "openspec validate --all --strict --json",
     "validate:template:mws": "node tools/scripts/validate-template-render.mjs --input examples/render.mws.yaml",
     "validate:template": "node tools/scripts/validate-template-render.mjs --input examples/render.neutral.yaml",
-    "validate:spec": "pnpm ospec:validate",
-    "validate": "pnpm validate:spec && pnpm validate:template",
+    "validate": "pnpm validate:template",
     "starter:validate": "starter-validate --type starter starter.yaml",
     "test:render": "starter-render --input examples/render.neutral.yaml",
     "test:render:mws": "starter-render --input examples/render.mws.yaml",
@@ -50,13 +43,7 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@fission-ai/openspec": "~1.12.0",
     "@mood481/starter-contracts": "0.4.0",
     "@mood481/starter-validator": "0.4.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@fission-ai/openspec"
-    ]
   }
 }

@@ -16,19 +16,6 @@
       "matchDepNames": ["pnpm"],
       "matchUpdateTypes": ["major"],
       "enabled": false
-    },
-    {
-      "matchDepNames": ["@fission-ai/openspec"],
-      "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true,
-      "automergeType": "pr",
-      "automergeStrategy": "rebase",
-      "platformAutomerge": true
-    },
-    {
-      "matchDepNames": ["@fission-ai/openspec"],
-      "matchUpdateTypes": ["major"],
-      "automerge": false
     }
   ]
 }

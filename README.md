@@ -67,7 +67,7 @@ The package is privately distributed through Gitea and delegates rendering to th
 .
 ├── .github/           # GitHub Actions workflows
 ├── bin/               # Exported binary (delegates to canonical starter-render)
-├── openspec/          # Starter-maintenance SDD artifacts
+├── docs/              # Starter-maintenance documentation (includes the retired OpenSpec archive)
 ├── template/          # Neutral generated-project baseline (no shipped lockfile)
 ├── docs/              # Starter-maintenance documentation
 ├── starter.yaml       # Starter contract metadata
@@ -187,30 +187,23 @@ Variant selection is an input to `starter-render`; variants do not require varia
 
 Future variants may declare additional validation commands. These validations are additive to the neutral starter validations — variants must not remove or weaken base validations unless a later approved change modifies the base validation contract.
 
-### SDD and OpenSpec
+### SDD Handling
 
-OpenSpec is an optional external extension, not part of the neutral template or any variant. A generated project gets SDD content only when an SDD extension is explicitly selected and resolved by the canonical renderer. This starter repository keeps its own root `openspec/` for maintenance regardless.
+SDD content is an optional external extension, not part of the neutral template or any variant. A generated project gets SDD content only when an SDD extension is explicitly selected and resolved by the canonical renderer. The former OpenSpec planning history is kept as a retired read-only archive under `docs/openspec-archive/`; current task management uses the repository's own SDD-integrated system.
 
-### Local OpenSpec Commands
+### Local Validation Commands
 
-OpenSpec is installed locally in this starter for repository maintenance. Use the package scripts for normal validation:
-
-```bash
-pnpm validate:spec
-pnpm ospec:validate
-```
-
-To validate only the active change, use the local passthrough script:
+Repository maintenance validation runs through the package scripts:
 
 ```bash
-pnpm ospec validate "<change-id>" --strict
+pnpm validate
+pnpm validate:template
+pnpm validate:template:mws
 ```
-
-Do not use `npx openspec`; OpenSpec is local starter-maintenance tooling, not part of the generated project.
 
 ## Dependency Automation
 
-This starter repository uses Renovate to keep root `@fission-ai/openspec` maintenance tooling up to date: `patch` and `minor` updates automerge after regenerating the checked-in OpenSpec tooling, while `major` updates stay manual. See `docs/renovate.md` for how to activate Renovate on GitHub or on other Git servers.
+This starter repository uses Renovate to keep root maintenance dependencies up to date through manual pull requests. See `docs/renovate.md` for how to activate Renovate on GitHub or on other Git servers.
 
 ## Terminology
 

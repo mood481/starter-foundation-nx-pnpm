@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented in this file.
 
-The format follows the change IDs tracked through OpenSpec. Each entry corresponds to an archived OpenSpec change.
+The format follows the change IDs tracked through the former OpenSpec workflow. Each entry corresponds to an archived change, now kept as a retired read-only archive under `docs/openspec-archive/`.
 
 ## 0.7.0
 

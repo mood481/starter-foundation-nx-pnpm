@@ -8,8 +8,6 @@
   "permission": {
     "bash": {
       "pnpm *": "allow",
-      "pnpm ospec:*": "allow",
-      "pnpm ospec *": "allow",
       "pnpm validate *": "allow",
       "pnpm validate:*": "allow",
       "nx *": "allow",
@@ -17,7 +15,6 @@
       "cat *": "allow",
       "echo *": "allow",
       "mkdir *": "allow",
-      "openspec *": "allow",
       "rg *": "allow",
       "test *": "allow",
 

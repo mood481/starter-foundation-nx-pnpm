@@ -16,7 +16,7 @@ The metadata identifies:
 
 ## Foundation Scope
 
-The `mws` variant contributes only MWS foundation metadata and MWS foundation documentation. It does not add applications, services, APIs, workers, packages, infrastructure, auth, storage, eventing, or observability modules, and it does not bundle or imply an OpenSpec/SDD baseline. Any SDD integration in a generated project comes from an explicitly selected external extension resolved through the canonical `@mood481/starter-renderer` under the toolkit render-extension contract; the variant itself makes no SDD assumption.
+The `mws` variant contributes only MWS foundation metadata and MWS foundation documentation. It does not add applications, services, APIs, workers, packages, infrastructure, auth, storage, eventing, or observability modules, and it does not bundle or imply an SDD baseline. Any SDD integration in a generated project comes from an explicitly selected external extension resolved through the canonical `@mood481/starter-renderer` under the toolkit render-extension contract; the variant itself makes no SDD assumption.
 
 Later MWS modules and capabilities should be added through dedicated module starters, not by adding SDD content to the `mws` overlay.
 

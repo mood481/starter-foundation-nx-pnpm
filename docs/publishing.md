@@ -7,7 +7,8 @@ organization's private Gitea npm registry. The published package exports
 `@mood481/starter-contracts` and `@mood481/starter-validator` are devDependencies
 used for local validation. All three are consumed from Gitea at their published
 `0.4.0` versions, and the neutral `template/` no longer ships a lockfile. This is
-a starter-maintenance document; root `openspec/` artifacts are never copied into
+a starter-maintenance document; the retired planning archive under
+`docs/openspec-archive/` is never copied into
 a generated project.
 
 ## Registry
@@ -138,7 +139,6 @@ Run the local checks before publishing:
 
 ```bash
 pnpm validate
-pnpm ospec validate "<change-id>" --strict
 ```
 
 Confirm the published `files` ship `bin/starter-foundation-render.mjs` and do not
