@@ -69,9 +69,7 @@ The package is privately distributed through Gitea and delegates rendering to th
 ├── bin/               # Exported binary (delegates to canonical starter-render)
 ├── docs/              # Starter-maintenance documentation (includes the retired OpenSpec archive)
 ├── template/          # Neutral generated-project baseline (no shipped lockfile)
-├── docs/              # Starter-maintenance documentation
 ├── starter.yaml       # Starter contract metadata
-├── renovate.json      # Renovate dependency automation config
 ├── README.md          # This file
 ├── VALIDATION.md      # Validation instructions
 └── CHANGELOG.md       # Change history
@@ -203,7 +201,7 @@ pnpm validate:template:mws
 
 ## Dependency Automation
 
-This starter repository uses Renovate to keep root maintenance dependencies up to date through manual pull requests. See `docs/renovate.md` for how to activate Renovate on GitHub or on other Git servers.
+Dependency automation (Renovate) is not part of this starter. It is provided as an optional `starter-extensions` extension and applied only when explicitly selected, like any other SDD or tooling extension.
 
 ## Terminology
 
