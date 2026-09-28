@@ -109,13 +109,28 @@ workflow.
 
 ## Consuming the Package
 
-With the `@mood481` mapping and a `package:read` token loaded:
+With the `@mood481` mapping and a `package:read` token loaded, run the
+shipped binary by naming the package with `--package` and the binary as the
+command. Do not pass the binary name as a positional argument to the package
+specifier: `npx <pkg> <bin>` forwards `<bin>` as an argument to the binary
+instead of selecting it.
 
 ```bash
-npx @mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --help
+npx --yes --package=@mood481/starter-foundation-nx-pnpm@<version> -- starter-foundation-render --help
+pnpm dlx --package=@mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --help
 ```
 
-The `starter-foundation-render` binary delegates to the canonical `starter-render`, so its behavior matches invoking `starter-render` directly. Because the package's runtime dependency `@mood481/starter-renderer` (and its transitive `@mood481/starter-contracts`/`starter-validator`) also resolve from the `@mood481` scope on Gitea, consumers need the mapping even for `npx`. Scoped packages are private; unscoped dependencies such as `yaml` and `ajv` still resolve from the public npm registry.
+Render examples (`--starter` is injected automatically against the installed
+package root, so consumers only pass the render options):
+
+```bash
+npx --yes --package=@mood481/starter-foundation-nx-pnpm@<version> -- starter-foundation-render --input ./render.yaml --output ./my-project
+pnpm dlx --package=@mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --input ./render.yaml --output ./my-project
+npx --yes --package=@mood481/starter-foundation-nx-pnpm@<version> -- starter-foundation-render --input ./render.yaml --output ./my-project --set PROJECT_NAME="My Project"
+pnpm dlx --package=@mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --variant mws --output ./my-project --set PROJECT_ID=my-project --set PROJECT_NAME="My Project"
+```
+
+The `starter-foundation-render` binary delegates to the canonical `starter-render`, so its behavior matches invoking `starter-render` directly. Because the package's runtime dependency `@mood481/starter-renderer` (and its transitive `@mood481/starter-contracts`/`starter-validator`) also resolve from the `@mood481` scope on Gitea, consumers need the mapping even for `npx`/`pnpm dlx`. Scoped packages are private; unscoped dependencies such as `yaml` and `ajv` still resolve from the public npm registry.
 
 ## Validation
 

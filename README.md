@@ -29,13 +29,16 @@ pnpm test:render
 pnpm test:render:mws
 ```
 
-The package also ships `starter-foundation-render`, a thin binary that delegates to the canonical `starter-render` against the installed package's own starter root:
+The package also ships `starter-foundation-render`, a thin binary that delegates to the canonical `starter-render` against the installed package's own starter root (`--starter` is injected automatically):
 
 ```bash
-npx @mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --input examples/render.neutral.yaml --output ./my-project
+npx --yes --package=@mood481/starter-foundation-nx-pnpm@<version> -- starter-foundation-render --help
+pnpm dlx --package=@mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --help
+npx --yes --package=@mood481/starter-foundation-nx-pnpm@<version> -- starter-foundation-render --input ./render.yaml --output ./my-project
+pnpm dlx --package=@mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --input ./render.yaml --output ./my-project --set PROJECT_NAME="My Project"
 ```
 
-See [docs/publishing.md](docs/publishing.md) for the private Gitea registry and the `@mood481` scope configuration required before `npx`.
+See [docs/publishing.md](docs/publishing.md) for the private Gitea registry and the `@mood481` scope configuration required before `npx`/`pnpm dlx`.
 
 The canonical render request shape is:
 
