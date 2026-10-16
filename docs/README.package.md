@@ -4,7 +4,7 @@ Generate an Nx and pnpm workspace from the Mood foundation starter. The package 
 
 ## Requirements
 
-- Node.js 22.22.2 or later and pnpm 10 or later.
+- Node.js 24 or later. Use pnpm 11 or later for `pnpm dlx`; `npx` only requires npm.
 - Access to the private `@mood481` packages on Gitea.
 
 Configure the `@mood481` scope in your user npm configuration (`~/.npmrc`) and provide a Gitea token with package read access:
@@ -55,11 +55,11 @@ These combinations follow the [pnpm compatibility matrix](https://pnpm.io/instal
 Run the package command with either client:
 
 ```bash
-pnpm dlx @mood481/starter-foundation-nx-pnpm --input ./render.yaml --output ./my-project
-npx --yes @mood481/starter-foundation-nx-pnpm --input ./render.yaml --output ./my-project
+pnpm dlx @mood481/starter-foundation-nx-pnpm --input ./render.yaml
+npx --yes @mood481/starter-foundation-nx-pnpm --input ./render.yaml
 ```
 
-The command uses this package as the starter automatically. `--output` selects the destination; it overrides `paths.root` in the request.
+The command uses this package as the starter automatically. `paths.root` is the output directory, resolved relative to the directory where you run the command. To choose a different destination, pass `--output ./another-project`; it overrides `paths.root`. An absolute path works with either option.
 
 To provide all values on the command line without a request file, use `--output` and repeatable `--set` arguments:
 

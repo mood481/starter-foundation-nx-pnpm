@@ -133,7 +133,7 @@ npx --yes @mood481/starter-foundation-nx-pnpm@<version> --input ./render.yaml --
 pnpm dlx @mood481/starter-foundation-nx-pnpm@<version> --variant mws --output ./my-project --set PROJECT_ID=my-project --set PROJECT_NAME="My Project"
 ```
 
-The `starter-foundation-render` binary delegates to the canonical `starter-render`, so its behavior matches invoking `starter-render` directly. Because the package's runtime dependency `@mood481/starter-renderer` (and its transitive `@mood481/starter-contracts`/`starter-validator`) also resolve from the `@mood481` scope on Gitea, consumers need the mapping even for `npx`/`pnpm dlx`. Scoped packages are private; unscoped dependencies such as `yaml` and `ajv` still resolve from the public npm registry.
+The `starter-foundation-render` binary delegates to the canonical `starter-render` and resolves a relative `paths.root` in an input request from the caller's working directory. `--output` takes precedence. Because the package's runtime dependency `@mood481/starter-renderer` (and its transitive `@mood481/starter-contracts`/`starter-validator`) also resolve from the `@mood481` scope on Gitea, consumers need the mapping even for `npx`/`pnpm dlx`. Scoped packages are private; unscoped dependencies such as `yaml` and `ajv` still resolve from the public npm registry.
 
 ## Validation
 

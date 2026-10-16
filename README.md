@@ -46,7 +46,7 @@ The canonical render request shape below uses Node 26 (Current), pnpm 12, and Nx
 mode: standalone
 
 paths:
-  root: ../my-project
+  root: ./my-project
 
 placeholders:
   PROJECT_NAME: My Project
@@ -71,6 +71,8 @@ For pnpm 11 with Node 24 LTS, replace those four version placeholders with:
 Both combinations follow the [pnpm compatibility matrix](https://pnpm.io/installation/#compatibility), the [Nx Node.js requirements](https://nx.dev/docs/technologies/node/introduction#requirements), and [Nx 23.3's pnpm 12 support](https://nx.dev/blog/nx-23-3-release).
 
 Render placeholders are explicit scalar values supplied in the request; the renderer does not derive values from files, the environment, or starter metadata. `NX_VERSION` sets the generated workspace's `nx` dependency to the given npm version specifier. Runtime placeholders such as `NODE_VERSION` and `PNPM_VERSION` are also provided in the request when the template references them.
+
+`paths.root` is the generated project's output directory. When using the package binary through `npx` or `pnpm dlx`, a relative value is resolved from the command's working directory. `--output` overrides it.
 
 ## Publishing
 
@@ -111,8 +113,8 @@ template/
 
 ## Prerequisites
 
-- Node.js >= 22
-- pnpm >= 10
+- Node.js 24 (pinned in `.nvmrc`; currently 24.22.0)
+- pnpm 11 (pinned in `package.json`; currently 11.28.5)
 - Gitea access for the private `@mood481` scope (needed to install the canonical toolkit packages):
 
 ```bash
@@ -126,6 +128,7 @@ export GITEA_TOKEN=<your read:package token>
 
 ```bash
 cp .npmrc.example .npmrc && export GITEA_TOKEN=<token>
+nvm use
 pnpm install          # resolves @mood481/starter-* from Gitea, rest from npm public
 pnpm validate
 ```

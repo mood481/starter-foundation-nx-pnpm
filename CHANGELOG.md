@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 Older entries follow change IDs from the former OpenSpec workflow, kept as a
 retired read-only archive under `docs/openspec-archive/`.
 
+## 0.8.1
+
+Resolve a relative `paths.root` in a render request from the caller's working
+directory when using the package binary through `npx` or `pnpm dlx`. An explicit
+`--output` still overrides it. Pin repository maintenance to Node.js 24.22.0
+and pnpm 11.28.5, including the publish workflow.
+
 ## 0.8.0
 
 BREAKING: Require `NX_VERSION` in render inputs and use it as the generated
