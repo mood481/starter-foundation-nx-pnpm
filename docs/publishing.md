@@ -5,8 +5,8 @@ organization's private Gitea npm registry. The published package exports
 `starter-foundation-render` as a thin shim that delegates to the canonical
 `@mood481/starter-renderer`, which is a runtime dependency; the toolkit
 `@mood481/starter-contracts` and `@mood481/starter-validator` are devDependencies
-used for local validation. All three are consumed from Gitea at their published
-`0.4.0` versions, and the neutral `template/` no longer ships a lockfile. This is
+used for local validation. All three are consumed from Gitea at the versions
+declared in `package.json`, and the neutral `template/` no longer ships a lockfile. This is
 a starter-maintenance document; the retired planning archive under
 `docs/openspec-archive/` is never copied into
 a generated project.
@@ -22,6 +22,9 @@ https://git.mood481.es/api/packages/mood/npm/
 The `@mood481` scope maps to that registry. Do not set a global `registry=`
 value: unscoped dependencies such as `yaml` continue to resolve from the npm
 public registry.
+
+The package tarball uses [README.package.md](README.package.md) as its root
+`README.md`. The repository root README remains the maintainer guide.
 
 ## Gitea Tokens
 
@@ -110,25 +113,24 @@ workflow.
 
 ## Consuming the Package
 
-With the `@mood481` mapping and a `package:read` token loaded, run the
-shipped binary by naming the package with `--package` and the binary as the
-command. Do not pass the binary name as a positional argument to the package
-specifier: `npx <pkg> <bin>` forwards `<bin>` as an argument to the binary
-instead of selecting it.
+With the `@mood481` mapping and a `package:read` token loaded, pass the
+package directly to `npx` or `pnpm dlx`. Both clients select its sole `bin`
+entry, `starter-foundation-render`. The arguments after the package name go
+to that command.
 
 ```bash
-npx --yes --package=@mood481/starter-foundation-nx-pnpm@<version> -- starter-foundation-render --help
-pnpm dlx --package=@mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --help
+npx --yes @mood481/starter-foundation-nx-pnpm@<version> --help
+pnpm dlx @mood481/starter-foundation-nx-pnpm@<version> --help
 ```
 
 Render examples (`--starter` is injected automatically against the installed
 package root, so consumers only pass the render options):
 
 ```bash
-npx --yes --package=@mood481/starter-foundation-nx-pnpm@<version> -- starter-foundation-render --input ./render.yaml --output ./my-project
-pnpm dlx --package=@mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --input ./render.yaml --output ./my-project
-npx --yes --package=@mood481/starter-foundation-nx-pnpm@<version> -- starter-foundation-render --input ./render.yaml --output ./my-project --set PROJECT_NAME="My Project"
-pnpm dlx --package=@mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --variant mws --output ./my-project --set PROJECT_ID=my-project --set PROJECT_NAME="My Project"
+npx --yes @mood481/starter-foundation-nx-pnpm@<version> --input ./render.yaml --output ./my-project
+pnpm dlx @mood481/starter-foundation-nx-pnpm@<version> --input ./render.yaml --output ./my-project
+npx --yes @mood481/starter-foundation-nx-pnpm@<version> --input ./render.yaml --output ./my-project --set PROJECT_NAME="My Project"
+pnpm dlx @mood481/starter-foundation-nx-pnpm@<version> --variant mws --output ./my-project --set PROJECT_ID=my-project --set PROJECT_NAME="My Project"
 ```
 
 The `starter-foundation-render` binary delegates to the canonical `starter-render`, so its behavior matches invoking `starter-render` directly. Because the package's runtime dependency `@mood481/starter-renderer` (and its transitive `@mood481/starter-contracts`/`starter-validator`) also resolve from the `@mood481` scope on Gitea, consumers need the mapping even for `npx`/`pnpm dlx`. Scoped packages are private; unscoped dependencies such as `yaml` and `ajv` still resolve from the public npm registry.
@@ -139,7 +141,13 @@ Run the local checks before publishing:
 
 ```bash
 pnpm validate
+pnpm build
 ```
+
+`pnpm build` (also available as `pnpm pack:render`) writes a local `.tgz` to
+`dist/` using the same clean staging step as `publish:render`. It does not
+require a publish token, apply release version gates, or contact Gitea. Inspect
+the tarball and its root README before a release.
 
 Confirm the published `files` ship `bin/starter-foundation-render.mjs` and do not
 contain the removed local renderer, the extension machinery, or a

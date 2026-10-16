@@ -32,10 +32,10 @@ pnpm test:render:mws
 The package also ships `starter-foundation-render`, a thin binary that delegates to the canonical `starter-render` against the installed package's own starter root (`--starter` is injected automatically):
 
 ```bash
-npx --yes --package=@mood481/starter-foundation-nx-pnpm@<version> -- starter-foundation-render --help
-pnpm dlx --package=@mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --help
-npx --yes --package=@mood481/starter-foundation-nx-pnpm@<version> -- starter-foundation-render --input ./render.yaml --output ./my-project
-pnpm dlx --package=@mood481/starter-foundation-nx-pnpm@<version> starter-foundation-render --input ./render.yaml --output ./my-project --set PROJECT_NAME="My Project"
+npx --yes @mood481/starter-foundation-nx-pnpm@<version> --help
+pnpm dlx @mood481/starter-foundation-nx-pnpm@<version> --help
+npx --yes @mood481/starter-foundation-nx-pnpm@<version> --input ./render.yaml --output ./my-project
+pnpm dlx @mood481/starter-foundation-nx-pnpm@<version> --input ./render.yaml --output ./my-project --set PROJECT_NAME="My Project"
 ```
 
 See [docs/publishing.md](docs/publishing.md) for the private Gitea registry and the `@mood481` scope configuration required before `npx`/`pnpm dlx`.
@@ -60,6 +60,8 @@ Render placeholders are explicit scalar values supplied in the request; the rend
 ## Publishing
 
 The package is privately distributed through Gitea and delegates rendering to the canonical toolkit. Configure the `@mood481` scope mapping and read token before installing or using `npx`; maintainers publish with the repository `pnpm publish:render` entrypoint. The full publishing, channel-gating, and GitHub Actions configuration is documented in [docs/publishing.md](docs/publishing.md).
+
+Run `pnpm build` (or `pnpm pack:render`) to create a local package tarball in `dist/` without publishing it. The packaged README comes from [docs/README.package.md](docs/README.package.md) and contains only consumer instructions.
 
 ## Repository Structure
 

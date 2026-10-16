@@ -2,7 +2,14 @@
 
 All notable changes to this project are documented in this file.
 
-The format follows the change IDs tracked through the former OpenSpec workflow. Each entry corresponds to an archived change, now kept as a retired read-only archive under `docs/openspec-archive/`.
+Older entries follow change IDs from the former OpenSpec workflow, kept as a
+retired read-only archive under `docs/openspec-archive/`.
+
+## 0.7.2
+
+Provide a consumer-focused README in the published package and a local
+`pnpm build` command to inspect the package tarball without publishing. Document
+direct `npx` and `pnpm dlx` invocation of the package's sole binary.
 
 ## 0.7.0
 

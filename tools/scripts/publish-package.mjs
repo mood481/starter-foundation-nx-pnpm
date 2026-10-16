@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
-import {cp, mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
+import {mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
 import {spawn} from 'node:child_process';
 import {tmpdir} from 'node:os';
-import {dirname, resolve} from 'node:path';
+import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {preparePackageDirectory, repoRoot} from './prepare-package.mjs';
 import {
     ALLOWED_PRERELEASE_IDENTIFIERS,
     assertGiteaRegistry,
@@ -12,8 +13,6 @@ import {
     PACKAGE_NAME,
     registryAuthKey,
 } from './publish-config.mjs';
-
-const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
 export function resolvePublishPlan({version, env = process.env}) {
     const match = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+)(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/.exec(version);
@@ -140,24 +139,6 @@ function runPnpm(args, env, timeoutMs, cwd) {
     });
 }
 
-async function preparePublishDirectory() {
-    const directory = await mkdtemp(resolve(tmpdir(), 'starter-publish-'));
-    try {
-        await cp(repoRoot, directory, {
-            filter: (sourcePath) => {
-                const relativePath = sourcePath.slice(repoRoot.length).replace(/^[/\\]/, '');
-                const excludedDirectories = new Set(['.git', 'build', 'coverage', 'dist', 'node_modules', 'tmp']);
-                return !relativePath.split(/[/\\]/).some((segment) => excludedDirectories.has(segment));
-            },
-            recursive: true,
-        });
-        return directory;
-    } catch (error) {
-        await rm(directory, {recursive: true, force: true});
-        throw error;
-    }
-}
-
 export async function publishPackage({env = process.env, args = []} = {}) {
     const forwardedArgs = args.filter((arg) => arg !== '--');
     const unsupportedArgs = forwardedArgs.filter((arg) => arg !== '--dry-run');
@@ -191,7 +172,7 @@ export async function publishPackage({env = process.env, args = []} = {}) {
     const action = forwardedArgs.includes('--dry-run') ? 'Dry-running' : 'Publishing';
     console.log(`${action} ${packageJson.name}@${packageJson.version} to ${GITEA_NPM_REGISTRY} with tag ${plan.tag}.`);
     console.log('Preparing package...');
-    const publishDirectory = await preparePublishDirectory();
+    const publishDirectory = await preparePackageDirectory();
     console.log('Publishing from a clean temporary package directory.');
 
     try {
