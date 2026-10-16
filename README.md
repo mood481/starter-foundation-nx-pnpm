@@ -40,7 +40,7 @@ pnpm dlx @mood481/starter-foundation-nx-pnpm@<version> --input ./render.yaml --o
 
 See [docs/publishing.md](docs/publishing.md) for the private Gitea registry and the `@mood481` scope configuration required before `npx`/`pnpm dlx`.
 
-The canonical render request shape is:
+The canonical render request shape below uses Node 26 (Current), pnpm 12, and Nx 23.3:
 
 ```yaml
 mode: standalone
@@ -53,9 +53,24 @@ placeholders:
   PROJECT_SLUG: my-project
   PROJECT_DESCRIPTION: Generated foundation repository.
   DEFAULT_PACKAGE_SCOPE: "@my-project"
+  NODE_VERSION: "26.12.0"
+  NODE_VERSION_SINGLE: "26"
+  PNPM_VERSION: "12.14.0"
+  NX_VERSION: "^23.3.0"
 ```
 
-Render placeholders are explicit scalar values supplied in the request; the renderer does not derive values from files, the environment, or starter metadata. Starter provenance placeholders (for example `STARTER_ID`, `STARTER_VERSION`, `NODE_VERSION`, `PNPM_VERSION`) are provided in the request when the template references them.
+For pnpm 11 with Node 24 LTS, replace those four version placeholders with:
+
+```yaml
+  NODE_VERSION: "24.22.0"
+  NODE_VERSION_SINGLE: "24"
+  PNPM_VERSION: "11.28.5"
+  NX_VERSION: "^23.3.0"
+```
+
+Both combinations follow the [pnpm compatibility matrix](https://pnpm.io/installation/#compatibility), the [Nx Node.js requirements](https://nx.dev/docs/technologies/node/introduction#requirements), and [Nx 23.3's pnpm 12 support](https://nx.dev/blog/nx-23-3-release).
+
+Render placeholders are explicit scalar values supplied in the request; the renderer does not derive values from files, the environment, or starter metadata. `NX_VERSION` sets the generated workspace's `nx` dependency to the given npm version specifier. Runtime placeholders such as `NODE_VERSION` and `PNPM_VERSION` are also provided in the request when the template references them.
 
 ## Publishing
 

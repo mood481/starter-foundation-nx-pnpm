@@ -10,7 +10,8 @@ placeholders:
   PROJECT_SLUG: example-mws-foundation
   PROJECT_DESCRIPTION: Example MWS-compatible foundation repository.
   DEFAULT_PACKAGE_SCOPE: "@example-mws"
-  NODE_VERSION: "24.20.0"
-  NODE_VERSION_SINGLE: "24"
-  PNPM_VERSION: "11.25.0"
+  NODE_VERSION: "26.12.0"
+  NODE_VERSION_SINGLE: "26"
+  PNPM_VERSION: "12.14.0"
+  NX_VERSION: "^23.3.0"
   VERSION: 0.1.0

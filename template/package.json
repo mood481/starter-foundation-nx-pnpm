@@ -20,7 +20,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.0",
     "eslint": "^10.9.1",
-    "nx": "^23.1.1",
+    "nx": "__NX_VERSION__",
     "typescript": "^6.0.3"
   }
 }

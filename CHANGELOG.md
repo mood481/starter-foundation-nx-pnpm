@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 Older entries follow change IDs from the former OpenSpec workflow, kept as a
 retired read-only archive under `docs/openspec-archive/`.
 
+## 0.8.0
+
+BREAKING: Require `NX_VERSION` in render inputs and use it as the generated
+workspace's `nx` dependency specifier. Existing inputs must add the placeholder.
+Refresh the examples to Node 26, pnpm 12, and Nx 23.3; document a compatible
+Node 24 LTS and pnpm 11 option and inline generation without a request file.
+
 ## 0.7.2
 
 Provide a consumer-focused README in the published package and a local

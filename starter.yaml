@@ -14,6 +14,7 @@ template:
       - PROJECT_SLUG
       - PROJECT_DESCRIPTION
       - DEFAULT_PACKAGE_SCOPE
+      - NX_VERSION
 
 variants:
   mws:
