@@ -149,6 +149,17 @@ pnpm build
 require a publish token, apply release version gates, or contact Gitea. Inspect
 the tarball and its root README before a release.
 
+To exercise the tarball with `npx`, pass it through `--package` and name the
+binary explicitly:
+
+```bash
+tarball="dist/mood481-starter-foundation-nx-pnpm-$(node -p "require('./package.json').version").tgz"
+npx --yes --package="./$tarball" starter-foundation-render --help
+```
+
+The tarball is local, but npm still resolves this package's private runtime
+dependencies from the configured Gitea registry.
+
 Confirm the published `files` ship `bin/starter-foundation-render.mjs` and do not
 contain the removed local renderer, the extension machinery, or a
 `template/pnpm-lock.yaml`.

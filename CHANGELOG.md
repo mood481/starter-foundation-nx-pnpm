@@ -5,6 +5,11 @@ All notable changes to this project are documented in this file.
 Older entries follow change IDs from the former OpenSpec workflow, kept as a
 retired read-only archive under `docs/openspec-archive/`.
 
+## 0.8.2
+
+Restore the generated `.gitignore` when npm installs the package tarball and
+renames the bundled template file to `.npmignore`.
+
 ## 0.8.1
 
 Resolve a relative `paths.root` in a render request from the caller's working
