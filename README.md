@@ -4,7 +4,7 @@ Neutral foundation starter for strict Nx + pnpm multi-language monorepos.
 
 ## Overview
 
-This starter defines a neutral, renderable foundation template for monorepos based on Nx and pnpm. It provides the monorepo structure, workspace configuration, and validation baseline without selecting an SDD provider. Rendering and validation are performed by the canonical starter-toolkit (`@mood481/starter-renderer` / `@mood481/starter-validator`); approved variants and optional extensions may add contributions outside the neutral `template/`.
+This starter defines a neutral, renderable foundation template for monorepos based on Nx and pnpm. It provides the monorepo structure, workspace configuration, validation baseline, and `@mood481/dev-standards` tooling without selecting an SDD provider or preinstalling a fixed standards profile. Rendering and validation are performed by the canonical starter-toolkit (`@mood481/starter-renderer` / `@mood481/starter-validator`); approved variants and optional extensions may add contributions outside the neutral `template/`.
 
 ## Usage
 
@@ -104,7 +104,7 @@ template/
 ├── services/          # Backend services, APIs, workers
 ├── packages/          # Shared libraries and reusable packages
 ├── tools/             # Scripts, generators, automation
-├── docs/              # Generated-project documentation
+├── docs/              # Generated-project documentation; local operations live under docs/operations/
 ├── package.json       # Root workspace metadata
 ├── pnpm-workspace.yaml
 ├── nx.json            # Nx orchestration config
@@ -132,6 +132,26 @@ nvm use
 pnpm install          # resolves @mood481/starter-* from Gitea, rest from npm public
 pnpm validate
 ```
+
+## Development standards
+
+Generated projects include `@mood481/dev-standards` as a development dependency so
+teams can use the canonical rules/guides tool directly. The neutral foundation does
+not materialize any standards by default.
+
+From a generated workspace:
+
+```bash
+pnpm exec dev-standards list
+pnpm exec dev-standards install devel quality ts-js nx-pnpm
+```
+
+Once a project installs standards, `dev-standards check` and
+`dev-standards update` manage that project's own selection and manifest. No
+`starter` wrapper is involved.
+
+The generated `.npmrc` maps the `@mood481` scope to Gitea and reads credentials
+from `GITEA_TOKEN`; no token is written into the starter.
 
 ## Variants
 

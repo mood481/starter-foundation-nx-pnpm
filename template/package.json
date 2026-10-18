@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
+    "@mood481/dev-standards": "^0.3.1",
     "eslint": "^10.9.1",
     "nx": "__NX_VERSION__",
     "typescript": "^6.0.3"

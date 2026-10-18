@@ -77,3 +77,18 @@ pnpm dlx @mood481/starter-foundation-nx-pnpm \
 ```
 
 To generate the `mws` variant, set `variant: mws` in the request and add `PROJECT_ID` to `placeholders`. You can also select it with `--variant mws`.
+
+## Development standards
+
+The generated workspace includes `@mood481/dev-standards` as a development
+dependency but does not preinstall a rules/guides profile. After generation, choose
+the context required by the project directly with the standards CLI:
+
+```bash
+pnpm exec dev-standards list
+pnpm exec dev-standards install devel quality ts-js nx-pnpm
+```
+
+After installation, use `pnpm exec dev-standards check` and
+`pnpm exec dev-standards update` directly. The generated `.npmrc` maps
+`@mood481` to Gitea and expects the package-read token through `GITEA_TOKEN`.

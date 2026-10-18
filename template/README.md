@@ -9,7 +9,11 @@ __PROJECT_DESCRIPTION__
 
 ## Getting Started
 
+The generated project resolves private `@mood481` packages from the Mood Gitea
+registry. Export a package-read token before the first install:
+
 ```bash
+export GITEA_TOKEN=<token>
 pnpm install
 pnpm validate
 ```
@@ -35,6 +39,22 @@ pnpm validate
 | `pnpm build`      | Build all projects                   |
 | `pnpm validate`   | Run full validation suite            |
 | `pnpm nx graph`   | Generate the workspace project graph |
+
+## Development Standards
+
+`@mood481/dev-standards` is available as a development dependency, but the
+foundation does not install a fixed rules/guides profile. Projects can adopt only the
+standards they need:
+
+```bash
+pnpm exec dev-standards list
+pnpm exec dev-standards install devel quality ts-js nx-pnpm
+```
+
+After materializing standards, use `pnpm exec dev-standards check` and
+`pnpm exec dev-standards update` directly.
+
+Repository-specific operating information lives under `docs/operations/`.
 
 ## Adding a Project
 

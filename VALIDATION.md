@@ -49,6 +49,8 @@ When adding or modifying a variant, confirm the following contract checks:
 - `starter.yaml` declares the expected contract fields.
 - `template/` contains the expected directory structure.
 - The neutral template does not require an SDD directory or provider.
+- The template provides `@mood481/dev-standards` without preinstalling a rules/guides profile.
+- Repository-specific generated-project documentation lives under `docs/operations/`.
 
 ### Rendered Output Validation
 
@@ -57,6 +59,7 @@ When adding or modifying a variant, confirm the following contract checks:
 - `pnpm install` works in a generated copy.
 - `pnpm validate` works in a generated copy.
 - Nx can produce a project graph output.
+- No `docs/manifest.json` is required unless the generated project explicitly installs development standards.
 
 ### Running Template Validation
 
@@ -68,7 +71,11 @@ pnpm validate:template
 
 It renders the neutral template with the canonical `@mood481/starter-renderer` (via `starter-render`), validates `starter.yaml` and the render request with the canonical `@mood481/starter-validator`, scans the rendered output for unresolved placeholders, runs a real `pnpm install` in the rendered project (there is no shipped template lockfile; the install produces the project's `pnpm-lock.yaml`), then runs generated-project `pnpm validate` and generates an Nx graph.
 
-Neutral template validation does not apply variant overlays.
+Neutral template validation does not apply variant overlays. Because the generated
+workspace installs `@mood481/dev-standards` from the private Mood registry, the
+validation environment must provide `GITEA_TOKEN` with package read access. Baseline
+validation does not run `dev-standards check` because no standards are materialized
+by default.
 
 To keep the temporary rendered directory for debugging:
 
