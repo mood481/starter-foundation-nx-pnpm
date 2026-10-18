@@ -50,7 +50,7 @@ When adding or modifying a variant, confirm the following contract checks:
 - `template/` contains the expected directory structure.
 - The neutral template does not require an SDD directory or provider.
 - The template provides `@mood481/dev-standards` without preinstalling a rules/guides profile.
-- Repository-specific generated-project documentation lives under `docs/operations/`.
+- The template does not pre-generate generic monorepo or validation operations that would substitute for project-selected standards.
 
 ### Rendered Output Validation
 

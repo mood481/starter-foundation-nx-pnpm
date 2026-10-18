@@ -54,7 +54,7 @@ pnpm exec dev-standards install devel quality ts-js nx-pnpm
 After materializing standards, use `pnpm exec dev-standards check` and
 `pnpm exec dev-standards update` directly.
 
-Repository-specific operating information lives under `docs/operations/`.
+The foundation ships only minimal bootstrap notes under `docs/operations/`. Project-specific operational documentation is created by the consuming project as its real applications, services and workflows emerge.
 
 ## Adding a Project
 
