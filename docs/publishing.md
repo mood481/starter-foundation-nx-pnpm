@@ -51,34 +51,34 @@ and cannot find this private package.
 
 ## Local Publishing
 
-The repository-owned `pnpm publish:render` script is the only manual publish
-entrypoint. It supplies the Gitea registry to `pnpm publish` and creates a
-short-lived userconfig when `GITEA_TOKEN` is set. It prints the selected
-package, registry, and channel, then stages a clean temporary package directory
-so local dependency caches under `template/` cannot delay or contaminate the
-package. An existing token-bearing `NPM_CONFIG_USERCONFIG` may be used instead.
-The child publish process has a 120-second timeout; override it with
-`PUBLISH_TIMEOUT_MS` when a slower network requires it.
+The repository-owned `pnpm publish:render` script keeps `package.json` on a stable
+base version such as `0.8.4`. Prerelease suffixes belong to the publication request,
+not to the committed manifest.
 
-Local and manual publishing requires a prerelease version. For example:
+For a local prerelease:
 
 ```bash
-pnpm version prerelease --preid=devel --no-git-tag-version
 read -r -s GITEA_TOKEN
 export GITEA_TOKEN
-pnpm publish:render
+export PUBLISH_PRERELEASE=beta.1
+NPM_CONFIG_USERCONFIG=.npmrc.example pnpm publish:render
 ```
+
+The effective published version is derived in the temporary staging directory, so the
+repository manifest remains `0.8.4` while the uploaded package can be
+`0.8.4-beta.1`.
 
 The channel policy is:
 
-| Context | Version | Tag |
+| Context | Effective version | Tag |
 | --- | --- | --- |
-| Local or manual | `x.y.z-devel.N` | `devel` |
-| Local or manual | `x.y.z-alpha.N`, `x.y.z-beta.N`, `x.y.z-rc.N` | `next` |
-| Release tag push | prerelease-free `x.y.z` | `latest` |
+| Tag `vX.Y.Z` | `X.Y.Z` | `latest` |
+| Tag/manual `devel.N` | `X.Y.Z-devel.N` | `devel` |
+| Tag/manual `alpha.N`, `beta.N`, `rc.N` | `X.Y.Z-...` | `next` |
 
-Local and manually dispatched runs cannot publish `latest`. A bare final
-version or an unsupported prerelease identifier is rejected before upload.
+A tag is valid when its stable `X.Y.Z` base exactly matches the stable version in
+`package.json`. The prerelease suffix is intentionally ignored for that base-version
+comparison.
 
 The manifest remains registry-agnostic: it does not set
 `publishConfig.registry`. Its existing `publishConfig.access` metadata does not
@@ -87,8 +87,12 @@ select the registry or provide authentication.
 ## GitHub Actions Configuration
 
 The workflow lives at `.github/workflows/publish.yml` and calls the same
-`pnpm publish:render` entrypoint used locally. It publishes to external Gitea,
-not GitHub Packages.
+`pnpm publish:render` entrypoint used locally. Before pnpm executes that script,
+the workflow exposes the repository `.npmrc.example` as `NPM_CONFIG_USERCONFIG`
+so pnpm's dependency verification resolves private `@mood481` packages from
+Gitea instead of the public npm registry. The publisher then creates its own
+short-lived authenticated userconfig for the actual upload. It publishes to
+external Gitea, not GitHub Packages.
 
 Configure the repository before using it:
 
@@ -98,9 +102,11 @@ Configure the repository before using it:
 4. Confirm the runner can reach `git.mood481.es`.
 
 The workflow runs on pushed `v*` tags and can also be started with
-`workflow_dispatch`. A pushed tag must exactly match the `package.json` version;
-only that path receives release context and can publish a final version under
-`latest`. A manually dispatched run must use an allowed prerelease version.
+`workflow_dispatch`. `package.json` always contains the stable `X.Y.Z` base.
+A pushed `vX.Y.Z` tag publishes `latest`; `vX.Y.Z-devel.N` publishes `devel`;
+and `vX.Y.Z-alpha.N`, `-beta.N`, or `-rc.N` publish `next`. In every case the
+tag's stable base must equal the manifest version. Manual dispatch asks only for
+the prerelease suffix and derives the effective version from the manifest base.
 
 The workflow requests only the GitHub `contents: read` permission. The Gitea
 PAT provides the package permission. The publish script converts the injected

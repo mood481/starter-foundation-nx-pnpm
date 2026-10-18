@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      prerelease:
+        description: 'Prerelease suffix to publish, e.g. devel.0, alpha.1, beta.1 or rc.1'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -27,18 +32,22 @@ jobs:
 
       - name: Verify release tag
         if: github.event_name == 'push'
-        shell: bash
+        env:
+          PUBLISH_RELEASE: 'true'
         run: |
-          test "$GITHUB_REF_TYPE" = "tag"
-          tag_version="${GITHUB_REF_NAME#v}"
-          package_version="$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version")"
-          if [ "$tag_version" != "$package_version" ]; then
-            echo "Tag version $tag_version does not match package.json version $package_version."
-            exit 1
-          fi
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          import { resolvePublishPlan } from './tools/scripts/publish-package.mjs';
+
+          const packageJson = JSON.parse(await readFile('package.json', 'utf8'));
+          const plan = resolvePublishPlan({version: packageJson.version, env: process.env});
+          console.log(`Release tag accepted: ${plan.version} -> ${plan.tag}`);
+          NODE
 
       - name: Publish package
         run: pnpm publish:render
         env:
           GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+          NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/.npmrc.example
           PUBLISH_RELEASE: ${{ github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
+          PUBLISH_PRERELEASE: ${{ inputs.prerelease }}

@@ -14,45 +14,86 @@ import {
     registryAuthKey,
 } from './publish-config.mjs';
 
-export function resolvePublishPlan({version, env = process.env}) {
-    const match = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+)(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/.exec(version);
+function parseVersion(value, label) {
+    const match = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/.exec(value);
     if (!match) {
-        throw new Error(`Package version is not valid semver: ${version}`);
-    }
-
-    const prereleaseIdentifier = match[4];
-    const isReleaseWorkflow = env.PUBLISH_RELEASE === 'true'
-        && env.GITHUB_ACTIONS === 'true'
-        && env.GITHUB_EVENT_NAME === 'push'
-        && env.GITHUB_REF_TYPE === 'tag'
-        && env.GITHUB_REF_NAME === `v${version}`;
-
-    if (!prereleaseIdentifier) {
-        if (!isReleaseWorkflow) {
-            throw new Error(
-                'Refusing to publish a final version outside the release workflow. '
-                + 'Use pnpm version prerelease --preid=devel --no-git-tag-version first.',
-            );
-        }
-
-        return {tag: 'latest', release: true};
-    }
-
-    if (isReleaseWorkflow) {
-        throw new Error('The release workflow requires a prerelease-free package version.');
-    }
-
-    if (!ALLOWED_PRERELEASE_IDENTIFIERS.has(prereleaseIdentifier)) {
-        throw new Error(
-            `Unsupported prerelease identifier "${prereleaseIdentifier}". `
-            + 'Allowed identifiers are devel, alpha, beta, and rc.',
-        );
+        throw new Error(`${label} is not a supported semver release version: ${value}`);
     }
 
     return {
-        tag: prereleaseIdentifier === 'devel' ? 'devel' : 'next',
-        release: false,
+        base: `${match[1]}.${match[2]}.${match[3]}`,
+        prerelease: match[4],
+        version: value,
     };
+}
+
+function distTagForPrerelease(prerelease) {
+    const identifier = prerelease.split('.')[0];
+    if (!ALLOWED_PRERELEASE_IDENTIFIERS.has(identifier)) {
+        throw new Error(
+            `Unsupported prerelease identifier "${identifier}". `
+            + 'Allowed identifiers are devel, alpha, beta, and rc.',
+        );
+    }
+    return identifier === 'devel' ? 'devel' : 'next';
+}
+
+export function resolvePublishPlan({version, env = process.env}) {
+    const packageVersion = parseVersion(version, 'Package version');
+    if (packageVersion.prerelease) {
+        throw new Error(
+            'package.json must contain only a stable base version (x.y.z); '
+            + 'prerelease suffixes belong to release tags or PUBLISH_PRERELEASE.',
+        );
+    }
+
+    const isTaggedWorkflow = env.PUBLISH_RELEASE === 'true'
+        && env.GITHUB_ACTIONS === 'true'
+        && env.GITHUB_EVENT_NAME === 'push'
+        && env.GITHUB_REF_TYPE === 'tag'
+        && env.GITHUB_REF_NAME?.startsWith('v');
+
+    if (isTaggedWorkflow) {
+        const taggedVersion = parseVersion(
+            env.GITHUB_REF_NAME.slice(1),
+            'Release tag version',
+        );
+        if (taggedVersion.base !== packageVersion.base) {
+            throw new Error(
+                `Release tag base ${taggedVersion.base} does not match package.json version ${packageVersion.base}.`,
+            );
+        }
+        if (!taggedVersion.prerelease) {
+            return {
+                version: taggedVersion.version,
+                tag: 'latest',
+                release: true,
+            };
+        }
+        return {
+            version: taggedVersion.version,
+            tag: distTagForPrerelease(taggedVersion.prerelease),
+            release: false,
+        };
+    }
+
+    const prerelease = env.PUBLISH_PRERELEASE?.trim();
+    if (prerelease) {
+        const effectiveVersion = parseVersion(
+            `${packageVersion.base}-${prerelease}`,
+            'Manual prerelease version',
+        );
+        return {
+            version: effectiveVersion.version,
+            tag: distTagForPrerelease(effectiveVersion.prerelease),
+            release: false,
+        };
+    }
+
+    throw new Error(
+        'Publishing requires a matching vX.Y.Z[-prerelease] release tag or '
+        + 'PUBLISH_PRERELEASE for a manual prerelease. package.json remains at X.Y.Z.',
+    );
 }
 
 async function prepareUserConfig({env = process.env, registry = GITEA_NPM_REGISTRY}) {
@@ -170,9 +211,9 @@ export async function publishPackage({env = process.env, args = []} = {}) {
         ...forwardedArgs,
     ];
     const action = forwardedArgs.includes('--dry-run') ? 'Dry-running' : 'Publishing';
-    console.log(`${action} ${packageJson.name}@${packageJson.version} to ${GITEA_NPM_REGISTRY} with tag ${plan.tag}.`);
+    console.log(`${action} ${packageJson.name}@${plan.version} to ${GITEA_NPM_REGISTRY} with tag ${plan.tag}.`);
     console.log('Preparing package...');
-    const publishDirectory = await preparePackageDirectory();
+    const publishDirectory = await preparePackageDirectory({version: plan.version});
     console.log('Publishing from a clean temporary package directory.');
 
     try {

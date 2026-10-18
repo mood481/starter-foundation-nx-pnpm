@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 Older entries follow change IDs from the former OpenSpec workflow, kept as a
 retired read-only archive under `docs/openspec-archive/`.
 
+## 0.8.4
+
+Configure the repository-level `@mood481` registry during publishing so pnpm's
+pre-script dependency verification resolves private toolkit packages from Gitea
+before the publish script starts.
+Keep `package.json` on the stable base version and derive prerelease package
+versions from matching release tags or manual prerelease inputs.
+
 ## 0.8.2
 
 Restore the generated `.gitignore` when npm installs the package tarball and
