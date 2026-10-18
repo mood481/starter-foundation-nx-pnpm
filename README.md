@@ -104,7 +104,7 @@ template/
 ├── services/          # Backend services, APIs, workers
 ├── packages/          # Shared libraries and reusable packages
 ├── tools/             # Scripts, generators, automation
-├── docs/              # Generated-project documentation; local operations live under docs/operations/
+├── docs/              # Minimal generated-project bootstrap documentation
 ├── package.json       # Root workspace metadata
 ├── pnpm-workspace.yaml
 ├── nx.json            # Nx orchestration config
@@ -148,7 +148,9 @@ pnpm exec dev-standards install devel quality ts-js nx-pnpm
 
 Once a project installs standards, `dev-standards check` and
 `dev-standards update` manage that project's own selection and manifest. No
-`starter` wrapper is involved.
+`starter` wrapper is involved. The starter deliberately avoids generating generic
+monorepo or validation documents that would compete with the standards and the
+project's future operational documentation.
 
 The generated `.npmrc` maps the `@mood481` scope to Gitea and reads credentials
 from `GITEA_TOKEN`; no token is written into the starter.
